@@ -1,0 +1,51 @@
+import numpy as np
+from sklearn.metrics import accuracy_score, f1_score, classification_report, recall_score, confusion_matrix
+import torch
+
+def compute_metrics(y_true, y_pred, y_proba=None):
+    """Compute medical classification metrics"""
+    acc = accuracy_score(y_true, y_pred)
+    
+    # Determine if binary or multiclass
+    unique_labels = set(y_true)
+    if len(unique_labels) <= 2:
+        # Binary classification
+        f1 = f1_score(y_true, y_pred, average='binary')
+        sensitivity = float(recall_score(y_true, y_pred))
+        specificity = float(specificity_score(y_true, y_pred))
+    else:
+        # Multiclass classification
+        f1 = f1_score(y_true, y_pred, average='weighted')
+        # For multiclass, calculate macro averages for sensitivity and specificity
+        sensitivity = float(recall_score(y_true, y_pred, average='macro'))
+        specificity = float(specificity_multiclass(y_true, y_pred))
+    
+    metrics = {
+        'accuracy': float(acc),
+        'f1': float(f1),
+        'sensitivity': sensitivity,
+        'specificity': specificity
+    }
+    return metrics
+
+def specificity_score(y_true, y_pred):
+    tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
+    return tn / (tn + fp) if (tn + fp) > 0 else 0.0
+
+def specificity_multiclass(y_true, y_pred):
+    """Calculate specificity for multiclass classification"""
+    cm = confusion_matrix(y_true, y_pred)
+    # Specificity for each class (true negatives / (true negatives + false positives))
+    specificities = []
+    for i in range(cm.shape[0]):
+        # For class i: TN = sum of diagonal except (i,i), FP = sum of column i except (i,i)
+        tn = cm.sum() - (cm[i, :].sum() + cm[:, i].sum() - cm[i, i])
+        fp = cm[:, i].sum() - cm[i, i]
+        spec = tn / (tn + fp) if (tn + fp) > 0 else 0.0
+        specificities.append(spec)
+    # Return average specificity across all classes
+    return sum(specificities) / len(specificities)
+
+def confidence_from_proba(y_proba):
+    """Extract confidence from probabilities"""
+    return float(np.max(y_proba))
