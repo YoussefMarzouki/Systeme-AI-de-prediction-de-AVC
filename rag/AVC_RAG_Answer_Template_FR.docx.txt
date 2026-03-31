@@ -1,0 +1,67 @@
+TITRE
+Réponse structurée – Évaluation éducative des symptômes d’AVC (RAG)
+
+IMPORTANT (À AFFICHER EN HAUT)
+- Je ne suis pas un professionnel de santé et je ne peux pas poser de diagnostic.
+- En cas de signes d’AVC possibles (début soudain, faiblesse d’un côté, trouble de la parole, visage asymétrique, perte de vision, trouble de l’équilibre, mal de tête brutal inhabituel), appelez immédiatement le 15 (SAMU) / 112.
+
+1) RÉSUMÉ EN 2–3 LIGNES (TRIAGE)
+- Niveau d’urgence estimé : [URGENCE IMMÉDIATE / URGENCE À ÉVALUER RAPIDEMENT / FAIBLE PROBABILITÉ MAIS SURVEILLANCE]
+- Action recommandée : [Appeler 15/112 maintenant / Aller aux urgences / Consulter rapidement / Surveiller + consulter si aggravation]
+- Pourquoi (très bref) : [ex: symptômes soudains compatibles avec FAST]
+
+2) VOS SYMPTÔMES (CE QUE J’AI COMPRIS)
+- Âge / sexe (si fourni) :
+- Moment de début (date/heure) :
+- Installation : [soudain / progressif / inconnu]
+- Symptômes principaux rapportés :
+  - Visage : [bouche de travers ? oui/non/inconnu]
+  - Bras/jambe : [faiblesse d’un côté ? oui/non/inconnu]
+  - Parole : [difficulté à parler/comprendre ? oui/non/inconnu]
+  - Vision : [perte de vision/diplopie ? oui/non/inconnu]
+  - Équilibre : [vertiges, chute ? oui/non/inconnu]
+  - Céphalée brutale inhabituelle : [oui/non/inconnu]
+  - Autres :
+- Facteurs de risque mentionnés (si connus) : HTA, diabète, tabac, fibrillation auriculaire, cholestérol, antécédents…
+
+3) DÉPISTAGE RAPIDE (FAST / VITE)
+- F (Face / Visage) : [résultat]
+- A (Arm / Bras) : [résultat]
+- S (Speech / Parole) : [résultat]
+- T (Time / Temps) : [heure de début + importance d’agir vite]
+
+4) RAISONNEMENT (BASÉ SUR LES SOURCES RETROUVÉES)
+- Informations clés des documents (avec citations) :
+  1) [Point 1 + source]
+  2) [Point 2 + source]
+  3) [Point 3 + source]
+- Interprétation : expliquer en termes simples pourquoi ces symptômes peuvent correspondre (ou non) à un AVC, sans diagnostiquer.
+
+5) CE QU’IL FAUT FAIRE MAINTENANT (PLAN D’ACTION)
+Si URGENCE IMMÉDIATE :
+- Appeler 15/112 maintenant.
+- Noter l’heure exacte de début.
+- Ne pas conduire soi-même si symptômes actifs.
+- Ne pas manger/boire si trouble de la déglutition.
+- Préparer : liste médicaments, antécédents, allergies.
+
+Si URGENCE À ÉVALUER RAPIDEMENT :
+- Consulter en urgence / contacter un médecin immédiatement.
+- Surveiller l’apparition de signes FAST.
+
+Si FAIBLE PROBABILITÉ MAIS SURVEILLANCE :
+- Mesures de prudence + quand recontacter.
+- Signaux d’alarme qui nécessitent le 15/112.
+
+6) QUESTIONS DE CLARIFICATION (MAX 3)
+1) À quelle heure exactement les symptômes ont-ils commencé ?
+2) Les symptômes sont-ils soudains et d’un seul côté ?
+3) Y a-t-il trouble de la parole ou asymétrie du visage actuellement ?
+
+7) DIFFÉRENTIELS (OPTIONNEL, SANS DIAGNOSTIC)
+- Exemples : migraine avec aura, hypoglycémie, crise d’épilepsie avec déficit post-critique, vertige vestibulaire, etc.
+- Toujours rappeler : certains “imitateurs” ressemblent à l’AVC → mieux vaut urgence si doute.
+
+8) SOURCES (OBLIGATOIRE)
+- [Titre] – [Organisme] – [URL] – (date consultée)
+- [Titre] – [Organisme] – [URL] – (date consultée)
