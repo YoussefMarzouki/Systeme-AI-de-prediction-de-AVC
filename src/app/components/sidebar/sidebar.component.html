@@ -1,0 +1,66 @@
+<aside class="sidebar">
+  <!-- Logo -->
+  <div class="logo-section">
+    <div class="logo-icon">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <rect width="28" height="28" rx="8" fill="#2563eb"/>
+        <path d="M8 14h12M14 8v12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="14" cy="14" r="4" stroke="white" stroke-width="1.5" fill="none"/>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <span class="logo-title">ClinicalLens</span>
+      <span class="logo-subtitle">RECEPTION PORTAL</span>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav-section">
+    <a *ngFor="let item of navItems"
+       [routerLink]="item.route"
+       routerLinkActive="active"
+       class="nav-item">
+      <span class="nav-icon">
+        <!-- Dashboard -->
+        <svg *ngIf="item.icon === 'dashboard'" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <rect x="2" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="11" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="2" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="11" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <!-- Registration -->
+        <svg *ngIf="item.icon === 'registration'" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M4 4h12v14H4z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M7 8h6M7 11h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M10 2v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <!-- Appointments -->
+        <svg *ngIf="item.icon === 'appointments'" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M7 2v4M13 2v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <!-- Records -->
+        <svg *ngIf="item.icon === 'records'" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M5 3h7l4 4v10a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M12 3v4h4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="nav-label">{{ item.label }}</span>
+    </a>
+  </nav>
+
+  <!-- Logout -->
+  <div class="logout-section">
+    <a class="nav-item logout-item" href="#">
+      <span class="nav-icon">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M7 17H4a1 1 0 01-1-1V4a1 1 0 011-1h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M14 13l3-3-3-3M8 10h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="nav-label">Logout</span>
+    </a>
+  </div>
+</aside>
