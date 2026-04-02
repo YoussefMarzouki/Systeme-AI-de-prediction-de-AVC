@@ -1,0 +1,4 @@
+from .patient_repository import PatientRepository
+from .dossier_repository import DossierRepository
+from .donnees_cliniques_repository import DonneesCliniquesRepository
+from .image_irm_repository import ImageIRMRepository
