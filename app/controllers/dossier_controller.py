@@ -38,3 +38,24 @@ def add_donnees_cliniques(dossier_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 400
+
+@dossier_bp.route('/api/v1/dossiers/evaluated', methods=['GET'])
+def get_evaluated_dossiers():
+    try:
+        data = dossier_service.get_evaluated_dossiers()
+        return jsonify({"status": "success", "records": data}), 200
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+@dossier_bp.route('/api/v1/patients/<string:patient_id>/history', methods=['GET'])
+def get_patient_history(patient_id):
+    try:
+        data = dossier_service.get_patient_history(patient_id)
+        return jsonify({"status": "success", "history": data}), 200
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+

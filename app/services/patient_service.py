@@ -13,11 +13,19 @@ class PatientService:
     def create_patient(self, data: dict, current_user_id: str) -> str:
         # Assuming date string 'YYYY-MM-DD'
         dob = datetime.strptime(data['dateNaissance'], '%Y-%m-%d').date()
+        today = datetime.today().date()
+        age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
         
+        cin_val = data.get('cin')
+        if not cin_val or str(cin_val).strip() == '':
+            cin_val = None
+
         new_patient = Patient(
+            cin=cin_val,
             nom=data['nom'],
             prenom=data['prenom'],
             dateNaissance=dob,
+            age=age,
             sexe=data['sexe']
         )
         patient = self.patient_repo.create(new_patient)
@@ -29,9 +37,11 @@ class PatientService:
             raise Exception("Patient introuvable")
         return {
             "id": patient.id,
+            "cin": patient.cin,
             "nom": patient.nom,
             "prenom": patient.prenom,
             "dateNaissance": str(patient.dateNaissance),
+            "age": patient.age,
             "sexe": patient.sexe
         }
 
@@ -76,8 +86,10 @@ class PatientService:
         patients = self.patient_repo.search(query)
         return [{
             "id": p.id,
+            "cin": p.cin,
             "nom": p.nom,
             "prenom": p.prenom,
             "dateNaissance": str(p.dateNaissance),
+            "age": p.age,
             "sexe": p.sexe
         } for p in patients]

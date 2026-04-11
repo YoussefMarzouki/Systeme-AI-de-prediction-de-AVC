@@ -15,5 +15,6 @@ class PatientRepository:
         return Patient.query.filter(
             (Patient.nom.ilike(search_filter)) | 
             (Patient.prenom.ilike(search_filter)) |
+            (Patient.cin.ilike(search_filter)) |
             (Patient.id.ilike(search_filter))
         ).all()
