@@ -1,9 +1,8 @@
 <div class="page-container">
   <!-- Breadcrumb -->
   <div class="breadcrumb">
-    <span class="breadcrumb-parent">PATIENTS</span>
-    <span class="breadcrumb-separator">›</span>
-    <span class="breadcrumb-current">NEW REGISTRATION</span>
+    <span class="breadcrumb-dot"></span>
+    <span class="breadcrumb-text">PATIENTS › NEW REGISTRATION</span>
   </div>
 
   <!-- Page Title -->
@@ -35,8 +34,8 @@
               <input type="text" formControlName="fullLegalName" placeholder="e.g. Johnathan Doe" class="form-input" />
             </div>
             <div class="form-group">
-              <label class="form-label">MEDICAL RECORD NUMBER (MRN)</label>
-              <input type="text" formControlName="mrn" placeholder="CL-9482-TX" class="form-input" />
+              <label class="form-label">NATIONAL ID</label>
+              <input type="text" formControlName="cin" placeholder="AB123456" class="form-input" />
             </div>
           </div>
 
@@ -53,97 +52,39 @@
                 <option value="" disabled selected>Select Gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
-                <option value="non-binary">Non-binary</option>
-                <option value="other">Other</option>
-                <option value="prefer-not">Prefer not to say</option>
               </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">NATIONAL ID / SOCIAL SECURITY</label>
-              <input type="text" formControlName="nationalId" placeholder="XXX-XX-XXXX" class="form-input" />
             </div>
           </div>
         </form>
       </div>
 
-      <!-- Contact Details & Insurance Row -->
-      <div class="two-card-row">
-        <!-- Contact Details -->
-        <div class="form-card">
-          <div class="card-header">
-            <div class="card-icon blue">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <rect x="4" y="2" width="12" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
-                <circle cx="10" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/>
-                <path d="M6 16c0-2.21 1.79-4 4-4s4 1.79 4 4" stroke="currentColor" stroke-width="1.5"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Contact Details</h2>
+      <!-- Contact Details -->
+      <div class="form-card">
+        <div class="card-header">
+          <div class="card-icon blue">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect x="4" y="2" width="12" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="10" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M6 16c0-2.21 1.79-4 4-4s4 1.79 4 4" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
           </div>
-
-          <form [formGroup]="registrationForm">
-            <div class="form-group">
-              <label class="form-label">PHONE NUMBER</label>
-              <input type="tel" formControlName="phoneNumber" placeholder="+1 (555) 000-0000" class="form-input" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">EMAIL ADDRESS</label>
-              <input type="email" formControlName="emailAddress" placeholder="patient@example.com" class="form-input" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">HOME ADDRESS</label>
-              <input type="text" formControlName="homeAddress" placeholder="Street Address, Apt, City, State, Zip" class="form-input" />
-            </div>
-          </form>
+          <h2 class="card-title">Contact Details</h2>
         </div>
 
-        <!-- Insurance Details -->
-        <div class="form-card">
-          <div class="card-header">
-            <div class="card-icon blue">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <rect x="2" y="4" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
-                <path d="M2 8h16" stroke="currentColor" stroke-width="1.5"/>
-                <path d="M6 12h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Insurance Details</h2>
+        <form [formGroup]="registrationForm">
+          <div class="form-group">
+            <label class="form-label">PHONE NUMBER</label>
+            <input type="tel" formControlName="phoneNumber" placeholder="+216 20 123 456" class="form-input" />
           </div>
-
-          <form [formGroup]="registrationForm">
-            <div class="form-group">
-              <label class="form-label">PROVIDER NAME</label>
-              <input type="text" formControlName="insuranceProvider" placeholder="e.g. BlueCross BlueShield" class="form-input" />
-            </div>
-            <div class="form-row two-col">
-              <div class="form-group">
-                <label class="form-label">POLICY NUMBER</label>
-                <input type="text" formControlName="policyNumber" placeholder="POL-123456" class="form-input" />
-              </div>
-              <div class="form-group">
-                <label class="form-label">GROUP NUMBER</label>
-                <input type="text" formControlName="groupNumber" placeholder="GRP-987" class="form-input" />
-              </div>
-            </div>
-
-            <!-- Scan Insurance Card -->
-            <div class="upload-section">
-              <div class="upload-info">
-                <span class="upload-title">Scan Insurance Card</span>
-                <span class="upload-desc">Upload front and back for auto-verification.</span>
-              </div>
-              <button class="upload-btn" type="button">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M8 3v10M3 8l5-5 5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Upload
-              </button>
-            </div>
-          </form>
-        </div>
+          <div class="form-group">
+            <label class="form-label">EMAIL ADDRESS</label>
+            <input type="email" formControlName="emailAddress" placeholder="patient@example.tn" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">HOME ADDRESS</label>
+            <input type="text" formControlName="homeAddress" placeholder="e.g. 2000 Bardo, Tunis" class="form-input" />
+          </div>
+        </form>
       </div>
 
       <!-- Emergency Contact -->
@@ -169,7 +110,7 @@
             </div>
             <div class="form-group">
               <label class="form-label">PHONE NUMBER</label>
-              <input type="tel" formControlName="emergencyPhone" placeholder="+1 (555) 000-0000" class="form-input" />
+              <input type="tel" formControlName="emergencyPhone" placeholder="+216 98 123 456" class="form-input" />
             </div>
           </div>
         </form>
@@ -177,35 +118,13 @@
 
     </div>
 
-    <!-- Right Sidebar Widgets -->
-    <div class="sidebar-widgets">
-      <!-- Registration Status -->
-      <div class="status-widget">
-        <div class="status-label">REGISTRATION STATUS</div>
-        <div class="status-content">
-          <div class="status-percentage">{{ registrationProgress }}%</div>
-          <div class="status-text">Patient details currently being processed...</div>
-        </div>
-        <div class="status-bar">
-          <div class="status-bar-fill" [style.width.%]="registrationProgress"></div>
-        </div>
-      </div>
-
-      <!-- Clinical Tip -->
-      <div class="tip-widget">
-        <div class="tip-label">CLINICAL TIP</div>
-        <p class="tip-text">
-          Ensure the MRN matches the internal system protocol. Auto-generation is based on the facility region "TX" for Texas Branch.
-        </p>
-      </div>
-    </div>
   </div>
 
   <!-- Action Bar -->
   <div class="action-bar">
     <button class="btn btn-ghost" type="button" (click)="onDiscard()">Discard</button>
     <div class="action-bar-right">
-      <button class="btn btn-outline" type="button" (click)="onSaveDraft()">Save Draft</button>
+
       <button class="btn btn-primary" type="button" (click)="onCompleteRegistration()">
         Complete Registration
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">

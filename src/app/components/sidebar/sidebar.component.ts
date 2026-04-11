@@ -13,7 +13,7 @@ export class SidebarComponent {
   navItems = [
     { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
     { label: 'Registration', icon: 'registration', route: '/registration' },
-    { label: 'Appointments', icon: 'appointments', route: '/appointments' },
-    { label: 'Records', icon: 'records', route: '/records' },
+    { label: 'Patient Intake', icon: 'intake', route: '/intake' },
+
   ];
 }

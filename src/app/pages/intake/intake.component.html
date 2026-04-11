@@ -1,6 +1,10 @@
 <div class="page-container">
-  <!-- Page Title -->
+  <!-- Page Header -->
   <div class="page-header">
+    <div class="header-breadcrumb">
+      <span class="breadcrumb-dot"></span>
+      <span class="breadcrumb-text">CLINICAL INTAKE</span>
+    </div>
     <h1 class="page-title">New Patient Intake</h1>
     <p class="page-subtitle">Acute Stroke Assessment Protocol — Select an existing patient to begin analysis, or enter details manually.</p>
   </div>
@@ -20,7 +24,7 @@
       </div>
 
       <form [formGroup]="intakeForm">
-        <label class="form-label">SEARCH PATIENT BY NAME OR MRN</label>
+        <label class="form-label">SEARCH PATIENT BY NAME OR CIN</label>
         <div class="search-row">
           <div class="search-input-wrap">
             <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -29,7 +33,7 @@
             </svg>
             <input type="text"
                    formControlName="patientSearch"
-                   placeholder="e.g. John Doe or MRN-123456"
+                   placeholder="e.g. John Doe or CIN number"
                    class="form-input search-input"
                    (keyup.enter)="onSearchPatient()" />
           </div>
@@ -53,8 +57,8 @@
             <span class="patient-detail-value">{{ selectedPatient.dob }}</span>
           </div>
           <div class="patient-detail">
-            <span class="patient-detail-label">MEDICAL RECORD NUMBER</span>
-            <span class="patient-detail-value patient-mrn">{{ selectedPatient.mrn }}</span>
+            <span class="patient-detail-label">NATIONAL ID</span>
+            <span class="patient-detail-value patient-cin">{{ selectedPatient.cin }}</span>
           </div>
           <button type="button" class="change-patient-btn" (click)="onChangePatient()">Change Patient</button>
         </div>
@@ -82,15 +86,15 @@
               <input type="date" formControlName="dateOfBirth" placeholder="mm/dd/yyyy" class="form-input" />
             </div>
             <div class="form-group">
-              <label class="form-label">MEDICAL RECORD NUMBER (MRN)</label>
-              <input type="text" formControlName="mrn" placeholder="MRN-000000" class="form-input" />
+              <label class="form-label">NATIONAL ID</label>
+              <input type="text" formControlName="cin" placeholder="e.g. AB123456" class="form-input" />
             </div>
           </div>
         </div>
       </form>
     </div>
 
-    <!-- Clinical Symptoms (BE-FAST) -->
+    <!-- Clinical Symptoms -->
     <div class="form-card">
       <div class="card-header">
         <div class="card-icon red">
@@ -98,7 +102,7 @@
             <path d="M10 2l1.5 4.5H16l-3.5 2.5 1.5 4.5L10 11l-4 2.5 1.5-4.5L4 6.5h4.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="currentColor" fill-opacity="0.15"/>
           </svg>
         </div>
-        <h2 class="card-title">Clinical Symptoms (BE-FAST)</h2>
+        <h2 class="card-title">Clinical Symptoms</h2>
       </div>
 
       <div class="symptoms-grid">
@@ -123,6 +127,20 @@
               <circle cx="10" cy="8.5" r="0.5" fill="#475569"/>
               <circle cx="13" cy="8.5" r="0.5" fill="#475569"/>
             </svg>
+            <svg *ngIf="symptom.icon === 'head'" width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M9 16c4 0 7-3 7-7s-3-7-7-7-7 3-7 7 3 7 7 7z" stroke="#475569" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M6 3.5L5 2m7 1.5l1-1.5M4.5 7H3m12 0h1.5" stroke="#475569" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <svg *ngIf="symptom.icon === 'leg'" width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M7 2v6c0 2 1 3 3 5v3m-2-12l3 5" stroke="#475569" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg *ngIf="symptom.icon === 'brain'" width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M9 15c-3-1-5-3-5-6 0-3 2-4 5-4s5 1 5 4c0 3-2 5-5 6z" stroke="#475569" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M5.5 8.5c1.5 0 2-2 3.5-2s2 2 3.5 2M6.5 11c1-1 1.5-2 2.5-2s1.5 1 2.5 2" stroke="#475569" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <svg *ngIf="symptom.icon === 'numb'" width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M9 3v12M4 8h10M6 5.5l6 7M12 5.5l-6 7" stroke="#475569" stroke-width="1.5" stroke-dasharray="1 3" stroke-linecap="round"/>
+            </svg>
           </span>
           <span class="symptom-label">{{ symptom.label }}</span>
           <div class="symptom-checkbox" [class.checked]="symptom.checked">
@@ -133,7 +151,7 @@
         </div>
       </div>
 
-      <!-- Symptom Onset Time -->
+      <!-- Symptom Onset Time & Vitals -->
       <form [formGroup]="intakeForm">
         <div class="onset-row">
           <div class="form-group onset-time">
@@ -142,8 +160,20 @@
               <input type="time" formControlName="symptomOnsetTime" class="form-input" placeholder="--:-- --" />
             </div>
           </div>
-          <div class="acute-badge">
-            ACUTE WINDOW ACTIVE
+        </div>
+
+        <div class="vital-signs-row" style="margin-top: 1.5rem;">
+          <div class="form-group" style="width: 100%;">
+            <label class="form-label" style="display: flex; justify-content: space-between;">
+              BLOOD PRESSURE
+              <span style="color: #ef4444; font-weight: 600;">{{ intakeForm.get('tension')?.value }} mmHg</span>
+            </label>
+            <input type="range" formControlName="tension" min="70" max="250" step="1" style="width: 100%; margin-top: 0.75rem;" />
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #64748b; margin-top: 0.5rem; text-transform: uppercase;">
+              <span>70 Low</span>
+              <span>120 Normal</span>
+              <span>250+ High Risk</span>
+            </div>
           </div>
         </div>
       </form>
@@ -219,14 +249,10 @@
   <div class="action-bar">
     <button class="btn btn-ghost" type="button" (click)="onDiscardDraft()">Discard Draft</button>
     <div class="action-bar-right">
-      <button class="btn btn-outline" type="button" (click)="onSavePending()">Save as Pending</button>
+
       <button class="btn btn-primary" type="button" (click)="onSubmitAnalysis()">Submit for Analysis</button>
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer class="page-footer">
-    <p class="footer-title">VIGILANT LENS DIAGNOSTIC TERMINAL V4.0.2</p>
-    <p class="footer-subtitle">Confidential Medical Record — Access Logged & Encrypted</p>
-  </footer>
+
 </div>

@@ -1,0 +1,365 @@
+<div class="dashboard">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <div class="header-breadcrumb">
+        <span class="breadcrumb-dot"></span>
+        <span class="breadcrumb-text">MÉDECIN GÉNÉRALISTE</span>
+      </div>
+      <h1 class="page-title">Patient Dashboard</h1>
+    </div>
+    <div class="header-actions">
+      <button (click)="fetchDossiers()" class="btn-refresh" id="refreshBtn">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M2 8a6 6 0 0110.89-3.48M14 8a6 6 0 01-10.89 3.48" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M14 2v4h-4M2 14v-4h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Stat Cards -->
+  <div class="stats-grid stagger-children">
+    <!-- Total Patients -->
+    <div class="stat-card animate-fade-in-up">
+      <div class="stat-icon-wrap blue">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <circle cx="11" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M3 20c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Total Patients</span>
+        <span class="stat-value">{{ records.length }}</span>
+      </div>
+      <div class="stat-trend up">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M7 11V3M3 7l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- High Risk -->
+    <div class="stat-card animate-fade-in-up">
+      <div class="stat-icon-wrap red">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <path d="M11 2l9 16H2L11 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M11 9v4M11 15h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">High Risk Alerts</span>
+        <span class="stat-value danger">{{ highRiskCount }}</span>
+      </div>
+      <div class="stat-badge danger" *ngIf="highRiskCount > 0">URGENT</div>
+    </div>
+
+    <!-- Medium Risk -->
+    <div class="stat-card animate-fade-in-up">
+      <div class="stat-icon-wrap amber">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <circle cx="11" cy="11" r="9" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M11 7v4l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Medium Risk</span>
+        <span class="stat-value warning">{{ mediumRiskCount }}</span>
+      </div>
+    </div>
+
+    <!-- Low Risk -->
+    <div class="stat-card animate-fade-in-up">
+      <div class="stat-icon-wrap green">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <circle cx="11" cy="11" r="9" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M7 11l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Low Risk / Clear</span>
+        <span class="stat-value success">{{ lowRiskCount }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Section -->
+  <div class="table-section animate-fade-in-up" style="animation-delay: 300ms;">
+    <div class="table-header">
+      <div class="table-title-row">
+        <div class="table-title-group">
+          <h2 class="table-title">Patient Assessments</h2>
+          <span class="table-count">{{ records.length }} records</span>
+        </div>
+        <div class="table-filter-group">
+          <button class="filter-chip" [class.active]="activeFilter === 'all'" (click)="setFilter('all')">All</button>
+          <button class="filter-chip" [class.active]="activeFilter === 'high'" (click)="setFilter('high')">
+            <span class="filter-dot red"></span>High Risk
+          </button>
+          <button class="filter-chip" [class.active]="activeFilter === 'medium'" (click)="setFilter('medium')">
+            <span class="filter-dot amber"></span>Medium
+          </button>
+          <button class="filter-chip" [class.active]="activeFilter === 'low'" (click)="setFilter('low')">
+            <span class="filter-dot green"></span>Low
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="data-table" id="patientTable">
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Dossier Date</th>
+            <th>Risk Level</th>
+            <th>Probability</th>
+            <th>Status</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Loading State -->
+          <tr *ngIf="loading">
+            <td colspan="6">
+              <div class="loading-state">
+                <div class="loading-spinner"></div>
+                <span>Loading patient assessments...</span>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Empty State -->
+          <tr *ngIf="!loading && filteredRecords.length === 0">
+            <td colspan="6">
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                    <circle cx="24" cy="24" r="20" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4 4"/>
+                    <path d="M18 20h12M18 26h8" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <p class="empty-title">No assessments found</p>
+                <p class="empty-desc">Run a patient intake assessment to see results here.</p>
+                <a routerLink="/intake" class="empty-action">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                  New Intake
+                </a>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Data Rows -->
+          <tr *ngFor="let rec of filteredRecords; let i = index"
+              class="data-row"
+              [style.animation-delay]="(i * 50) + 'ms'">
+            <td>
+              <div class="patient-cell">
+                <div class="patient-avatar" [style.background]="getAvatarGradient(rec.patient_name)">
+                  {{ rec.patient_name?.charAt(0)?.toUpperCase() }}
+                </div>
+                <div class="patient-info">
+                  <span class="patient-name">{{ rec.patient_name }}</span>
+                  <span class="patient-cin">{{ rec.patient_cin || 'N/A' }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="date-cell">{{ rec.date }}</span>
+            </td>
+            <td>
+              <span class="risk-badge" [ngClass]="getRiskClass(rec.risk_level)">
+                <span class="risk-dot"></span>
+                {{ rec.risk_level }}
+              </span>
+            </td>
+            <td>
+              <div class="probability-cell">
+                <span class="probability-value">{{ rec.fused_probability | percent:'1.1-1' }}</span>
+              </div>
+            </td>
+            <td>
+              <span class="status-badge" [ngClass]="rec.dossier_status === 'OUVERT' ? 'open' : 'closed'">
+                {{ rec.dossier_status === 'OUVERT' ? 'Active' : 'Closed' }}
+              </span>
+            </td>
+            <td class="text-right">
+              <div class="action-group">
+                <button (click)="viewReport(rec)" class="action-btn" id="viewReport_{{i}}">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M2 8s2.5-5 6-5 6 5 6 5-2.5 5-6 5-6-5-6-5z" stroke="currentColor" stroke-width="1.5"/>
+                    <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/>
+                  </svg>
+                  Review
+                </button>
+                <button (click)="openHistory(rec)" class="action-btn action-btn-history" id="viewHistory_{{i}}">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M8 4.5V8l2.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  History
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── History Slide-Out Panel ─────────────────────────── -->
+<div class="history-overlay" [class.active]="historyOpen" (click)="closeHistory()"></div>
+<div class="history-panel" [class.open]="historyOpen">
+  <!-- Panel Header -->
+  <div class="history-panel-header">
+    <div class="history-header-content">
+      <div class="history-header-icon">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 5v5l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="history-title">Consultation History</h3>
+        <p class="history-subtitle" *ngIf="historyData">{{ historyData.patient_name }}</p>
+      </div>
+    </div>
+    <button class="history-close-btn" (click)="closeHistory()" id="closeHistoryBtn">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Patient Summary Card -->
+  <div class="history-patient-card" *ngIf="historyData">
+    <div class="history-patient-avatar" [style.background]="getAvatarGradient(historyData.patient_name)">
+      {{ historyData.patient_name?.charAt(0)?.toUpperCase() }}
+    </div>
+    <div class="history-patient-details">
+      <span class="history-patient-name">{{ historyData.patient_name }}</span>
+      <div class="history-patient-meta">
+        <span *ngIf="historyData.patient_cin">CIN: {{ historyData.patient_cin }}</span>
+        <span *ngIf="historyData.patient_age">Age: {{ historyData.patient_age }}</span>
+        <span *ngIf="historyData.patient_sexe">Sex: {{ historyData.patient_sexe }}</span>
+      </div>
+    </div>
+    <div class="history-consultation-count">
+      <span class="count-value">{{ historyData.total_consultations }}</span>
+      <span class="count-label">Consultations</span>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="history-loading" *ngIf="historyLoading">
+    <div class="loading-spinner"></div>
+    <span>Loading history...</span>
+  </div>
+
+  <!-- Empty State -->
+  <div class="history-empty" *ngIf="!historyLoading && historyData?.consultations?.length === 0">
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+      <circle cx="20" cy="20" r="16" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <path d="M14 18h12M14 24h8" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <p>No consultation history available</p>
+  </div>
+
+  <!-- Timeline -->
+  <div class="history-timeline" *ngIf="!historyLoading && historyData?.consultations?.length > 0">
+    <div class="timeline-item" *ngFor="let c of historyData.consultations; let i = index; let last = last">
+      <!-- Timeline connector -->
+      <div class="timeline-connector">
+        <div class="timeline-dot" [ngClass]="getRiskClass(c.risk_level || 'UNKNOWN')"></div>
+        <div class="timeline-line" *ngIf="!last"></div>
+      </div>
+
+      <!-- Timeline content -->
+      <div class="timeline-card">
+        <div class="timeline-card-header">
+          <div class="timeline-date-group">
+            <span class="timeline-date">{{ c.dateCreation | date:'mediumDate' }}</span>
+            <span class="timeline-time">{{ c.dateCreation | date:'shortTime' }}</span>
+          </div>
+          <span class="risk-badge" [ngClass]="getRiskClass(c.risk_level || 'UNKNOWN')">
+            <span class="risk-dot"></span>
+            {{ c.risk_level || 'PENDING' }}
+          </span>
+        </div>
+
+        <div class="timeline-card-body">
+          <!-- Risk & Probability -->
+          <div class="timeline-metrics" *ngIf="c.fused_probability != null">
+            <div class="timeline-metric">
+              <span class="metric-label">Probability</span>
+              <span class="metric-value">{{ c.fused_probability | percent:'1.1-1' }}</span>
+            </div>
+            <div class="timeline-metric">
+              <span class="metric-label">Dossier Status</span>
+              <span class="metric-value">{{ c.statut }}</span>
+            </div>
+          </div>
+
+          <!-- Clinical Notes -->
+          <div class="timeline-clinical" *ngIf="c.clinical_data?.length > 0">
+            <span class="timeline-section-label">Clinical Notes</span>
+            <div class="clinical-note" *ngFor="let cd of c.clinical_data">
+              <span class="clinical-detail" *ngIf="cd.tension">BP: {{ cd.tension }} mmHg</span>
+              <span class="clinical-detail" *ngIf="cd.fast">FAST: {{ cd.fast }}</span>
+              <p class="clinical-notes-text" *ngIf="cd.notes">{{ cd.notes }}</p>
+            </div>
+          </div>
+
+          <!-- MRI Images -->
+          <div class="timeline-images" *ngIf="c.image_urls?.length > 0">
+            <span class="timeline-section-label">MRI Scans</span>
+            <div class="timeline-image-grid">
+              <img *ngFor="let url of c.image_urls" [src]="url" alt="MRI Scan" class="timeline-mri-thumb"/>
+            </div>
+          </div>
+
+          <!-- Rapport Info -->
+          <div class="timeline-rapport" *ngIf="c.rapport">
+            <div class="rapport-status-row">
+              <span class="rapport-status-badge" [ngClass]="{
+                'rapport-generated': c.rapport.statut === 'GENERATED',
+                'rapport-updated': c.rapport.statut === 'UPDATED',
+                'rapport-archived': c.rapport.statut === 'ARCHIVED'
+              }">
+                {{ c.rapport.statut }}
+              </span>
+              <span class="rapport-modified" *ngIf="c.rapport.modifie_par">
+                Modified by: {{ c.rapport.modifie_par }}
+              </span>
+            </div>
+            <span class="rapport-date" *ngIf="c.rapport.dateModification">
+              Last updated: {{ c.rapport.dateModification | date:'medium' }}
+            </span>
+          </div>
+
+          <!-- Created By -->
+          <div class="timeline-footer" *ngIf="c.created_by">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <circle cx="7" cy="5" r="2.5" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M2.5 13c0-2.485 2.015-4.5 4.5-4.5s4.5 2.015 4.5 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+            <span>{{ c.created_by }}</span>
+          </div>
+        </div>
+
+        <!-- View Report Button -->
+        <button class="timeline-view-btn" *ngIf="c.rapport" (click)="viewHistoryReport(c)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M1.5 7s2-4 5.5-4 5.5 4 5.5 4-2 4-5.5 4-5.5-4-5.5-4z" stroke="currentColor" stroke-width="1.2"/>
+            <circle cx="7" cy="7" r="1.5" stroke="currentColor" stroke-width="1.2"/>
+          </svg>
+          View Report
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

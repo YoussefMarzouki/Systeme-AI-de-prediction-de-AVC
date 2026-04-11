@@ -2,7 +2,9 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ClinicalApiService } from '../../services/clinical-api.service';
+import { PatientService } from '../../services/patient.service';
+import { DossierService } from '../../services/dossier.service';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-registration',
@@ -19,14 +21,15 @@ export class RegistrationComponent {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private api: ClinicalApiService
+    private patientService: PatientService,
+    private dossierService: DossierService,
+    private stateService: StateService
   ) {
     this.registrationForm = this.fb.group({
       fullLegalName: [''],
-      mrn: [''],
+      cin: [''],
       dateOfBirth: [''],
       genderIdentity: [''],
-      nationalId: [''],
       phoneNumber: [''],
       emailAddress: [''],
       homeAddress: [''],
@@ -67,20 +70,21 @@ export class RegistrationComponent {
     const payload = {
       nom: nom,
       prenom: prenom,
+      cin: val.cin || null,
       dateNaissance: val.dateOfBirth || '2000-01-01',
       sexe: sexe
     };
 
     // 1. Create Patient
-    this.api.createPatient(payload).subscribe({
+    this.patientService.createPatient(payload).subscribe({
       next: (res) => {
         if (res.patient_id) {
-          this.api.setPatientId(res.patient_id);
+          this.stateService.setPatientId(res.patient_id);
           // 2. Create dossier mapped to patient
-          this.api.createDossier().subscribe({
+          this.dossierService.createDossier().subscribe({
             next: (dossierRes) => {
               if (dossierRes.idDossier) {
-                this.api.setDossierId(dossierRes.idDossier);
+                this.stateService.setDossierId(dossierRes.idDossier);
                 this.isSubmitting = false;
                 this.router.navigate(['/intake']);
               }

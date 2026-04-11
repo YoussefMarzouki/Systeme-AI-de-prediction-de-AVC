@@ -1,0 +1,222 @@
+<div class="rapport-page">
+  <div class="rapport-container" *ngIf="predictionData">
+    <!-- Report Header -->
+    <div class="report-header">
+      <div class="report-header-bg"></div>
+      <div class="report-header-content">
+        <div class="header-left">
+          <div class="brand-section">
+            <div class="brand-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M8 12h8M12 8v8" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="12" cy="12" r="5" stroke="white" stroke-width="1.5" fill="none" opacity="0.5"/>
+              </svg>
+            </div>
+            <div>
+              <h1 class="report-title">StrokeAI Assessment Report</h1>
+              <p class="report-subtitle">Comprehensive Neurological Diagnostic Analysis</p>
+            </div>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="report-meta">
+            <span class="meta-label">Report Date</span>
+            <span class="meta-value">{{ currentDate | date:'mediumDate' }}</span>
+          </div>
+          <button (click)="printRapport()" class="print-btn print-hide" id="printBtn">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M4 6V2h8v4M4 12H2V7h12v5h-2" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              <rect x="4" y="10" width="8" height="4" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+            Export PDF
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-body">
+      <!-- Primary Risk Indicator -->
+      <div class="risk-card" [ngClass]="getRiskCardClass()">
+        <div class="risk-card-content">
+          <div class="risk-info">
+            <span class="risk-eyebrow">PRIMARY DIAGNOSIS RESULT</span>
+            <h2 class="risk-title">Risk Level: {{ predictionData.risk_level }}</h2>
+            <p class="risk-confidence">AI Confidence: {{ predictionData.confidence | percent:'1.1-2' }}</p>
+          </div>
+          <div class="risk-gauge">
+            <div class="gauge-circle">
+              <svg width="100" height="100" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="6"/>
+                <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="6"
+                        stroke-dasharray="264" [attr.stroke-dashoffset]="264 - (264 * (predictionData.fused_probability || 0))"
+                        stroke-linecap="round" transform="rotate(-90 50 50)"
+                        style="transition: stroke-dashoffset 1s ease-out;"/>
+              </svg>
+              <div class="gauge-value">
+                {{ predictionData.fused_probability | percent:'1.0-0' }}
+              </div>
+            </div>
+            <span class="gauge-label">Fused Probability</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analysis Grid -->
+      <div class="analysis-grid">
+        <!-- MRI Analysis -->
+        <div class="analysis-card">
+          <div class="analysis-header">
+            <div class="analysis-icon indigo">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M7 13l3-5 2 3 2-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="analysis-title">MRI Analysis</h3>
+          </div>
+
+          <div *ngIf="imageUrl" class="mri-preview">
+            <img [src]="imageUrl" alt="Patient MRI Scan" class="mri-image"/>
+          </div>
+          <div *ngIf="!imageUrl" class="mri-placeholder">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <rect x="4" y="4" width="24" height="24" rx="4" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4 3"/>
+              <path d="M12 20l4-6 4 6" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="12" cy="13" r="2" stroke="#cbd5e1" stroke-width="1.5"/>
+            </svg>
+            <span>No MRI scan provided</span>
+          </div>
+
+          <div class="analysis-metrics">
+            <div class="metric-row">
+              <span class="metric-label">Predicted Class</span>
+              <span class="metric-value">{{ predictionData.predicted_class || 'N/A' }}</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Image Probability</span>
+              <span class="metric-value highlight-indigo">{{ predictionData.image_probability != null ? (predictionData.image_probability | percent:'1.1-2') : 'N/A' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Clinical Analysis -->
+        <div class="analysis-card">
+          <div class="analysis-header">
+            <div class="analysis-icon emerald">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M5 3h10a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M7 8h6M7 11h6M7 14h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="analysis-title">Clinical Observations</h3>
+          </div>
+
+          <div class="symptoms-section">
+            <span class="symptoms-heading">Reported Symptoms</span>
+            <div class="symptoms-tags">
+              <span *ngFor="let sym of patientDetails?.symptoms || []" class="symptom-tag">{{ sym }}</span>
+              <span *ngIf="!patientDetails?.symptoms?.length" class="no-data">None reported</span>
+            </div>
+          </div>
+
+          <div class="vitals-row" *ngIf="patientDetails?.tension">
+            <span class="metric-label">Blood Pressure</span>
+            <span class="metric-value">{{ patientDetails.tension }} mmHg</span>
+          </div>
+
+          <div class="analysis-metrics">
+            <div class="metric-row">
+              <span class="metric-label">Symptom Probability</span>
+              <span class="metric-value highlight-emerald">{{ predictionData.symptom_probability != null ? (predictionData.symptom_probability | percent:'1.1-2') : 'N/A' }}</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">RAG Urgency Level</span>
+              <span class="urgency-badge" [ngClass]="{
+                'urgency-high': predictionData.symptom_urgency === 'HIGH' || predictionData.symptom_urgency === 'EMERGENCY',
+                'urgency-medium': predictionData.symptom_urgency === 'MEDIUM' || predictionData.symptom_urgency === 'MODERATE',
+                'urgency-low': predictionData.symptom_urgency === 'LOW'
+              }">
+                {{ predictionData.symptom_urgency || 'Unknown' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Methodology -->
+      <div class="methodology-card">
+        <div class="methodology-header">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M9 5v4M9 12h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <h4>How the Fused Prediction is Generated</h4>
+        </div>
+        <p>
+          StrokeAI uses a multi-modal fusion architecture combining two ML models:
+        </p>
+        <div class="methodology-items">
+          <div class="method-item">
+            <div class="method-weight">70%</div>
+            <div>
+              <strong>Image Probability</strong>
+              <span>Deep learning classifier analyzing MRI scans for ischemic or hemorrhagic patterns</span>
+            </div>
+          </div>
+          <div class="method-item">
+            <div class="method-weight">30%</div>
+            <div>
+              <strong>Symptom Probability</strong>
+              <span>NLP model evaluating severity of reported symptoms and vital signs</span>
+            </div>
+          </div>
+        </div>
+        <p class="methodology-note">
+          The final <strong>Risk Level</strong> is the weighted sum. Cases below confidence threshold are flagged as <code>UNCERTAIN</code>.
+        </p>
+      </div>
+
+      <!-- AI Response -->
+      <div class="ai-response-card" *ngIf="predictionData.symptom_response">
+        <div class="ai-response-header">
+          <div class="ai-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 2l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6l2-6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3>AI Knowledge Assessment</h3>
+          <span class="ai-badge">RAG OUTPUT</span>
+        </div>
+        <div class="ai-response-body">
+          {{ predictionData.symptom_response }}
+        </div>
+      </div>
+
+      <!-- Disclaimer -->
+      <div class="disclaimer print-hide">
+        <p>Report generated via StrokeAI Platform. This is an AI assessment for clinical support.</p>
+        <p>It does not replace final evaluation by a certified specialized physician.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fallback State -->
+  <div *ngIf="!predictionData" class="fallback-state">
+    <div class="fallback-card">
+      <div class="fallback-icon">
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+          <circle cx="28" cy="28" r="24" stroke="#e2e8f0" stroke-width="1.5"/>
+          <path d="M28 18v12M28 36h.01" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2 class="fallback-title">No Report Available</h2>
+      <p class="fallback-desc">Submit a patient assessment from the intake page to generate a diagnostic report.</p>
+      <a routerLink="/intake" class="fallback-btn">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Go to Intake
+      </a>
+    </div>
+  </div>
+</div>

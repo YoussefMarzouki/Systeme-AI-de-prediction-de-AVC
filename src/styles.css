@@ -2,6 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ══════════════════════════════════════════════
+   CIS / StrokeAI — Clean UI Design System (Template Match)
+   ══════════════════════════════════════════════ */
+
+:root {
+  /* Core Palette */
+  --color-bg-main: #f8fafc; /* Very light slate for page background */
+  --color-bg-card: #ffffff; /* White for cards */
+  --color-bg-input: #f1f5f9; /* Light gray for inputs */
+  --color-bg-sidebar: #f8fafc; /* Sidebar background matches main or slightly off-white */
+  
+  /* Primary Accents */
+  --color-primary: #1d4ed8; /* Blue 700 */
+  --color-primary-hover: #1e40af; /* Blue 800 */
+  --color-primary-light: #eff6ff; /* Blue 50 */
+  
+  /* Text */
+  --color-text-main: #0f172a; /* Slate 900 for headings */
+  --color-text-body: #334155; /* Slate 700 for body */
+  --color-text-muted: #64748b; /* Slate 500 for labels & icons */
+  
+  /* Borders */
+  --color-border: #e2e8f0; /* Slate 200 */
+  
+  /* Status Colors */
+  --color-danger-bg: #fee2e2;
+  --color-danger-text: #b91c1c;
+  --color-warning-bg: #fef3c7;
+  --color-warning-text: #b45309;
+  --color-success-bg: #d1fae5;
+  --color-success-text: #047857;
+  --color-info-bg: #dbeafe;
+  --color-info-text: #1d4ed8;
+
+  /* Layout */
+  --sidebar-width: 260px;
+  --header-height: 64px;
+}
+
+/* ── Reset ─────────────────────────────────── */
 * {
   margin: 0;
   padding: 0;
@@ -10,41 +50,47 @@
 
 html, body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: #f5f7fb;
-  color: #1e293b;
+  background-color: var(--color-bg-main);
+  color: var(--color-text-body);
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom scrollbar */
+/* ── Scrollbar ─────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 3px;
+  border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
-/* Form input base styles */
+/* ── Form Globals ──────────────────────────── */
 input, select, textarea {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: inherit;
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #9ca3af;
+  color: #94a3b8;
   font-weight: 400;
 }
 
-/* Smooth transitions globally */
-a, button {
+/* Base button animations */
+button {
+  cursor: pointer;
   transition: all 0.2s ease;
 }
+
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 80ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 160ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 240ms; }
