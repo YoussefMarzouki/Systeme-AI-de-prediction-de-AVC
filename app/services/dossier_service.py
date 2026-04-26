@@ -4,12 +4,10 @@ from app.models.analyses import EvaluationRisque
 from app.models.patient import Patient
 from app.core.db import db
 from app.repositories.dossier_repository import DossierRepository
-from app.repositories.donnees_cliniques_repository import DonneesCliniquesRepository
 
 class DossierService:
-    def __init__(self, dossier_repo: DossierRepository, donnees_repo: DonneesCliniquesRepository):
+    def __init__(self, dossier_repo: DossierRepository):
         self.dossier_repo = dossier_repo
-        self.donnees_repo = donnees_repo
 
     def create_dossier(self, patient_id: str, creator_id: str, is_medecin: bool) -> str:
         new_dossier = DossierPatient(
@@ -20,54 +18,56 @@ class DossierService:
         dossier = self.dossier_repo.create(new_dossier)
         return str(dossier.idDossier)
 
-    def add_donnees_cliniques(self, dossier_id: str, data: dict) -> str:
-        # Implicit check if dossier exists
-        self.dossier_repo.get_by_id(dossier_id)
-        
-        donnees = DonneesCliniques(
-            dossier_id=dossier_id,
-            fast=data.get('fast'),
-            tension=data.get('tension'),
-            age=data.get('age'),
-            notes=data.get('notes')
-        )
-        saved_donnees = self.donnees_repo.create(donnees)
-        return str(saved_donnees.id)
-
     def get_evaluated_dossiers(self) -> list:
         from app.models.rapport import Rapport
         from app.models.image_irm import ImageIRM
         from app.models.donnees_cliniques import DonneesCliniques
-        
+
         results = db.session.query(DossierPatient, Patient, EvaluationRisque).join(
             Patient, DossierPatient.patient_id == Patient.id
-        ).join(
+        ).outerjoin(
             EvaluationRisque, DossierPatient.idDossier == EvaluationRisque.dossier_id
-        ).order_by(EvaluationRisque.id.desc()).all()
-        
+        ).order_by(DossierPatient.dateCreation.desc()).all()
+
+        # Add any patients without a dossier as an "empty" row so they show up for intake
+        patients_with_dossier = set(dossier.patient_id for dossier, p, er in results)
+        patients_without_dossier = Patient.query.filter(
+            ~Patient.id.in_(patients_with_dossier) if patients_with_dossier else True
+        ).all()
+
         evaluated_list = []
+        
+        # Add patients that have dossiers
         for dossier, patient, eval_risque in results:
-            
-            # To fetch modification data for the new dashboard additions
             rapport = Rapport.query.filter_by(dossier_id=dossier.idDossier).first()
             modifier = rapport.modifie_par_id if rapport else None
             statut_rapport = rapport.statut if rapport else 'NO_REPORT'
             prediction_data = rapport.contenu if rapport else None
-            
+
             image = ImageIRM.query.filter_by(dossier_id=dossier.idDossier).order_by(ImageIRM.dateAcquisition.desc()).first()
             image_url = image.cheminStockage if image else None
-            
+
             donnees = DonneesCliniques.query.filter_by(dossier_id=dossier.idDossier).order_by(DonneesCliniques.dateSaisie.desc()).first()
             tension = donnees.tension if donnees else None
-            symptoms = [donnees.notes] if donnees and donnees.notes else ['Historically Logged Assessment']
+            # Important: use an empty array if no symptom notes exist, and an array with just notes string if it exists
+            symptoms_array = []
+            if donnees and donnees.notes:
+                symptoms_array = [donnees.notes]
+
+            risk_level = eval_risque.niveau if eval_risque else 'UNKNOWN'
+            
+            # Determine correct status
+            current_status = dossier.statut
+            if current_status == "OUVERT" and donnees and not image_url:
+                current_status = "PENDING_MRI"
 
             evaluated_list.append({
                 "patient_id": patient.id,
                 "patient_name": f"{patient.nom} {patient.prenom}",
                 "patient_cin": patient.cin,
-                "dossier_status": dossier.statut,
-                "risk_level": eval_risque.niveau,
-                "fused_probability": eval_risque.scoreGlobal,
+                "dossier_status": current_status,
+                "risk_level": risk_level,
+                "fused_probability": eval_risque.scoreGlobal if eval_risque else None,
                 "date": str(dossier.dateCreation.date()),
                 "dossier_id": dossier.idDossier,
                 "modifie_par_id": modifier,
@@ -75,9 +75,28 @@ class DossierService:
                 "prediction_data": prediction_data,
                 "imageUrl": image_url,
                 "tension": tension,
-                "symptoms": symptoms
+                "symptoms": symptoms_array
             })
-        
+
+        # Add patients without any dossier yet
+        for patient in patients_without_dossier:
+            evaluated_list.append({
+                "patient_id": patient.id,
+                "patient_name": f"{patient.nom} {patient.prenom}",
+                "patient_cin": patient.cin,
+                "dossier_status": "NO_DOSSIER",
+                "risk_level": "UNKNOWN",
+                "fused_probability": None,
+                "date": "N/A",
+                "dossier_id": None,
+                "modifie_par_id": None,
+                "statut_rapport": "NO_REPORT",
+                "prediction_data": None,
+                "imageUrl": None,
+                "tension": None,
+                "symptoms": []
+            })
+            
         return evaluated_list
 
     def get_patient_history(self, patient_id: str) -> list:
@@ -96,10 +115,8 @@ class DossierService:
 
         history = []
         for dossier in dossiers:
-            # Evaluation
             eval_risque = EvaluationRisque.query.filter_by(dossier_id=dossier.idDossier).first()
 
-            # Rapport + modification tracking
             rapport = Rapport.query.filter_by(dossier_id=dossier.idDossier).first()
             rapport_info = None
             if rapport:
@@ -113,26 +130,22 @@ class DossierService:
                     "dateGeneration": str(rapport.dateGeneration) if rapport.dateGeneration else None,
                     "dateModification": str(rapport.dateModification) if rapport.dateModification else None,
                     "modifie_par": modifier_name,
+                    "contenu": rapport.contenu
                 }
 
-            # Clinical data
             donnees_list = DonneesCliniques.query.filter_by(dossier_id=dossier.idDossier)\
                 .order_by(DonneesCliniques.dateSaisie.desc()).all()
-            clinical_entries = []
-            for d in donnees_list:
-                clinical_entries.append({
-                    "date": str(d.dateSaisie) if d.dateSaisie else None,
-                    "fast": d.fast,
-                    "tension": d.tension,
-                    "notes": d.notes,
-                })
+            clinical_entries = [{
+                "date": str(d.dateSaisie) if d.dateSaisie else None,
+                "fast": d.fast,
+                "tension": d.tension,
+                "notes": d.notes,
+            } for d in donnees_list]
 
-            # Images
             images = ImageIRM.query.filter_by(dossier_id=dossier.idDossier)\
                 .order_by(ImageIRM.dateAcquisition.desc()).all()
             image_urls = [img.cheminStockage for img in images if img.cheminStockage]
 
-            # Agent / Medecin who created the dossier
             created_by = None
             if dossier.medecin_id:
                 u = Utilisateur.query.get(dossier.medecin_id)

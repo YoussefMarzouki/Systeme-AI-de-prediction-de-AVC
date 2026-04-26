@@ -17,10 +17,10 @@ class Rapport(db.Model):
     cheminFichier = db.Column(db.String(500), nullable=True) # Path to the saved PDF
     contenu = db.Column(db.JSON, nullable=True) # Store structured report data if needed
     
-    # Medecin généraliste "crée/valide" Rapport (1 to 0..*)
+    # Medecin généraliste "crée" Rapport (1 to 0..*)
     medecin_id = db.Column(db.String(36), db.ForeignKey('utilisateurs.id'), nullable=False)
     
-    # Medecin spécialiste "modifie" Rapport (optional)
+    # Medecin spécialiste "modifie/valider" Rapport 
     modifie_par_id = db.Column(db.String(36), db.ForeignKey('utilisateurs.id'), nullable=True)
     
     # DossierPatient "génère" Rapport (1 to 0..*)

@@ -10,6 +10,9 @@ class PatientRepository:
     def get_by_id(self, patient_id: str) -> Patient:
         return Patient.query.get(patient_id)
 
+    def get_by_cin(self, cin: str) -> Patient:
+        return Patient.query.filter_by(cin=cin).first()
+
     def search(self, query: str):
         search_filter = f"%{query}%"
         return Patient.query.filter(

@@ -11,6 +11,55 @@ prediction_service = PredictionService()
 
 @prediction_bp.route('/api/v1/dossiers/<string:dossier_id>/predict', methods=['POST'])
 def run_prediction(dossier_id):
+    """Lancer une prédiction IA fusionnée pour un dossier
+    ---
+    tags:
+      - Prédictions
+    parameters:
+      - name: dossier_id
+        in: path
+        type: string
+        required: true
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            image_url:
+              type: string
+              description: URL de l'image IRM
+              example: "https://res.cloudinary.com/xxx/image.jpg"
+            symptoms_text:
+              type: string
+              description: Texte des symptômes pour le RAG
+              example: "Age 65. Symptoms: Paralysie faciale, Faiblesse du bras"
+    responses:
+      200:
+        description: Résultat de la prédiction avec score de risque
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+            dossier_id:
+              type: string
+            prediction:
+              type: object
+              properties:
+                image_probability:
+                  type: number
+                symptom_probability:
+                  type: number
+                fused_probability:
+                  type: number
+                risk_level:
+                  type: string
+      400:
+        description: Aucune donnée fournie
+      500:
+        description: Erreur serveur
+    """
     data = request.json
     image_url = data.get('image_url')
     symptoms_text = data.get('symptoms_text')
