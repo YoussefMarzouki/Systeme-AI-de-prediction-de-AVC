@@ -143,39 +143,6 @@
         </div>
       </div>
 
-      <!-- Methodology -->
-      <div class="methodology-card">
-        <div class="methodology-header">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M9 5v4M9 12h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <h4>How the Fused Prediction is Generated</h4>
-        </div>
-        <p>
-          StrokeAI uses a multi-modal fusion architecture combining two ML models:
-        </p>
-        <div class="methodology-items">
-          <div class="method-item">
-            <div class="method-weight">70%</div>
-            <div>
-              <strong>Image Probability</strong>
-              <span>Deep learning classifier analyzing MRI scans for ischemic or hemorrhagic patterns</span>
-            </div>
-          </div>
-          <div class="method-item">
-            <div class="method-weight">30%</div>
-            <div>
-              <strong>Symptom Probability</strong>
-              <span>NLP model evaluating severity of reported symptoms and vital signs</span>
-            </div>
-          </div>
-        </div>
-        <p class="methodology-note">
-          The final <strong>Risk Level</strong> is the weighted sum. Cases below confidence threshold are flagged as <code>UNCERTAIN</code>.
-        </p>
-      </div>
-
       <!-- AI Response -->
       <div class="ai-response-card" *ngIf="predictionData.symptom_response">
         <div class="ai-response-header">
@@ -187,8 +154,7 @@
           <h3>AI Knowledge Assessment</h3>
           <span class="ai-badge">RAG OUTPUT</span>
         </div>
-        <div class="ai-response-body">
-          {{ predictionData.symptom_response }}
+        <div class="ai-response-body" [innerHTML]="predictionData.symptom_response">
         </div>
       </div>
 

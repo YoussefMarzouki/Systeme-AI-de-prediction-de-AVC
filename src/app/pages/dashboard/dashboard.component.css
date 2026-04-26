@@ -215,6 +215,10 @@
   background: var(--color-bg-main, #f8fafc);
 }
 
+.data-row.clickable {
+  cursor: pointer;
+}
+
 /* Patient Cell */
 .patient-cell {
   display: flex;

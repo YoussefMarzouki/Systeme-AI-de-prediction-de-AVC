@@ -1,0 +1,99 @@
+<div class="mri-upload-page">
+  <div class="page-header">
+    <div class="header-left">
+      <div class="header-breadcrumb">
+        <span class="breadcrumb-text">MÉDECIN GÉNÉRALISTE</span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-text">PATIENT INTAKE</span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-text">STEP 2</span>
+      </div>
+      <h1 class="page-title">MRI Upload</h1>
+    </div>
+  </div>
+
+  <div class="patient-summary">
+    Patient: <strong>{{ patientName }}</strong> <span *ngIf="patientCin !== 'N/A'">(CIN: {{ patientCin }})</span>
+  </div>
+
+  <div class="symptom-analysis-card card" *ngIf="symptomAnalysisData || isAnalyzingSymptoms">
+    <h3 class="section-title">Clinical Symptom Assessment</h3>
+    <div *ngIf="isAnalyzingSymptoms" class="loading-state">
+      <span class="spinner dark"></span> Analyzing clinical symptoms via RAG...
+    </div>
+    <div *ngIf="!isAnalyzingSymptoms && symptomAnalysisData" class="symptom-results">
+       <div class="symptom-row">
+         <strong>Symptom Probability:</strong> 
+         <span class="highlight">{{ symptomAnalysisData.symptom_probability | percent:'1.1-2' }}</span>
+       </div>
+       <div class="symptom-row">
+         <strong>Urgency Level:</strong> 
+         <span class="badge">{{ symptomAnalysisData.urgency || symptomAnalysisData.symptom_urgency || 'N/A' }}</span>
+       </div>
+       <div class="symptom-row summary">
+         <strong>AI Assessment:</strong>
+         <div [innerHTML]="symptomAnalysisData.response || symptomAnalysisData.symptom_response"></div>
+       </div>
+    </div>
+  </div>
+
+  <div class="upload-section card">
+    <h3 class="section-title">Step 2: Upload MRI Scan</h3>
+    
+    <div class="upload-area" 
+         [class.drag-over]="isDragOver"
+         (dragover)="onDragOver($event)"
+         (dragleave)="onDragLeave()"
+         (drop)="onDrop($event)">
+      
+      <div class="upload-icon-large">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <path d="M24 32v-16m0 0l-8 8m8-8l8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M10 32v2a4 4 0 004 4h20a4 4 0 004-4v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="upload-text">
+        <span class="highlight">Click to upload</span> or drag and drop
+      </div>
+      <div class="upload-hint">1.5T or 3T structural MRI scan (e.g. T1, T2, FLAIR). JPG, PNG, DICOM.</div>
+      
+      <input type="file" class="file-input" (change)="onFileSelect($event)" accept="image/*,.dcm" id="mriUpload" />
+    </div>
+
+    <div class="file-list" *ngIf="uploadedFiles.length > 0">
+      <div class="file-item" *ngFor="let file of uploadedFiles; let i = index">
+        <div class="file-info">
+          <div class="file-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M14 2v6h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="file-details">
+            <span class="file-name">{{ file.name }}</span>
+            <span class="file-size">{{ file.size }} • 
+              <span class="file-status" [ngClass]="file.status.toLowerCase()">{{ file.status }}</span>
+            </span>
+          </div>
+        </div>
+        <button class="remove-btn" (click)="removeFile(i)" *ngIf="file.status !== 'Uploading...'">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-footer">
+    <button class="btn btn-secondary" (click)="onDoItLater()">Do it later & Return</button>
+    <button class="btn btn-primary" 
+            [disabled]="isSubmitting || uploadedFiles.length === 0 || uploadedFiles[0].status === 'Uploading...'"
+            (click)="onSubmitAnalysis()" 
+            id="analyzeBtn">
+      <span class="spinner" *ngIf="isSubmitting"></span>
+      {{ isSubmitting ? 'Analyzing...' : 'Run Fused Analysis' }}
+    </button>
+  </div>
+</div>

@@ -31,11 +31,13 @@
           <div class="form-row two-col">
             <div class="form-group">
               <label class="form-label">FULL LEGAL NAME</label>
-              <input type="text" formControlName="fullLegalName" placeholder="e.g. Johnathan Doe" class="form-input" />
+              <input type="text" formControlName="fullLegalName" placeholder="e.g. Johnathan Doe" class="form-input" [class.error-input]="registrationForm.get('fullLegalName')?.invalid && registrationForm.get('fullLegalName')?.touched" />
+              <div *ngIf="registrationForm.get('fullLegalName')?.errors?.['noSpace'] && registrationForm.get('fullLegalName')?.touched" class="error-message" style="color: #ef4444; font-size: 0.85rem; margin-top: 4px;">Please enter your full name (first and last).</div>
             </div>
             <div class="form-group">
               <label class="form-label">NATIONAL ID</label>
-              <input type="text" formControlName="cin" placeholder="AB123456" class="form-input" />
+              <input type="text" formControlName="cin" (blur)="onCheckCin()" placeholder="AB123456" class="form-input" [class.error-input]="cinExistsError" />
+              <div *ngIf="cinExistsError" class="error-message" style="color: #ef4444; font-size: 0.85rem; margin-top: 4px;">This CIN is already saved.</div>
             </div>
           </div>
 
@@ -43,8 +45,9 @@
             <div class="form-group">
               <label class="form-label">DATE OF BIRTH</label>
               <div class="input-with-icon">
-                <input type="date" formControlName="dateOfBirth" placeholder="mm/dd/yyyy" class="form-input" />
+                <input type="date" formControlName="dateOfBirth" placeholder="mm/dd/yyyy" class="form-input" [class.error-input]="registrationForm.get('dateOfBirth')?.invalid && registrationForm.get('dateOfBirth')?.touched" />
               </div>
+              <div *ngIf="registrationForm.get('dateOfBirth')?.errors?.['futureDate'] && registrationForm.get('dateOfBirth')?.touched" class="error-message" style="color: #ef4444; font-size: 0.85rem; margin-top: 4px;">Date of birth cannot be in the future.</div>
             </div>
             <div class="form-group">
               <label class="form-label">GENDER IDENTITY</label>
@@ -125,7 +128,7 @@
     <button class="btn btn-ghost" type="button" (click)="onDiscard()">Discard</button>
     <div class="action-bar-right">
 
-      <button class="btn btn-primary" type="button" (click)="onCompleteRegistration()">
+      <button class="btn btn-primary" type="button" [disabled]="cinExistsError || isSubmitting || registrationForm.invalid" (click)="onCompleteRegistration()">
         Complete Registration
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <path d="M13.5 4.5l-7 7L3 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

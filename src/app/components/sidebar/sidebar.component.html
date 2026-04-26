@@ -15,7 +15,7 @@
   <!-- Navigation -->
   <nav class="nav-section">
     <div class="nav-label-header">Main Menu</div>
-    <a *ngFor="let item of navItems"
+    <a *ngFor="let item of navItems; trackBy: trackByRoute"
        [routerLink]="item.route"
        routerLinkActive="active"
        class="nav-item">

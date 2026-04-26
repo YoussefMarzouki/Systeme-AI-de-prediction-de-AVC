@@ -29,9 +29,9 @@ export class DashboardComponent implements OnInit {
     private router: Router,
     private patientService: PatientService,
     private dossierService: DossierService,
-    private stateService: StateService
+    public stateService: StateService
   ) {
-    this.stateService.isCurrentUserMedecin = true;
+    // We let StateService handle the role instead of hardcoding it.
   }
 
   ngOnInit(): void {
@@ -149,26 +149,50 @@ export class DashboardComponent implements OnInit {
 
   viewHistoryReport(consultation: any) {
     this.closeHistory();
-    this.router.navigate(['/rapport'], {
-      state: {
-        prediction: {
-          risk_level: consultation.risk_level || 'UNKNOWN',
-          fused_probability: consultation.fused_probability || 0,
-          confidence: 0.99,
-          predicted_class: 'Historical Record',
-          symptom_urgency: 'N/A',
-          symptom_probability: null,
-          image_probability: null,
-          symptom_response: 'Loaded from consultation history.'
-        },
-        patientDetails: {
-          nom: this.historyData?.patient_name || 'Unknown',
-          tension: consultation.clinical_data?.[0]?.tension || null,
-          symptoms: consultation.clinical_data?.map((c: any) => c.notes).filter((n: any) => n) || []
-        },
-        imageUrl: consultation.image_urls?.[0] || null
+
+    const reportContent = consultation.rapport?.contenu;
+
+    if (reportContent) {
+      // Use actual report data if available
+      let parsedPrediction = reportContent;
+      if (typeof parsedPrediction === 'string') {
+        try { parsedPrediction = JSON.parse(parsedPrediction); } catch(e) {}
       }
-    });
+
+      this.router.navigate(['/mg/rapport'], {
+        state: {
+          prediction: parsedPrediction,
+          patientDetails: {
+            nom: this.historyData?.patient_name || 'Unknown',
+            tension: consultation.clinical_data?.[0]?.tension || null,
+            symptoms: consultation.clinical_data?.map((c: any) => c.notes).filter((n: any) => n) || ['Loaded from Patient DB']
+          },
+          imageUrl: consultation.image_urls?.[0] || parsedPrediction?.imageUrl || null
+        }
+      });
+    } else {
+      // Fallback back to historical summary if report data doesn't exist
+      this.router.navigate(['/mg/rapport'], {
+        state: {
+          prediction: {
+            risk_level: consultation.risk_level || 'UNKNOWN',
+            fused_probability: consultation.fused_probability || 0,
+            confidence: 0.99,
+            predicted_class: 'Historical Record',
+            symptom_urgency: 'N/A',
+            symptom_probability: null,
+            image_probability: null,
+            symptom_response: 'Loaded from consultation history.'
+          },
+          patientDetails: {
+            nom: this.historyData?.patient_name || 'Unknown',
+            tension: consultation.clinical_data?.[0]?.tension || null,
+            symptoms: consultation.clinical_data?.map((c: any) => c.notes).filter((n: any) => n) || []
+          },
+          imageUrl: consultation.image_urls?.[0] || null
+        }
+      });
+    }
   }
 
   viewReport(record: any) {
@@ -178,7 +202,7 @@ export class DashboardComponent implements OnInit {
         try { parsedPrediction = JSON.parse(parsedPrediction); } catch(e) {}
       }
 
-      this.router.navigate(['/rapport'], {
+      this.router.navigate(['/mg/rapport'], {
         state: {
           prediction: parsedPrediction,
           patientDetails: {
@@ -191,7 +215,7 @@ export class DashboardComponent implements OnInit {
     } else {
       const risk_level = record.risk_level === 'UNKNOWN' ? 'UNCERTAIN' : record.risk_level;
 
-      this.router.navigate(['/rapport'], {
+      this.router.navigate(['/mg/rapport'], {
         state: {
           prediction: {
             risk_level: risk_level,
@@ -208,6 +232,51 @@ export class DashboardComponent implements OnInit {
             symptoms: record.symptoms || ['Historically Logged Assessment']
           },
           imageUrl: record.imageUrl || null
+        }
+      });
+    }
+  }
+
+  onTableRowClick(record: any) {
+    if (this.stateService.isCurrentUserMedecin) {
+      if (record.dossier_status === 'PENDING_MRI') {
+        this.goToMriUpload(record);
+      } else {
+        this.goToIntake(record);
+      }
+    }
+  }
+
+  goToMriUpload(record: any) {
+    if (record && record.patient_id) {
+      // Need to resume context to Mri Upload for the dossier
+      this.stateService.setPatientId(record.patient_id);
+      this.stateService.setDossierId(record.dossier_id);
+      this.router.navigate(['/mg/mri-upload'], {
+        state: { 
+          patientDetails: { 
+            name: record.patient_name, 
+            cin: record.patient_cin 
+          },
+          symptomsData: {
+            symptomsText: record.symptoms && record.symptoms.length > 0 ? record.symptoms[0] : 'General Assessment',
+            tensionValue: record.tension
+          }
+        }
+      });
+    }
+  }
+
+  goToIntake(record: any) {
+    if (record && record.patient_id) {
+      // Set the selected patient ID in StateService so Intake component can pick it up
+      this.stateService.setPatientId(record.patient_id);
+      this.router.navigate(['/mg/intake'], {
+        state: { 
+          patientDetails: { 
+            name: record.patient_name, 
+            cin: record.patient_cin 
+          } 
         }
       });
     }

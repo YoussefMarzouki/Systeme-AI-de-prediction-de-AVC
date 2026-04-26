@@ -1,6 +1,24 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+
+function fullNameValidator(control: AbstractControl): ValidationErrors | null {
+  const value = control.value || '';
+  if (value.trim().length > 0 && !value.trim().includes(' ')) {
+    return { noSpace: true };
+  }
+  return null;
+}
+
+function pastDateValidator(control: AbstractControl): ValidationErrors | null {
+  if (!control.value) return null;
+  const selectedDate = new Date(control.value);
+  const now = new Date();
+  if (selectedDate > now) {
+    return { futureDate: true };
+  }
+  return null;
+}
 import { Router } from '@angular/router';
 import { PatientService } from '../../services/patient.service';
 import { DossierService } from '../../services/dossier.service';
@@ -17,6 +35,7 @@ export class RegistrationComponent {
   registrationForm: FormGroup;
   registrationProgress = 25;
   isSubmitting = false;
+  cinExistsError = false;
 
   constructor(
     private fb: FormBuilder,
@@ -26,13 +45,13 @@ export class RegistrationComponent {
     private stateService: StateService
   ) {
     this.registrationForm = this.fb.group({
-      fullLegalName: [''],
-      cin: [''],
-      dateOfBirth: [''],
-      genderIdentity: [''],
-      phoneNumber: [''],
-      emailAddress: [''],
-      homeAddress: [''],
+      fullLegalName: ['', [Validators.required, fullNameValidator]],
+      cin: ['', Validators.required],
+      dateOfBirth: ['', [Validators.required, pastDateValidator]],
+      genderIdentity: ['', Validators.required],
+      phoneNumber: ['', Validators.required],
+      emailAddress: ['', [Validators.required, Validators.email]],
+      homeAddress: ['', Validators.required],
       insuranceProvider: [''],
       policyNumber: [''],
       groupNumber: [''],
@@ -50,11 +69,44 @@ export class RegistrationComponent {
     console.log('Draft saved:', this.registrationForm.value);
   }
 
+  onCheckCin(): void {
+    const cin = this.registrationForm.value.cin;
+    if (!cin) {
+      this.cinExistsError = false;
+      return;
+    }
+    this.patientService.checkCinExists(cin).subscribe({
+      next: (res) => {
+        this.cinExistsError = res.exists;
+      },
+      error: (err) => {
+        console.error('Error checking CIN', err);
+      }
+    });
+  }
+
   onCompleteRegistration(): void {
     if (this.isSubmitting) return;
-    this.isSubmitting = true;
+
+    if (this.registrationForm.invalid) {
+      alert('Please fill out all required fields correctly.');
+      this.registrationForm.markAllAsTouched();
+      return;
+    }
+
+    if (this.cinExistsError) {
+      alert('This CIN is already saved. You cannot register a new patient with an existing CIN.');
+      return;
+    }
 
     const val = this.registrationForm.value;
+    
+    if (!val.cin) {
+      alert('Please enter a CIN before continuing');
+      return;
+    }
+
+    this.isSubmitting = true;
 
     // Parse full name
     const nameParts = (val.fullLegalName || '').split(' ');
@@ -80,13 +132,20 @@ export class RegistrationComponent {
       next: (res) => {
         if (res.patient_id) {
           this.stateService.setPatientId(res.patient_id);
-          // 2. Create dossier mapped to patient
+          // 2. Create dossier mapped to patient (only if medecin, or actually maybe agent should just create the patient without an empty dossier if they aren't doing intake? Let's keep it creating a dossier since they registered them, but redirect accordingly)
           this.dossierService.createDossier().subscribe({
             next: (dossierRes) => {
               if (dossierRes.idDossier) {
                 this.stateService.setDossierId(dossierRes.idDossier);
                 this.isSubmitting = false;
-                this.router.navigate(['/intake']);
+                
+                if (this.stateService.isCurrentUserMedecin) {
+                  alert('Save complete!');
+                  this.router.navigate(['/mg/intake']);
+                } else {
+                  alert('Save complete!');
+                  this.router.navigate(['/agent/dashboard']);
+                }
               }
             },
             error: (err) => {

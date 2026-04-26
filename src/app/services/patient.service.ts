@@ -32,4 +32,11 @@ export class PatientService {
   getPatientHistory(patientId: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/${patientId}/history`, { headers: this.state.getAuthHeaders() });
   }
+
+  /**
+   * Check if a patient with the given CIN already exists
+   */
+  checkCinExists(cin: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/check-cin?cin=${cin}`, { headers: this.state.getAuthHeaders() });
+  }
 }

@@ -4,10 +4,10 @@
     <div class="header-title">Clinical Information System</div>
     
     <div class="header-tabs">
-      <a routerLink="/dashboard" routerLinkActive="active" class="header-tab">Dashboard</a>
-      <a routerLink="/records" routerLinkActive="active" class="header-tab">Patient Records</a>
-      <a routerLink="/intake" routerLinkActive="active" class="header-tab">CDS Analysis</a>
-      <a routerLink="/rapport" routerLinkActive="active" class="header-tab">Reports</a>
+      <a [routerLink]="prefix + '/dashboard'" routerLinkActive="active" class="header-tab">Dashboard</a>
+      <a [routerLink]="prefix + '/registration'" routerLinkActive="active" class="header-tab">Patient Records</a>
+      <a *ngIf="state.isCurrentUserMedecin" [routerLink]="prefix + '/intake'" routerLinkActive="active" class="header-tab">CDS Analysis</a>
+      <a *ngIf="state.isCurrentUserMedecin" [routerLink]="prefix + '/rapport'" routerLinkActive="active" class="header-tab">Reports</a>
     </div>
   </div>
 
@@ -48,13 +48,14 @@
     </button>
 
     <!-- User profile -->
-    <div class="user-profile" id="userProfile">
+    <div class="user-profile" id="userProfile" (click)="toggleRole()" style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+      <div style="display: flex; flex-direction: column; text-align: right;">
+        <span style="font-size: 0.85rem; font-weight: 600; color: #1e293b;">{{ userName }}</span>
+        <span style="font-size: 0.75rem; color: #64748b;">{{ userRole }}</span>
+      </div>
       <div class="user-avatar-wrap">
         <div class="user-avatar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
+          <span>{{ userInitials }}</span>
         </div>
       </div>
     </div>

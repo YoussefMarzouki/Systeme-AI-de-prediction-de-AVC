@@ -12,12 +12,34 @@ export class PredictionService {
   constructor(private http: HttpClient, private state: StateService) {}
 
   /**
-   * Request prediction from backend
+   * Request fused (image + symptoms) prediction from backend
    */
   predictFused(imageUrl: string | null, symptomsText: string | null): Observable<any> {
     const payload = {
       image_url: imageUrl,
       symptoms_text: symptomsText
+    };
+    return this.http.post(`${this.apiUrl}/${this.state.dossierId}/predict`, payload, { headers: this.state.getAuthHeaders() });
+  }
+
+  /**
+   * Request symptoms-only prediction (no image, no duplicate LLM call)
+   */
+  predictSymptoms(symptomsText: string): Observable<any> {
+    const payload = {
+      image_url: null,
+      symptoms_text: symptomsText
+    };
+    return this.http.post(`${this.apiUrl}/${this.state.dossierId}/predict`, payload, { headers: this.state.getAuthHeaders() });
+  }
+
+  /**
+   * Request image-only prediction (no symptom analysis)
+   */
+  predictImage(imageUrl: string): Observable<any> {
+    const payload = {
+      image_url: imageUrl,
+      symptoms_text: null
     };
     return this.http.post(`${this.apiUrl}/${this.state.dossierId}/predict`, payload, { headers: this.state.getAuthHeaders() });
   }

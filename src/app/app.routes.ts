@@ -4,20 +4,30 @@ import { RegistrationComponent } from './pages/registration/registration.compone
 import { IntakeComponent } from './pages/intake/intake.component';
 import { RapportComponent } from './pages/rapport/rapport.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { MriUploadComponent } from './pages/mri-upload/mri-upload.component';
 
 export const routes: Routes = [
   {
-    path: '',
+    path: 'agent',
     component: MainLayoutComponent,
     children: [
-      { path: '', redirectTo: 'registration', pathMatch: 'full' },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: DashboardComponent },
+      { path: 'registration', component: RegistrationComponent }
+    ]
+  },
+  {
+    path: 'mg',
+    component: MainLayoutComponent,
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'registration', component: RegistrationComponent },
       { path: 'intake', component: IntakeComponent },
-      { path: 'rapport', component: RapportComponent },
-      { path: 'appointments', component: RegistrationComponent }, // placeholder
-      { path: 'records', component: IntakeComponent }, // placeholder
+      { path: 'mri-upload', component: MriUploadComponent },
+      { path: 'rapport', component: RapportComponent }
     ]
   },
-  { path: '**', redirectTo: '' }
+  { path: '', redirectTo: '/agent/dashboard', pathMatch: 'full' },
+  { path: '**', redirectTo: '/agent/dashboard' }
 ];

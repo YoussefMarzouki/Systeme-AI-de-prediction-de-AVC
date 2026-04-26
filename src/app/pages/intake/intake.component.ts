@@ -71,11 +71,20 @@ export class IntakeComponent {
       triageNotes: [''],
     });
 
-    // Check if patient exists from previous registration step
+    const nav = this.router.getCurrentNavigation();
+    const state = nav?.extras.state as { patientDetails?: any };
+
+    // Check if patient exists from previous registration step or dashboard click
     if (this.stateService.patientId) {
-      // In a real scenario we might fetch the generated patient.
       this.patientFound = true;
-      this.selectedPatient.name = 'Patient ID ' + this.stateService.patientId;
+      if (state?.patientDetails) {
+        this.selectedPatient.name = state.patientDetails.name;
+        this.selectedPatient.cin = state.patientDetails.cin || 'N/A';
+        // Auto-fill search with cin or name so it's clear
+        this.intakeForm.patchValue({ patientSearch: state.patientDetails.cin || state.patientDetails.name });
+      } else {
+        this.selectedPatient.name = 'Patient ID ' + this.stateService.patientId;
+      }
     }
   }
 
@@ -94,8 +103,8 @@ export class IntakeComponent {
               cin: p.cin || 'N/A'
             };
             this.stateService.setPatientId(p.id);
-            // Need a dossier for this patient
-            this.dossierService.createDossier().subscribe(d => this.stateService.setDossierId(d.idDossier));
+            // Dossier creation is now deferred until submission
+            this.stateService.setDossierId('');
           } else {
             this.onPatientNotFound();
           }
@@ -111,6 +120,7 @@ export class IntakeComponent {
     this.intakeForm.get('patientSearch')?.reset();
     this.stateService.setPatientId('');
     this.stateService.setDossierId('');
+    this.uploadedFiles = []; // Clear any uploaded files to prevent wrong assignment
   }
 
   onPatientNotFound(): void {
@@ -159,12 +169,7 @@ export class IntakeComponent {
         if (res?.secure_url) {
           this.uploadedFiles[idx].status = 'Success';
           this.uploadedFiles[idx].url = res.secure_url;
-          
-          // Link to PostgreSQL DB
-          this.imageIrmService.linkMriToDossier(res.secure_url).subscribe({
-             next: (dbRes) => console.log('Linked MRI to DB:', dbRes),
-             error: (err) => console.error('Failed to link MRI to DB:', err)
-          });
+          // Linking to DB will happen on submit to avoid orphaned records
         } else {
           this.uploadedFiles[idx].status = 'Failed';
         }
@@ -184,7 +189,8 @@ export class IntakeComponent {
     this.patientFound = false;
     this.showManualEntry = false;
     this.symptoms.forEach(s => s.checked = false);
-    this.uploadedFiles = [];
+    this.stateService.setPatientId('');
+    this.stateService.setDossierId('');
   }
 
   onSavePending(): void {
@@ -221,77 +227,81 @@ export class IntakeComponent {
     // though the main target is the AI prompt in predictFused
     (fastData as any).ageText = ageText;
 
-    // IF NO DOSSIER EXISTS (e.g. Manual Entry or Direct Link)
+    // IF NO DOSSIER EXISTS (which is now always true because we deferred it)
     if (!this.stateService.dossierId) {
-      const val = this.intakeForm.value;
-      
-      // Parse full name
-      const nameParts = (val.fullName || '').split(' ');
-      const prenom = nameParts[0] || 'Unknown';
-      const nom = nameParts.slice(1).join(' ') || 'Manual';
+      if (!this.stateService.patientId) {
+        const val = this.intakeForm.value;
+        const nameParts = (val.fullName || '').split(' ');
+        const prenom = nameParts[0] || 'Unknown';
+        const nom = nameParts.slice(1).join(' ') || 'Manual';
 
-      const payload = {
-        nom: nom,
-        prenom: prenom,
-        cin: val.cin || null,
-        dateNaissance: val.dateOfBirth || '2000-01-01',
-        sexe: 'M' // Default
-      };
+        const payload = {
+          nom: nom,
+          prenom: prenom,
+          cin: val.cin || null,
+          dateNaissance: val.dateOfBirth || '2000-01-01',
+          sexe: 'M' // Default
+        };
 
-      // 1. Create Patient
-      this.patientService.createPatient(payload as any).subscribe({
-        next: (res) => {
-          this.stateService.setPatientId(res.patient_id);
-          // 2. Create Dossier
-          this.dossierService.createDossier().subscribe({
-            next: (dres) => {
-              this.stateService.setDossierId(dres.idDossier);
-              // 3. Submit Symptoms
-              this.submitSymptoms(fastData, notes);
-            }
-          });
-        },
-        error: () => { this.isSubmitting = false; alert("Failed to create manual patient."); }
-      });
+        // 1. Create Patient
+        this.patientService.createPatient(payload as any).subscribe({
+          next: (res) => {
+            this.stateService.setPatientId(res.patient_id);
+            this.createDossierAndContinue(fastData, notes);
+          },
+          error: () => { this.isSubmitting = false; alert("Failed to create manual patient."); }
+        });
+      } else {
+        // Patient exists, just create dossier
+        this.createDossierAndContinue(fastData, notes);
+      }
     } else {
       this.submitSymptoms(fastData, notes);
     }
+  }
+
+  private createDossierAndContinue(fastData: any, notes: string) {
+    this.dossierService.createDossier().subscribe({
+      next: (dres) => {
+        this.stateService.setDossierId(dres.idDossier);
+        // Submit Symptoms
+        this.submitSymptoms(fastData, notes);
+      },
+      error: () => {
+        this.isSubmitting = false;
+        alert("Failed to create dossier.");
+      }
+    });
   }
 
   private submitSymptoms(fastData: any, notes: string) {
     this.donneesCliniquesService.addDonneesCliniques(fastData, notes).subscribe({
       next: (res) => {
         if (res.status === 'success') {
+          this.isSubmitting = false;
           const ageText = (fastData as any).ageText || '';
           const symptomsText = ageText + "Symptoms: " + fastData.symptoms.join(', ') + ". Notes: " + notes;
-          let imageUrl: string | null = null;
-          
-          if (this.uploadedFiles.length > 0 && this.uploadedFiles[0].url) {
-            imageUrl = this.uploadedFiles[0].url;
-          }
 
-          // Call the Backend for Prediction
-          this.predictionService.predictFused(imageUrl, symptomsText).subscribe({
-            next: (predRes) => {
-              console.log('Prediction Result:', predRes);
-              this.isSubmitting = false;
-              // Navigate to Rapport component passing prediction data and patient context
-              this.router.navigate(['/rapport'], { state: { patientDetails: fastData, prediction: predRes.prediction, imageUrl } });
-            },
-            error: (predErr) => {
-              console.error('Error getting prediction', predErr);
-              alert('Assessment submitted but prediction failed.');
-              this.isSubmitting = false;
+          // Route to Step 2 (MRI Upload Component)
+          this.router.navigate(['/mg/mri-upload'], {
+            state: {
+              patientDetails: this.selectedPatient,
+              symptomsData: {
+                symptomsText: symptomsText,
+                tensionValue: fastData.tension,
+                ageText: ageText
+              }
             }
           });
         } else {
           this.isSubmitting = false;
+          alert("Failed to save clinical data.");
         }
       },
       error: (err) => {
-        console.error('Error adding symptoms', err);
-        alert('Failed to submit symptoms.');
+        console.error('Save symptoms error:', err);
         this.isSubmitting = false;
+        alert("Wait, there was an issue saving clinical data.");
       }
     });
   }
