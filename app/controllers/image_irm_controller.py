@@ -7,6 +7,16 @@ image_irm_bp = Blueprint('image_irm', __name__)
 irm_repo = ImageIRMRepository()
 irm_service = ImageIRMService(irm_repo)
 
+
+@image_irm_bp.route('/api/v1/images-irm', methods=['GET'])
+def list_images_irm():
+    try:
+        images = irm_service.list_images()
+        return jsonify({"status": "success", "images": images}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @image_irm_bp.route('/api/v1/dossiers/<string:dossier_id>/image-irm', methods=['POST'])
 def upload_image_irm(dossier_id):
     """Uploader une image IRM DICOM pour un dossier
@@ -88,6 +98,36 @@ def add_image_metadata(dossier_id):
         image_id = irm_service.add_image_metadata(dossier_id, data)
         db.session.commit()
         return jsonify({"status": "success", "idImage": image_id}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
+
+
+@image_irm_bp.route('/api/v1/images-irm/<string:image_id>', methods=['GET'])
+def get_image_irm(image_id):
+    try:
+        image = irm_service.get_image(image_id)
+        return jsonify({"status": "success", "image": image}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 404
+
+
+@image_irm_bp.route('/api/v1/images-irm/<string:image_id>', methods=['PUT'])
+def update_image_irm(image_id):
+    data = request.json or {}
+    try:
+        image = irm_service.update_image(image_id, data)
+        return jsonify({"status": "success", "image": image}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
+
+
+@image_irm_bp.route('/api/v1/images-irm/<string:image_id>', methods=['DELETE'])
+def delete_image_irm(image_id):
+    try:
+        irm_service.delete_image(image_id)
+        return jsonify({"status": "success", "message": "Image IRM supprimee"}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 400

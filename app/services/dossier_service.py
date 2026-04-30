@@ -1,13 +1,27 @@
 from app.models.dossier_patient import DossierPatient
 from app.models.donnees_cliniques import DonneesCliniques
-from app.models.analyses import EvaluationRisque
+from app.models.analyses import AnalyseIA, EvaluationRisque
 from app.models.patient import Patient
 from app.core.db import db
 from app.repositories.dossier_repository import DossierRepository
+import json
 
 class DossierService:
     def __init__(self, dossier_repo: DossierRepository):
         self.dossier_repo = dossier_repo
+
+    def _serialize_dossier(self, dossier: DossierPatient) -> dict:
+        return {
+            "idDossier": dossier.idDossier,
+            "dateCreation": str(dossier.dateCreation) if dossier.dateCreation else None,
+            "statut": dossier.statut,
+            "patient_id": dossier.patient_id,
+            "agent_id": dossier.agent_id,
+            "medecin_id": dossier.medecin_id,
+        }
+
+    def list_dossiers(self) -> list[dict]:
+        return [self._serialize_dossier(dossier) for dossier in self.dossier_repo.list_all()]
 
     def create_dossier(self, patient_id: str, creator_id: str, is_medecin: bool) -> str:
         new_dossier = DossierPatient(
@@ -18,19 +32,46 @@ class DossierService:
         dossier = self.dossier_repo.create(new_dossier)
         return str(dossier.idDossier)
 
+    def get_dossier(self, dossier_id: str) -> dict:
+        dossier = self.dossier_repo.get_by_id(dossier_id)
+        if not dossier:
+            raise Exception("Dossier introuvable")
+        return self._serialize_dossier(dossier)
+
+    def update_dossier(self, dossier_id: str, data: dict) -> dict:
+        dossier = self.dossier_repo.get_by_id(dossier_id)
+        if not dossier:
+            raise Exception("Dossier introuvable")
+
+        if 'statut' in data:
+            dossier.statut = data['statut']
+        if 'patient_id' in data:
+            dossier.patient_id = data['patient_id']
+        if 'agent_id' in data:
+            dossier.agent_id = data['agent_id']
+        if 'medecin_id' in data:
+            dossier.medecin_id = data['medecin_id']
+
+        self.dossier_repo.update()
+        return self._serialize_dossier(dossier)
+
+    def delete_dossier(self, dossier_id: str) -> None:
+        dossier = self.dossier_repo.get_by_id(dossier_id)
+        if not dossier:
+            raise Exception("Dossier introuvable")
+        self.dossier_repo.delete(dossier)
+
     def get_evaluated_dossiers(self) -> list:
         from app.models.rapport import Rapport
         from app.models.image_irm import ImageIRM
         from app.models.donnees_cliniques import DonneesCliniques
 
-        results = db.session.query(DossierPatient, Patient, EvaluationRisque).join(
+        results = db.session.query(DossierPatient, Patient).join(
             Patient, DossierPatient.patient_id == Patient.id
-        ).outerjoin(
-            EvaluationRisque, DossierPatient.idDossier == EvaluationRisque.dossier_id
         ).order_by(DossierPatient.dateCreation.desc()).all()
 
         # Add any patients without a dossier as an "empty" row so they show up for intake
-        patients_with_dossier = set(dossier.patient_id for dossier, p, er in results)
+        patients_with_dossier = set(dossier.patient_id for dossier, p in results)
         patients_without_dossier = Patient.query.filter(
             ~Patient.id.in_(patients_with_dossier) if patients_with_dossier else True
         ).all()
@@ -38,11 +79,12 @@ class DossierService:
         evaluated_list = []
         
         # Add patients that have dossiers
-        for dossier, patient, eval_risque in results:
-            rapport = Rapport.query.filter_by(dossier_id=dossier.idDossier).first()
+        for dossier, patient in results:
+            rapport = Rapport.query.filter_by(dossier_id=dossier.idDossier).order_by(Rapport.dateModification.desc()).first()
             modifier = rapport.modifie_par_id if rapport else None
             statut_rapport = rapport.statut if rapport else 'NO_REPORT'
             prediction_data = rapport.contenu if rapport else None
+            prediction_content = self._content_dict(prediction_data)
 
             image = ImageIRM.query.filter_by(dossier_id=dossier.idDossier).order_by(ImageIRM.dateAcquisition.desc()).first()
             image_url = image.cheminStockage if image else None
@@ -54,7 +96,13 @@ class DossierService:
             if donnees and donnees.notes:
                 symptoms_array = [donnees.notes]
 
-            risk_level = eval_risque.niveau if eval_risque else 'UNKNOWN'
+            eval_risque = self._latest_evaluation_for_dossier(dossier.idDossier)
+            risk_level = prediction_content.get('risk_level') or (eval_risque.niveau if eval_risque else 'UNKNOWN')
+            fused_probability = self._first_number(
+                prediction_content.get('fused_probability'),
+                prediction_content.get('probability'),
+                eval_risque.scoreGlobal if eval_risque else None
+            )
             
             # Determine correct status
             current_status = dossier.statut
@@ -67,7 +115,7 @@ class DossierService:
                 "patient_cin": patient.cin,
                 "dossier_status": current_status,
                 "risk_level": risk_level,
-                "fused_probability": eval_risque.scoreGlobal if eval_risque else None,
+                "fused_probability": fused_probability,
                 "date": str(dossier.dateCreation.date()),
                 "dossier_id": dossier.idDossier,
                 "modifie_par_id": modifier,
@@ -115,9 +163,15 @@ class DossierService:
 
         history = []
         for dossier in dossiers:
-            eval_risque = EvaluationRisque.query.filter_by(dossier_id=dossier.idDossier).first()
-
-            rapport = Rapport.query.filter_by(dossier_id=dossier.idDossier).first()
+            rapport = Rapport.query.filter_by(dossier_id=dossier.idDossier).order_by(Rapport.dateModification.desc()).first()
+            rapport_content = self._content_dict(rapport.contenu if rapport else None)
+            eval_risque = self._latest_evaluation_for_dossier(dossier.idDossier)
+            risk_level = rapport_content.get('risk_level') or (eval_risque.niveau if eval_risque else None)
+            fused_probability = self._first_number(
+                rapport_content.get('fused_probability'),
+                rapport_content.get('probability'),
+                eval_risque.scoreGlobal if eval_risque else None
+            )
             rapport_info = None
             if rapport:
                 modifier_name = None
@@ -159,8 +213,8 @@ class DossierService:
                 "dateCreation": str(dossier.dateCreation) if dossier.dateCreation else None,
                 "statut": dossier.statut,
                 "created_by": created_by,
-                "risk_level": eval_risque.niveau if eval_risque else None,
-                "fused_probability": eval_risque.scoreGlobal if eval_risque else None,
+                "risk_level": risk_level,
+                "fused_probability": fused_probability,
                 "rapport": rapport_info,
                 "clinical_data": clinical_entries,
                 "image_urls": image_urls,
@@ -175,3 +229,33 @@ class DossierService:
             "total_consultations": len(history),
             "consultations": history,
         }
+
+    def _latest_evaluation_for_dossier(self, dossier_id: str):
+        return db.session.query(EvaluationRisque).outerjoin(
+            AnalyseIA, EvaluationRisque.analyse_ia_id == AnalyseIA.idAnalyse
+        ).filter(
+            EvaluationRisque.dossier_id == dossier_id
+        ).order_by(
+            AnalyseIA.dateAnalyse.desc().nullslast()
+        ).first()
+
+    def _content_dict(self, content):
+        if isinstance(content, dict):
+            return content
+        if isinstance(content, str):
+            try:
+                parsed = json.loads(content)
+                return parsed if isinstance(parsed, dict) else {}
+            except json.JSONDecodeError:
+                return {}
+        return {}
+
+    def _first_number(self, *values):
+        for value in values:
+            if value is None:
+                continue
+            try:
+                return float(value)
+            except (TypeError, ValueError):
+                continue
+        return None

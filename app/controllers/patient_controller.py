@@ -9,6 +9,15 @@ patient_repo = PatientRepository()
 patient_service = PatientService(patient_repo)
 
 
+@patient_bp.route('/api/v1/patients', methods=['GET'])
+def list_patients():
+    try:
+        patients = patient_service.list_patients()
+        return jsonify({"status": "success", "patients": patients}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @patient_bp.route('/api/v1/patients', methods=['POST'])
 def create_patient():
     """Créer un nouveau patient
@@ -89,6 +98,27 @@ def get_patient(patient_id):
         return jsonify({"status": "success", "patient": patient_data}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 404
+
+
+@patient_bp.route('/api/v1/patients/<string:patient_id>', methods=['PUT'])
+def update_patient(patient_id):
+    data = request.json or {}
+    try:
+        patient = patient_service.update_patient(patient_id, data)
+        return jsonify({"status": "success", "patient": patient}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
+
+
+@patient_bp.route('/api/v1/patients/<string:patient_id>', methods=['DELETE'])
+def delete_patient(patient_id):
+    try:
+        patient_service.delete_patient(patient_id)
+        return jsonify({"status": "success", "message": "Patient supprime"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
 
 
 @patient_bp.route('/api/v1/patients/search', methods=['GET'])

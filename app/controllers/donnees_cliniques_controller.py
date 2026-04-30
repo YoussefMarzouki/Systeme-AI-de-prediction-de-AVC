@@ -11,6 +11,15 @@ dossier_repo = DossierRepository()
 donnees_service = DonneesCliniquesService(donnees_repo, dossier_repo)
 
 
+@donnees_cliniques_bp.route('/api/v1/donnees-cliniques', methods=['GET'])
+def list_donnees_cliniques():
+    try:
+        entries = donnees_service.list_donnees_cliniques()
+        return jsonify({"status": "success", "donnees_cliniques": entries}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @donnees_cliniques_bp.route('/api/v1/dossiers/<string:dossier_id>/donnees-cliniques', methods=['POST'])
 def add_donnees_cliniques(dossier_id):
     """Ajouter des données cliniques à un dossier
@@ -85,4 +94,34 @@ def get_donnees_cliniques(dossier_id):
         entries = donnees_service.get_by_dossier(dossier_id)
         return jsonify({"status": "success", "donnees_cliniques": entries}), 200
     except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@donnees_cliniques_bp.route('/api/v1/donnees-cliniques/<string:donnees_id>', methods=['GET'])
+def get_donnees_cliniques_by_id(donnees_id):
+    try:
+        donnees = donnees_service.get_donnees_cliniques(donnees_id)
+        return jsonify({"status": "success", "donnees_cliniques": donnees}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 404
+
+
+@donnees_cliniques_bp.route('/api/v1/donnees-cliniques/<string:donnees_id>', methods=['PUT'])
+def update_donnees_cliniques(donnees_id):
+    data = request.json or {}
+    try:
+        donnees = donnees_service.update_donnees_cliniques(donnees_id, data)
+        return jsonify({"status": "success", "donnees_cliniques": donnees}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
+
+
+@donnees_cliniques_bp.route('/api/v1/donnees-cliniques/<string:donnees_id>', methods=['DELETE'])
+def delete_donnees_cliniques(donnees_id):
+    try:
+        donnees_service.delete_donnees_cliniques(donnees_id)
+        return jsonify({"status": "success", "message": "Donnees cliniques supprimees"}), 200
+    except Exception as e:
+        db.session.rollback()
         return jsonify({"error": str(e)}), 400

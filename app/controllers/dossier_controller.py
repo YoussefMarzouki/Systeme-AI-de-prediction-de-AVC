@@ -10,6 +10,15 @@ dossier_repo = DossierRepository()
 dossier_service = DossierService(dossier_repo)
 
 
+@dossier_bp.route('/api/v1/dossiers', methods=['GET'])
+def list_dossiers():
+    try:
+        dossiers = dossier_service.list_dossiers()
+        return jsonify({"status": "success", "dossiers": dossiers}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @dossier_bp.route('/api/v1/dossiers', methods=['POST'])
 def create_dossier():
     """Créer un nouveau dossier patient
@@ -51,6 +60,36 @@ def create_dossier():
         id_dossier = dossier_service.create_dossier(data['patient_id'], current_user_id, is_medecin)
         db.session.commit()
         return jsonify({"status": "success", "idDossier": id_dossier}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
+
+
+@dossier_bp.route('/api/v1/dossiers/<string:dossier_id>', methods=['GET'])
+def get_dossier(dossier_id):
+    try:
+        dossier = dossier_service.get_dossier(dossier_id)
+        return jsonify({"status": "success", "dossier": dossier}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 404
+
+
+@dossier_bp.route('/api/v1/dossiers/<string:dossier_id>', methods=['PUT'])
+def update_dossier(dossier_id):
+    data = request.json or {}
+    try:
+        dossier = dossier_service.update_dossier(dossier_id, data)
+        return jsonify({"status": "success", "dossier": dossier}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
+
+
+@dossier_bp.route('/api/v1/dossiers/<string:dossier_id>', methods=['DELETE'])
+def delete_dossier(dossier_id):
+    try:
+        dossier_service.delete_dossier(dossier_id)
+        return jsonify({"status": "success", "message": "Dossier supprime"}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 400

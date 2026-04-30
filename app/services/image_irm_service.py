@@ -13,6 +13,19 @@ class ImageIRMService:
         if not os.path.exists(self.upload_folder):
             os.makedirs(self.upload_folder)
 
+    def _serialize_image(self, image: ImageIRM) -> dict:
+        return {
+            "idImage": image.idImage,
+            "format": image.format,
+            "cheminStockage": image.cheminStockage,
+            "dateAcquisition": str(image.dateAcquisition) if image.dateAcquisition else None,
+            "qualiteOK": image.qualiteOK,
+            "dossier_id": image.dossier_id,
+        }
+
+    def list_images(self) -> list[dict]:
+        return [self._serialize_image(image) for image in self.irm_repo.list_all()]
+
     def _get_or_create_dossier(self, patient_id: str):
         dossier = db.session.query(DossierPatient).filter_by(patient_id=patient_id).order_by(DossierPatient.dateCreation.desc()).first()
         if not dossier:
@@ -45,6 +58,37 @@ class ImageIRMService:
         )
         irm = self.irm_repo.create(new_irm)
         return str(irm.idImage)
+
+    def get_image(self, image_id: str) -> dict:
+        image = self.irm_repo.get_by_id(image_id)
+        if not image:
+            raise Exception("Image IRM introuvable")
+        return self._serialize_image(image)
+
+    def update_image(self, image_id: str, data: dict) -> dict:
+        image = self.irm_repo.get_by_id(image_id)
+        if not image:
+            raise Exception("Image IRM introuvable")
+
+        if 'format' in data:
+            image.format = data['format']
+        if 'cheminStockage' in data:
+            image.cheminStockage = data['cheminStockage']
+        if 'url' in data:
+            image.cheminStockage = data['url']
+        if 'qualiteOK' in data:
+            image.qualiteOK = data['qualiteOK']
+        if 'dossier_id' in data:
+            image.dossier_id = data['dossier_id']
+
+        self.irm_repo.update()
+        return self._serialize_image(image)
+
+    def delete_image(self, image_id: str) -> None:
+        image = self.irm_repo.get_by_id(image_id)
+        if not image:
+            raise Exception("Image IRM introuvable")
+        self.irm_repo.delete(image)
 
     def request_mri(self, data: dict) -> dict:
         # Simulate an MRI request
