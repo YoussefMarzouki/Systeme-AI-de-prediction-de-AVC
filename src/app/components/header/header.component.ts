@@ -14,11 +14,15 @@ export class HeaderComponent {
   constructor(public state: StateService, private router: Router) {}
 
   get userName(): string {
-    return this.state.isCurrentUserMedecin ? 'Dr. Ahmed Ben Ali' : 'Agent Yassin';
+    if (this.state.isCurrentUserSpecialiste) return 'Dr. Khemiri Youssef';
+    if (this.state.isCurrentUserMedecin) return 'Dr. Mansour Leila';
+    return 'Agent Yassin';
   }
 
   get userRole(): string {
-    return this.state.isCurrentUserMedecin ? 'Médecin Généraliste' : 'Agent d\'accueil';
+    if (this.state.isCurrentUserSpecialiste) return 'Medecin Specialiste';
+    if (this.state.isCurrentUserMedecin) return 'Medecin Generaliste';
+    return 'Agent d\'accueil';
   }
 
   get userInitials(): string {
@@ -32,11 +36,16 @@ export class HeaderComponent {
   }
 
   get prefix(): string {
-    return this.state.isCurrentUserMedecin ? '/mg' : '/agent';
+    return this.state.routePrefix;
   }
 
   toggleRole() {
-    const newPrefix = this.state.isCurrentUserMedecin ? '/agent/dashboard' : '/mg/dashboard';
-    this.router.navigateByUrl(newPrefix);
+    if (this.state.currentRole === 'agent') {
+      this.router.navigateByUrl('/mg/dashboard');
+    } else if (this.state.currentRole === 'mg') {
+      this.router.navigateByUrl('/ms/validation-queue');
+    } else {
+      this.router.navigateByUrl('/agent/dashboard');
+    }
   }
 }

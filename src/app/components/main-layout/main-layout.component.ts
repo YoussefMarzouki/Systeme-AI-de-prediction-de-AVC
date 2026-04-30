@@ -28,9 +28,11 @@ export class MainLayoutComponent implements OnInit {
   private updateRoleFromUrl(url: string) {
     Promise.resolve().then(() => {
       if (url.startsWith('/mg')) {
-        this.state.isCurrentUserMedecin = true;
+        this.state.setRole('mg');
+      } else if (url.startsWith('/ms')) {
+        this.state.setRole('ms');
       } else if (url.startsWith('/agent')) {
-        this.state.isCurrentUserMedecin = false;
+        this.state.setRole('agent');
       }
     });
   }

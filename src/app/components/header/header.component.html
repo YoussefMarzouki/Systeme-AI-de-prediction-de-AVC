@@ -4,10 +4,11 @@
     <div class="header-title">Clinical Information System</div>
     
     <div class="header-tabs">
-      <a [routerLink]="prefix + '/dashboard'" routerLinkActive="active" class="header-tab">Dashboard</a>
-      <a [routerLink]="prefix + '/registration'" routerLinkActive="active" class="header-tab">Patient Records</a>
+      <a *ngIf="!state.isCurrentUserSpecialiste" [routerLink]="prefix + '/dashboard'" routerLinkActive="active" class="header-tab">Dashboard</a>
+      <a *ngIf="!state.isCurrentUserSpecialiste" [routerLink]="prefix + '/registration'" routerLinkActive="active" class="header-tab">Patient Records</a>
       <a *ngIf="state.isCurrentUserMedecin" [routerLink]="prefix + '/intake'" routerLinkActive="active" class="header-tab">CDS Analysis</a>
       <a *ngIf="state.isCurrentUserMedecin" [routerLink]="prefix + '/rapport'" routerLinkActive="active" class="header-tab">Reports</a>
+      <a *ngIf="state.isCurrentUserSpecialiste" [routerLink]="prefix + '/validation-queue'" routerLinkActive="active" class="header-tab">Validation Queue</a>
     </div>
   </div>
 

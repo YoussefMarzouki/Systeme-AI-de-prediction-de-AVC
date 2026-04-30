@@ -17,13 +17,20 @@ export class SidebarComponent implements DoCheck {
   constructor(public state: StateService) {}
 
   ngDoCheck() {
-    const prefix = this.state.isCurrentUserMedecin ? '/mg' : '/agent';
+    const prefix = this.state.routePrefix;
     if (this.lastPrefix !== prefix || this.navItems.length === 0) {
       this.lastPrefix = prefix;
-      const items = [
-        { label: 'Dashboard', icon: 'dashboard', route: `${prefix}/dashboard` },
-        { label: 'Registration', icon: 'registration', route: `${prefix}/registration` }
-      ];
+      const items = this.state.isCurrentUserSpecialiste
+        ? [
+            { label: 'Dashboard', icon: 'dashboard', route: `${prefix}/dashboard` },
+            { label: 'Registration', icon: 'registration', route: `${prefix}/registration` },
+            { label: 'Patient Intake', icon: 'intake', route: `${prefix}/intake` },
+            { label: 'Validation Queue', icon: 'validation', route: `${prefix}/validation-queue` }
+          ]
+        : [
+            { label: 'Dashboard', icon: 'dashboard', route: `${prefix}/dashboard` },
+            { label: 'Registration', icon: 'registration', route: `${prefix}/registration` }
+          ];
 
       if (this.state.isCurrentUserMedecin) {
         items.push({ label: 'Patient Intake', icon: 'intake', route: `${prefix}/intake` });

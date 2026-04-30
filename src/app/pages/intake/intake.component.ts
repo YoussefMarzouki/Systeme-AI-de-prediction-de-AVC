@@ -283,7 +283,7 @@ export class IntakeComponent {
           const symptomsText = ageText + "Symptoms: " + fastData.symptoms.join(', ') + ". Notes: " + notes;
 
           // Route to Step 2 (MRI Upload Component)
-          this.router.navigate(['/mg/mri-upload'], {
+          this.router.navigate([`${this.stateService.routePrefix}/mri-upload`], {
             state: {
               patientDetails: this.selectedPatient,
               symptomsData: {

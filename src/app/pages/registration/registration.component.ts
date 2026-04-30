@@ -139,9 +139,9 @@ export class RegistrationComponent {
                 this.stateService.setDossierId(dossierRes.idDossier);
                 this.isSubmitting = false;
                 
-                if (this.stateService.isCurrentUserMedecin) {
+                if (this.stateService.currentRole !== 'agent') {
                   alert('Save complete!');
-                  this.router.navigate(['/mg/intake']);
+                  this.router.navigate([`${this.stateService.routePrefix}/intake`]);
                 } else {
                   alert('Save complete!');
                   this.router.navigate(['/agent/dashboard']);

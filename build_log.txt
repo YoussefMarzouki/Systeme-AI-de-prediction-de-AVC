@@ -1,0 +1,30 @@
+﻿[33m❯[39m Building...
+[32m✔[39m Building...
+[1mInitial chunk files[22m[2m | [22m[1mNames[22m        [2m | [22m [1mRaw size[22m
+[32mchunk-PS2QBEOU.js[39m  [2m | [22m[2m-[22m            [2m | [22m[36m962.96 kB[39m[2m | [22m
+[32mmain.js[39m            [2m | [22m[2mmain[22m         [2m | [22m[36m538.55 kB[39m[2m | [22m
+[32mpolyfills.js[39m       [2m | [22m[2mpolyfills[22m    [2m | [22m [36m90.20 kB[39m[2m | [22m
+[32mstyles.css[39m         [2m | [22m[2mstyles[22m       [2m | [22m  [36m7.24 kB[39m[2m | [22m
+
+[1m [22m                  [2m | [22m[1mInitial total[22m[2m | [22m  [1m1.60 MB[22m
+
+[1mLazy chunk files[22m   [2m | [22m[1mNames[22m        [2m | [22m [1mRaw size[22m
+[32mchunk-J5K7EB4B.js[39m  [2m | [22m[2mbrowser[22m      [2m | [22m[36m158.11 kB[39m[2m | [22m
+
+Application bundle generation complete. [1.630 seconds]
+
+[1m[33m[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mAll "@import" rules must come first[0m [invalid-@import]
+System.Management.Automation.RemoteException
+    src/styles.css:524:0:
+[37m      524 │ [32m@import[37m url('https://fonts.googleapis.com/css2?family=Inter:wght@...
+          ╵ [32m~~~~~~~[0m
+System.Management.Automation.RemoteException
+  This rule cannot come before an "@import" rule
+System.Management.Automation.RemoteException
+    src/styles.css:1:0:
+[37m      1 │ [32m[37m*, ::before, ::after {
+        ╵ [32m^[0m
+System.Management.Automation.RemoteException
+[39m[22m
+Output location: C:\Users\yy212\Desktop\sprint 2\frontend\dist\frontend
+

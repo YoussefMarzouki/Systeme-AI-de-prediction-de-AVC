@@ -143,7 +143,7 @@ export class MriUploadComponent implements OnInit {
 
   onDoItLater(): void {
     // Return to dashboard
-    this.router.navigate(['/mg/dashboard']);
+    this.router.navigate([`${this.stateService.routePrefix}/dashboard`]);
   }
 
   onSubmitAnalysis(): void {
@@ -184,7 +184,7 @@ export class MriUploadComponent implements OnInit {
           );
         }
 
-        this.router.navigate(['/mg/rapport'], {
+        this.router.navigate([`${this.stateService.routePrefix}/rapport`], {
           state: {
             prediction: mergedPrediction,
             patientDetails: {

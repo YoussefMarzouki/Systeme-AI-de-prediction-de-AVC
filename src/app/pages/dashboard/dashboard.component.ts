@@ -159,7 +159,7 @@ export class DashboardComponent implements OnInit {
         try { parsedPrediction = JSON.parse(parsedPrediction); } catch(e) {}
       }
 
-      this.router.navigate(['/mg/rapport'], {
+      this.router.navigate([`${this.stateService.routePrefix}/rapport`], {
         state: {
           prediction: parsedPrediction,
           patientDetails: {
@@ -172,7 +172,7 @@ export class DashboardComponent implements OnInit {
       });
     } else {
       // Fallback back to historical summary if report data doesn't exist
-      this.router.navigate(['/mg/rapport'], {
+      this.router.navigate([`${this.stateService.routePrefix}/rapport`], {
         state: {
           prediction: {
             risk_level: consultation.risk_level || 'UNKNOWN',
@@ -202,7 +202,7 @@ export class DashboardComponent implements OnInit {
         try { parsedPrediction = JSON.parse(parsedPrediction); } catch(e) {}
       }
 
-      this.router.navigate(['/mg/rapport'], {
+      this.router.navigate([`${this.stateService.routePrefix}/rapport`], {
         state: {
           prediction: parsedPrediction,
           patientDetails: {
@@ -215,7 +215,7 @@ export class DashboardComponent implements OnInit {
     } else {
       const risk_level = record.risk_level === 'UNKNOWN' ? 'UNCERTAIN' : record.risk_level;
 
-      this.router.navigate(['/mg/rapport'], {
+      this.router.navigate([`${this.stateService.routePrefix}/rapport`], {
         state: {
           prediction: {
             risk_level: risk_level,
@@ -238,7 +238,7 @@ export class DashboardComponent implements OnInit {
   }
 
   onTableRowClick(record: any) {
-    if (this.stateService.isCurrentUserMedecin) {
+    if (this.stateService.isCurrentUserDoctor) {
       if (record.dossier_status === 'PENDING_MRI') {
         this.goToMriUpload(record);
       } else {
@@ -252,7 +252,7 @@ export class DashboardComponent implements OnInit {
       // Need to resume context to Mri Upload for the dossier
       this.stateService.setPatientId(record.patient_id);
       this.stateService.setDossierId(record.dossier_id);
-      this.router.navigate(['/mg/mri-upload'], {
+      this.router.navigate([`${this.stateService.routePrefix}/mri-upload`], {
         state: { 
           patientDetails: { 
             name: record.patient_name, 
@@ -271,7 +271,7 @@ export class DashboardComponent implements OnInit {
     if (record && record.patient_id) {
       // Set the selected patient ID in StateService so Intake component can pick it up
       this.stateService.setPatientId(record.patient_id);
-      this.router.navigate(['/mg/intake'], {
+      this.router.navigate([`${this.stateService.routePrefix}/intake`], {
         state: { 
           patientDetails: { 
             name: record.patient_name, 
