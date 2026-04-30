@@ -43,7 +43,7 @@ def create_app():
     app = Flask(__name__)
     
     # Configuration PostgreSQL au lieu de SQLite
-    db_url = os.environ.get('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5433/postgres')
+    db_url = os.environ.get('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/postgres')
     app.config['SQLALCHEMY_DATABASE_URI'] = db_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
@@ -59,11 +59,10 @@ def create_app():
     with app.app_context():
         try:
             db.create_all()
-            print("[+] Tables PostgreSQL créées avec succès ! (models: Patient, Dossier, ExamenIRM, etc.)")
             print("[+] Swagger UI disponible sur http://localhost:5000/apidocs/")
         except Exception as e:
             print(f"[!] Erreur de connexion à PostgreSQL: {e}")
             print(f"[!] L'URL utilisée était: {db_url}")
-            print("[!] Vérifiez que le mot de passe est 'postgres' ou définissez la variable d'environnement DATABASE_URL")
+
         
     return app

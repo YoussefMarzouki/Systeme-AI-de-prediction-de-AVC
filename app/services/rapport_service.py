@@ -192,6 +192,11 @@ class RapportService:
         rapport.statut = "VALIDATED"
         rapport.modifie_par_id = specialist_id
 
+        # Update dossier status as well
+        dossier = DossierPatient.query.get(rapport.dossier_id)
+        if dossier:
+            dossier.statut = "VALIDATED"
+
         self._add_comment_if_needed(rapport.dossier_id, specialist_id, payload.get("notes"))
         db.session.commit()
         return {"rapport_id": rapport.idRapport, "statut": rapport.statut}
@@ -211,6 +216,11 @@ class RapportService:
         rapport.contenu = content
         rapport.statut = "REJECTED"
         rapport.modifie_par_id = specialist_id
+
+        # Update dossier status as well
+        dossier = DossierPatient.query.get(rapport.dossier_id)
+        if dossier:
+            dossier.statut = "REJECTED"
 
         self._add_comment_if_needed(rapport.dossier_id, specialist_id, payload.get("notes"))
         db.session.commit()

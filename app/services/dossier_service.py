@@ -81,7 +81,13 @@ class DossierService:
         # Add patients that have dossiers
         for dossier, patient in results:
             rapport = Rapport.query.filter_by(dossier_id=dossier.idDossier).order_by(Rapport.dateModification.desc()).first()
-            modifier = rapport.modifie_par_id if rapport else None
+            modifier_id = rapport.modifie_par_id if rapport else None
+            modifier_name = None
+            if modifier_id:
+                from app.models.user import Utilisateur
+                u = Utilisateur.query.get(modifier_id)
+                modifier_name = u.nom if u else modifier_id
+
             statut_rapport = rapport.statut if rapport else 'NO_REPORT'
             prediction_data = rapport.contenu if rapport else None
             prediction_content = self._content_dict(prediction_data)
@@ -118,7 +124,8 @@ class DossierService:
                 "fused_probability": fused_probability,
                 "date": str(dossier.dateCreation.date()),
                 "dossier_id": dossier.idDossier,
-                "modifie_par_id": modifier,
+                "modifie_par_id": modifier_id,
+                "modifie_par_name": modifier_name,
                 "statut_rapport": statut_rapport,
                 "prediction_data": prediction_data,
                 "imageUrl": image_url,

@@ -36,20 +36,20 @@ def seed_db():
             for ad in agents_data:
                 agent = AgentAccueil.query.filter_by(email=ad['email']).first()
                 if not agent:
-                    agent = AgentAccueil(id=ad['id'], nom=ad['nom'], email=ad['email'], motDePasse=ad['password']) # Ensure hashing logic if your auth requires it
+                    agent = AgentAccueil(id=ad['id'], nom=ad['nom'], email=ad['email'], motDePasse=ad['password'], etat='actif')
                     db.session.add(agent)
                 agents.append(agent)
             db.session.commit()
 
             medecins_data = [
-                {'id': '33333333-3333-3333-3333-333333333333', 'nom': 'Dr. Khemiri, Youssef', 'email': 'dr.khemiri@hopital.tn', 'password': 'password123', 'specialite': True},
-                {'id': '44444444-4444-4444-4444-444444444444', 'nom': 'Dr. Mansour, Leila', 'email': 'dr.mansour@hopital.tn', 'password': 'password123', 'specialite': False}
+                {'id': '33333333-3333-3333-3333-333333333333', 'nom': 'Dr. Khemiri, Youssef', 'email': 'dr.khemiri@hopital.tn', 'password': 'password123', 'specialiste': True},
+                {'id': '44444444-4444-4444-4444-444444444444', 'nom': 'Dr. Mansour, Leila', 'email': 'dr.mansour@hopital.tn', 'password': 'password123', 'specialiste': False}
             ]
             medecins = []
             for md in medecins_data:
                 med = Medecin.query.filter_by(email=md['email']).first()
                 if not med:
-                    med = Medecin(id=md['id'], nom=md['nom'], email=md['email'], motDePasse=md['password'], specialite=md['specialite'])
+                    med = Medecin(id=md['id'], nom=md['nom'], email=md['email'], motDePasse=md['password'], specialiste=md['specialiste'], etat='actif')
                     db.session.add(med)
                 medecins.append(med)
             db.session.commit()
