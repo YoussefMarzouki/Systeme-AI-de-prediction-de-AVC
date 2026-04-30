@@ -41,6 +41,7 @@ export const routes: Routes = [
       { path: 'mri-upload', component: MriUploadComponent },
       { path: 'rapport', component: RapportComponent },
       { path: 'validation-queue', component: ValidationQueueComponent },
+      { path: 'case-evaluation', component: CaseEvaluationComponent },
       { path: 'case-evaluation/:id', component: CaseEvaluationComponent }
     ]
   },

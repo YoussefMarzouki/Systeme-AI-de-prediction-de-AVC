@@ -10,6 +10,7 @@ import { Router, RouterLink } from '@angular/router';
   styleUrl: './rapport.component.css'
 })
 export class RapportComponent implements OnInit {
+  private readonly storageKey = 'strokeai:lastRapport';
   predictionData: any;
   patientDetails: any;
   imageUrl: string | null = null;
@@ -21,16 +22,56 @@ export class RapportComponent implements OnInit {
       this.predictionData = navigation.extras.state['prediction'];
       this.patientDetails = navigation.extras.state['patientDetails'];
       this.imageUrl = navigation.extras.state['imageUrl'];
-
-      if (this.predictionData && !this.predictionData.symptom_response) {
-        this.predictionData.symptom_response = "N/A: Symptom analysis incomplete.";
-      }
+      this.normalizePredictionData();
+      this.saveReportState();
+    } else {
+      this.restoreReportState();
     }
   }
 
   ngOnInit(): void {
     if (!this.predictionData) {
       console.warn("No prediction data provided.");
+    }
+  }
+
+  private normalizePredictionData(): void {
+    if (!this.predictionData) return;
+
+    this.predictionData.symptom_probability =
+      this.predictionData.symptom_probability ?? this.predictionData.probability ?? null;
+    this.predictionData.symptom_urgency =
+      this.predictionData.symptom_urgency ?? this.predictionData.urgency ?? null;
+    this.predictionData.symptom_response =
+      this.predictionData.symptom_response ??
+      this.predictionData.response ??
+      this.predictionData.ai_assessment ??
+      "N/A: Symptom analysis incomplete.";
+  }
+
+  private saveReportState(): void {
+    try {
+      sessionStorage.setItem(this.storageKey, JSON.stringify({
+        predictionData: this.predictionData,
+        patientDetails: this.patientDetails,
+        imageUrl: this.imageUrl
+      }));
+    } catch (err) {
+      console.warn('Unable to save report state.', err);
+    }
+  }
+
+  private restoreReportState(): void {
+    try {
+      const raw = sessionStorage.getItem(this.storageKey);
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      this.predictionData = saved.predictionData;
+      this.patientDetails = saved.patientDetails;
+      this.imageUrl = saved.imageUrl;
+      this.normalizePredictionData();
+    } catch (err) {
+      console.warn('Unable to restore report state.', err);
     }
   }
 

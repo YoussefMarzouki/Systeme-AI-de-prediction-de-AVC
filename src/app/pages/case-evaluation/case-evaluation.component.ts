@@ -40,7 +40,26 @@ export class CaseEvaluationComponent implements OnInit {
       if (this.dossierId) {
         this.loadCaseDetail();
       } else {
-        this.error = "Aucun ID de dossier fourni.";
+        this.loadFirstPendingCase();
+      }
+    });
+  }
+
+  loadFirstPendingCase() {
+    this.loading = true;
+    this.rapportService.getValidationQueue().subscribe({
+      next: (res) => {
+        const firstCase = res.queue?.[0];
+        if (firstCase?.dossier_id) {
+          this.router.navigate(['/ms/case-evaluation', firstCase.dossier_id], { replaceUrl: true });
+        } else {
+          this.error = "Aucun dossier en attente de validation.";
+          this.loading = false;
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        this.error = "Erreur lors du chargement de la file de validation.";
         this.loading = false;
       }
     });
