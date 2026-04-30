@@ -184,12 +184,16 @@
               </div>
             </td>
             <td>
-              <span class="status-badge" [ngClass]="{'open': rec.dossier_status === 'OUVERT', 'closed': rec.dossier_status === 'CLOSED', 'pending': rec.dossier_status === 'PENDING_MRI'}">
-                <span *ngIf="rec.dossier_status === 'OUVERT'">Active</span>
-                <span *ngIf="rec.dossier_status === 'CLOSED'">Closed</span>
-                <span *ngIf="rec.dossier_status === 'PENDING_MRI'">Pending MRI</span>
-                <span *ngIf="rec.dossier_status === 'NO_DOSSIER'">New Patient</span>
-              </span>
+              <div class="flex flex-col gap-1">
+                <span class="status-badge" [ngClass]="{'open': rec.dossier_status === 'OUVERT', 'closed': rec.dossier_status === 'CLOSED', 'pending': rec.dossier_status === 'PENDING_MRI'}">
+                  <span *ngIf="rec.dossier_status === 'OUVERT'">Active</span>
+                  <span *ngIf="rec.dossier_status === 'CLOSED'">Closed</span>
+                  <span *ngIf="rec.dossier_status === 'PENDING_MRI'">Pending MRI</span>
+                  <span *ngIf="rec.dossier_status === 'NO_DOSSIER'">New Patient</span>
+                </span>
+                <span *ngIf="rec.statut_rapport === 'VALIDATED'" class="text-[10px] font-bold text-green-600 uppercase">✓ Validated <span *ngIf="rec.modifie_par_name" class="text-gray-400 font-normal">by {{ rec.modifie_par_name }}</span></span>
+                <span *ngIf="rec.statut_rapport === 'REJECTED'" class="text-[10px] font-bold text-red-600 uppercase">✗ Rejected <span *ngIf="rec.modifie_par_name" class="text-gray-400 font-normal">by {{ rec.modifie_par_name }}</span></span>
+              </div>
             </td>
             <td class="text-right">
               <div class="action-group">

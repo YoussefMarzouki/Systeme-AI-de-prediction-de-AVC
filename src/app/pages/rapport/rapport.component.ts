@@ -38,14 +38,24 @@ export class RapportComponent implements OnInit {
   private normalizePredictionData(): void {
     if (!this.predictionData) return;
 
+    // Detect modifications by specialist
+    this.predictionData.is_modified = !!(this.predictionData.validation_status && this.predictionData.validation_status !== 'GENERATED');
+
+    // Unify notes field
+    this.predictionData.display_notes = this.predictionData.specialist_notes || this.predictionData.rejection_notes;
+
     this.predictionData.symptom_probability =
       this.predictionData.symptom_probability ?? this.predictionData.probability ?? null;
+    
     this.predictionData.symptom_urgency =
       this.predictionData.symptom_urgency ?? this.predictionData.urgency ?? null;
-    this.predictionData.symptom_response =
-      this.predictionData.symptom_response ??
-      this.predictionData.response ??
-      this.predictionData.ai_assessment ??
+    
+    // Prioritize Specialist Assessment if validated or rejected (expert feedback), otherwise use AI response
+    this.predictionData.final_assessment = 
+      ((this.predictionData.validation_status === 'VALIDATED' || this.predictionData.validation_status === 'REJECTED') ? this.predictionData.ai_assessment : null) || 
+      this.predictionData.symptom_response ||
+      this.predictionData.response ||
+      this.predictionData.ai_assessment ||
       "N/A: Symptom analysis incomplete.";
   }
 
