@@ -14,7 +14,10 @@ class PatientService:
             "prenom": patient.prenom,
             "dateNaissance": str(patient.dateNaissance),
             "age": patient.age,
-            "sexe": patient.sexe
+            "sexe": patient.sexe,
+            "email": patient.email,
+            "telephone": patient.telephone,
+            "adresse": patient.adresse,
         }
 
     def list_patients(self) -> list[dict]:
@@ -35,7 +38,10 @@ class PatientService:
             prenom=data['prenom'],
             dateNaissance=dob,
             age=age,
-            sexe=data['sexe']
+            sexe=data['sexe'],
+            email=self._clean_optional(data.get('email')),
+            telephone=self._clean_optional(data.get('telephone')),
+            adresse=self._clean_optional(data.get('adresse')),
         )
         patient = self.patient_repo.create(new_patient)
         return str(patient.id)
@@ -65,15 +71,58 @@ class PatientService:
             patient.prenom = data['prenom']
         if 'sexe' in data:
             patient.sexe = data['sexe']
+        if 'email' in data:
+            patient.email = self._clean_optional(data.get('email'))
+        if 'telephone' in data:
+            patient.telephone = self._clean_optional(data.get('telephone'))
+        if 'adresse' in data:
+            patient.adresse = self._clean_optional(data.get('adresse'))
 
         self.patient_repo.update()
         return self._serialize_patient(patient)
+
+    def _clean_optional(self, value):
+        if value is None:
+            return None
+        cleaned = str(value).strip()
+        return cleaned if cleaned else None
 
     def delete_patient(self, patient_id: str) -> None:
         patient = self.patient_repo.get_by_id(patient_id)
         if not patient:
             raise Exception("Patient introuvable")
+        self._delete_patient_dependencies(patient_id)
         self.patient_repo.delete(patient)
+
+    def _delete_patient_dependencies(self, patient_id: str) -> None:
+        from app.core.db import db
+        from app.models.analyses import AnalyseIA, AnalyseSymptomes, EvaluationRisque
+        from app.models.commentaire_medical import CommentaireMedical
+        from app.models.donnees_cliniques import DonneesCliniques
+        from app.models.dossier_patient import DossierPatient
+        from app.models.image_irm import ImageIRM
+        from app.models.rapport import Rapport
+
+        dossiers = DossierPatient.query.filter_by(patient_id=patient_id).all()
+        for dossier in dossiers:
+            dossier_id = dossier.idDossier
+
+            EvaluationRisque.query.filter_by(dossier_id=dossier_id).delete(synchronize_session=False)
+            Rapport.query.filter_by(dossier_id=dossier_id).delete(synchronize_session=False)
+            CommentaireMedical.query.filter_by(dossier_id=dossier_id).delete(synchronize_session=False)
+
+            images = ImageIRM.query.filter_by(dossier_id=dossier_id).all()
+            for image in images:
+                AnalyseIA.query.filter_by(image_id=image.idImage).delete(synchronize_session=False)
+                db.session.delete(image)
+
+            clinical_entries = DonneesCliniques.query.filter_by(dossier_id=dossier_id).all()
+            for entry in clinical_entries:
+                AnalyseSymptomes.query.filter_by(donnees_cliniques_id=entry.id).delete(synchronize_session=False)
+                db.session.delete(entry)
+
+            db.session.delete(dossier)
+        db.session.flush()
 
     def check_cin(self, cin: str) -> bool:
         if not cin:

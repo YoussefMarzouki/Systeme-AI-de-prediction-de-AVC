@@ -15,7 +15,17 @@ class RapportRepository:
         return Rapport.query.get(rapport_id)
 
     def get_by_dossier(self, dossier_id: str) -> Rapport:
-        return Rapport.query.filter_by(dossier_id=dossier_id).first()
+        return Rapport.query.filter_by(dossier_id=dossier_id).order_by(Rapport.dateGeneration.desc()).first()
+
+    def get_pending_by_dossier(self, dossier_id: str, statuses: list[str]) -> Rapport:
+        return (
+            Rapport.query.filter(
+                Rapport.dossier_id == dossier_id,
+                Rapport.statut.in_(statuses),
+            )
+            .order_by(Rapport.dateGeneration.desc())
+            .first()
+        )
 
     def list_by_dossier_ids(self, dossier_ids: list[str]) -> list[Rapport]:
         if not dossier_ids:

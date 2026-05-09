@@ -23,7 +23,7 @@ class AnalyseSymptomes(db.Model):
     methode = db.Column(db.String(100), nullable=False)
     
     # 1 to 1 association with DonneesCliniques ("produit")
-    donnees_cliniques_id = db.Column(db.String(36), db.ForeignKey('donnees_cliniques.id'), nullable=False, unique=True)
+    donnees_cliniques_id = db.Column(db.String(36), db.ForeignKey('symptomes.id'), nullable=False, unique=True)
     
     # Evaluated by (1 -> 1)
     evaluation_risque = db.relationship('EvaluationRisque', backref='analyse_symptomes', uselist=False, lazy=True)

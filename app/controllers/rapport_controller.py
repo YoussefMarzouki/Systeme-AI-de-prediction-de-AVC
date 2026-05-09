@@ -102,6 +102,8 @@ def validate_rapport(rapport_id):
         result = rapport_service.validate_rapport(rapport_id, specialist_id, payload)
         return jsonify({"status": "success", "rapport": result}), 200
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         db.session.rollback()
         return jsonify({"error": str(e)}), 400
 
@@ -118,5 +120,7 @@ def reject_rapport(rapport_id):
         result = rapport_service.reject_rapport(rapport_id, specialist_id, payload)
         return jsonify({"status": "success", "rapport": result}), 200
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         db.session.rollback()
         return jsonify({"error": str(e)}), 400

@@ -80,7 +80,7 @@ class DossierService:
         
         # Add patients that have dossiers
         for dossier, patient in results:
-            rapport = Rapport.query.filter_by(dossier_id=dossier.idDossier).order_by(Rapport.dateModification.desc()).first()
+            rapport = self._latest_visible_rapport(dossier.idDossier)
             modifier_id = rapport.modifie_par_id if rapport else None
             modifier_name = None
             if modifier_id:
@@ -170,7 +170,12 @@ class DossierService:
 
         history = []
         for dossier in dossiers:
-            rapport = Rapport.query.filter_by(dossier_id=dossier.idDossier).order_by(Rapport.dateModification.desc()).first()
+            rapport = self._latest_visible_rapport(dossier.idDossier)
+            rapport_versions = (
+                Rapport.query.filter_by(dossier_id=dossier.idDossier)
+                .order_by(Rapport.dateGeneration.asc(), Rapport.dateModification.asc())
+                .all()
+            )
             rapport_content = self._content_dict(rapport.contenu if rapport else None)
             eval_risque = self._latest_evaluation_for_dossier(dossier.idDossier)
             risk_level = rapport_content.get('risk_level') or (eval_risque.niveau if eval_risque else None)
@@ -193,6 +198,27 @@ class DossierService:
                     "modifie_par": modifier_name,
                     "contenu": rapport.contenu
                 }
+
+            version_items = []
+            for index, version in enumerate(rapport_versions, start=1):
+                version_content = self._content_dict(version.contenu)
+                modifier_name = None
+                if version.modifie_par_id:
+                    modifier = Utilisateur.query.get(version.modifie_par_id)
+                    modifier_name = modifier.nom if modifier else version.modifie_par_id
+
+                version_items.append({
+                    "id": version.idRapport,
+                    "statut": version.statut,
+                    "version_number": version_content.get("version_number") or index,
+                    "version_type": version_content.get("version_type") or ("SPECIALIST_REVIEW" if version.modifie_par_id else "ORIGINAL_AI"),
+                    "previous_rapport_id": version_content.get("previous_rapport_id"),
+                    "dateGeneration": str(version.dateGeneration) if version.dateGeneration else None,
+                    "dateModification": str(version.dateModification) if version.dateModification else None,
+                    "modifie_par": modifier_name,
+                    "contenu": version.contenu,
+                    "is_current": rapport.idRapport == version.idRapport if rapport else False,
+                })
 
             donnees_list = DonneesCliniques.query.filter_by(dossier_id=dossier.idDossier)\
                 .order_by(DonneesCliniques.dateSaisie.desc()).all()
@@ -223,6 +249,7 @@ class DossierService:
                 "risk_level": risk_level,
                 "fused_probability": fused_probability,
                 "rapport": rapport_info,
+                "rapport_versions": version_items,
                 "clinical_data": clinical_entries,
                 "image_urls": image_urls,
             })
@@ -245,6 +272,26 @@ class DossierService:
         ).order_by(
             AnalyseIA.dateAnalyse.desc().nullslast()
         ).first()
+
+    def _latest_visible_rapport(self, dossier_id: str):
+        from app.models.rapport import Rapport
+
+        reviewed = (
+            Rapport.query.filter(
+                Rapport.dossier_id == dossier_id,
+                Rapport.statut != "UNVALIDATED",
+            )
+            .order_by(Rapport.dateGeneration.desc(), Rapport.dateModification.desc())
+            .first()
+        )
+        if reviewed:
+            return reviewed
+
+        return (
+            Rapport.query.filter_by(dossier_id=dossier_id)
+            .order_by(Rapport.dateGeneration.desc(), Rapport.dateModification.desc())
+            .first()
+        )
 
     def _content_dict(self, content):
         if isinstance(content, dict):

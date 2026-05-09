@@ -28,6 +28,7 @@ class RapportService:
         self.rapport_repo = rapport_repo
 
     def _serialize_rapport(self, rapport: Rapport) -> dict[str, Any]:
+        content = self._content_dict(rapport)
         return {
             "idRapport": rapport.idRapport,
             "dateGeneration": str(rapport.dateGeneration) if rapport.dateGeneration else None,
@@ -38,16 +39,28 @@ class RapportService:
             "medecin_id": rapport.medecin_id,
             "modifie_par_id": rapport.modifie_par_id,
             "dossier_id": rapport.dossier_id,
+            "version_type": content.get("version_type"),
+            "version_number": content.get("version_number"),
+            "previous_rapport_id": content.get("previous_rapport_id"),
         }
 
     def list_rapports(self) -> list[dict[str, Any]]:
         return [self._serialize_rapport(rapport) for rapport in self.rapport_repo.list_all()]
 
     def create_rapport(self, data: dict[str, Any]) -> str:
+        content = data.get("contenu")
+        if isinstance(content, dict):
+            content = dict(content)
+        else:
+            content = {}
+        content.setdefault("version_type", "ORIGINAL_AI")
+        content.setdefault("version_number", 1)
+        content.setdefault("validation_status", "UNVALIDATED")
+
         rapport = Rapport(
             statut=data.get("statut", "GENERATED"),
             cheminFichier=data.get("cheminFichier"),
-            contenu=data.get("contenu"),
+            contenu=content,
             medecin_id=data["medecin_id"],
             modifie_par_id=data.get("modifie_par_id"),
             dossier_id=data["dossier_id"],
@@ -104,7 +117,9 @@ class RapportService:
         return [self._build_queue_case(rapport) for rapport in rapports]
 
     def get_case_detail(self, dossier_id: str) -> dict[str, Any]:
-        rapport = self.rapport_repo.get_by_dossier(dossier_id)
+        rapport = self.rapport_repo.get_pending_by_dossier(dossier_id, self.PENDING_STATUSES)
+        if not rapport:
+            rapport = self.rapport_repo.get_by_dossier(dossier_id)
         if not rapport:
             raise Exception("Rapport introuvable pour ce dossier")
 
@@ -169,6 +184,9 @@ class RapportService:
             "date_generation": str(rapport.dateGeneration) if rapport.dateGeneration else None,
             "date_modification": str(rapport.dateModification) if rapport.dateModification else None,
             "modifie_par_id": rapport.modifie_par_id,
+            "version_type": content.get("version_type"),
+            "version_number": content.get("version_number"),
+            "previous_rapport_id": content.get("previous_rapport_id"),
         }
 
     def validate_rapport(self, rapport_id: str, specialist_id: str, payload: dict[str, Any]) -> dict[str, Any]:
@@ -177,6 +195,11 @@ class RapportService:
             raise Exception("Rapport introuvable")
 
         content = self._content_dict(rapport)
+        original_content = dict(content)
+        original_content.setdefault("version_type", "ORIGINAL_AI")
+        original_content.setdefault("version_number", 1)
+        original_content.setdefault("validation_status", "UNVALIDATED")
+
         if payload.get("predicted_class"):
             content["predicted_class"] = payload.get("predicted_class")
         if payload.get("ai_assessment") is not None:
@@ -187,10 +210,22 @@ class RapportService:
         content["validation_status"] = "VALIDATED"
         content["validated_at"] = datetime.utcnow().isoformat()
         content["validated_by"] = specialist_id
+        content["version_type"] = "SPECIALIST_REVIEW"
+        content["version_number"] = 2
+        content["previous_rapport_id"] = rapport.idRapport
 
-        rapport.contenu = content
-        rapport.statut = "VALIDATED"
-        rapport.modifie_par_id = specialist_id
+        rapport.contenu = original_content
+        rapport.statut = "UNVALIDATED"
+
+        reviewed = Rapport(
+            statut="VALIDATED",
+            cheminFichier=rapport.cheminFichier,
+            contenu=content,
+            medecin_id=rapport.medecin_id,
+            modifie_par_id=specialist_id,
+            dossier_id=rapport.dossier_id,
+        )
+        db.session.add(reviewed)
 
         # Update dossier status as well
         dossier = DossierPatient.query.get(rapport.dossier_id)
@@ -199,7 +234,12 @@ class RapportService:
 
         self._add_comment_if_needed(rapport.dossier_id, specialist_id, payload.get("notes"))
         db.session.commit()
-        return {"rapport_id": rapport.idRapport, "statut": rapport.statut}
+        return {
+            "original_rapport_id": rapport.idRapport,
+            "rapport_id": reviewed.idRapport,
+            "statut": reviewed.statut,
+            "previous_statut": rapport.statut,
+        }
 
     def reject_rapport(self, rapport_id: str, specialist_id: str, payload: dict[str, Any]) -> dict[str, Any]:
         rapport = self.rapport_repo.get_by_id(rapport_id)
@@ -207,15 +247,32 @@ class RapportService:
             raise Exception("Rapport introuvable")
 
         content = self._content_dict(rapport)
+        original_content = dict(content)
+        original_content.setdefault("version_type", "ORIGINAL_AI")
+        original_content.setdefault("version_number", 1)
+        original_content.setdefault("validation_status", "UNVALIDATED")
+
         if payload.get("notes"):
             content["rejection_notes"] = payload.get("notes")
         content["validation_status"] = "REJECTED"
         content["rejected_at"] = datetime.utcnow().isoformat()
         content["rejected_by"] = specialist_id
+        content["version_type"] = "SPECIALIST_REVIEW"
+        content["version_number"] = 2
+        content["previous_rapport_id"] = rapport.idRapport
 
-        rapport.contenu = content
-        rapport.statut = "REJECTED"
-        rapport.modifie_par_id = specialist_id
+        rapport.contenu = original_content
+        rapport.statut = "UNVALIDATED"
+
+        reviewed = Rapport(
+            statut="REJECTED",
+            cheminFichier=rapport.cheminFichier,
+            contenu=content,
+            medecin_id=rapport.medecin_id,
+            modifie_par_id=specialist_id,
+            dossier_id=rapport.dossier_id,
+        )
+        db.session.add(reviewed)
 
         # Update dossier status as well
         dossier = DossierPatient.query.get(rapport.dossier_id)
@@ -224,7 +281,12 @@ class RapportService:
 
         self._add_comment_if_needed(rapport.dossier_id, specialist_id, payload.get("notes"))
         db.session.commit()
-        return {"rapport_id": rapport.idRapport, "statut": rapport.statut}
+        return {
+            "original_rapport_id": rapport.idRapport,
+            "rapport_id": reviewed.idRapport,
+            "statut": reviewed.statut,
+            "previous_statut": rapport.statut,
+        }
 
     def _build_queue_case(self, rapport: Rapport) -> dict[str, Any]:
         dossier = DossierPatient.query.get(rapport.dossier_id)

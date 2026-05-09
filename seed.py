@@ -1,6 +1,7 @@
 import sys
 import os
 from datetime import datetime
+import bcrypt
 
 # Adjust Python path if run from root
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
@@ -12,11 +13,14 @@ from app.models.dossier_patient import DossierPatient
 from app.models.donnees_cliniques import DonneesCliniques
 from app.models.image_irm import ImageIRM
 from app.models.analyses import AnalyseIA, AnalyseSymptomes, EvaluationRisque
-from app.models.user import Utilisateur, Medecin, AgentAccueil
+from app.models.user import Utilisateur, Medecin, AgentAccueil, Admin
 from app.models.commentaire_medical import CommentaireMedical
 from app.models.rapport import Rapport
 
 app = create_app()
+
+def hash_password(password):
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 def seed_db():
     with app.app_context():
@@ -26,6 +30,24 @@ def seed_db():
             db.drop_all()
             db.create_all()
             print("Database tables recreated fresh.")
+
+            admin_data = {
+                'id': '55555555-5555-5555-5555-555555555555',
+                'nom': 'Administrateur Systeme',
+                'email': 'admin@hopital.tn',
+                'password': 'password123'
+            }
+            admin = Admin.query.filter_by(email=admin_data['email']).first()
+            if not admin:
+                admin = Admin(
+                    id=admin_data['id'],
+                    nom=admin_data['nom'],
+                    email=admin_data['email'],
+                    motDePasse=hash_password(admin_data['password']),
+                    etat='actif'
+                )
+                db.session.add(admin)
+                db.session.commit()
             
             # --- 1. USER CREATION (Médecins & Agents d'accueil) ---
             agents_data = [
@@ -36,7 +58,7 @@ def seed_db():
             for ad in agents_data:
                 agent = AgentAccueil.query.filter_by(email=ad['email']).first()
                 if not agent:
-                    agent = AgentAccueil(id=ad['id'], nom=ad['nom'], email=ad['email'], motDePasse=ad['password'], etat='actif')
+                    agent = AgentAccueil(id=ad['id'], nom=ad['nom'], email=ad['email'], motDePasse=hash_password(ad['password']), etat='actif')
                     db.session.add(agent)
                 agents.append(agent)
             db.session.commit()
@@ -49,7 +71,7 @@ def seed_db():
             for md in medecins_data:
                 med = Medecin.query.filter_by(email=md['email']).first()
                 if not med:
-                    med = Medecin(id=md['id'], nom=md['nom'], email=md['email'], motDePasse=md['password'], specialiste=md['specialiste'], etat='actif')
+                    med = Medecin(id=md['id'], nom=md['nom'], email=md['email'], motDePasse=hash_password(md['password']), specialiste=md['specialiste'], etat='actif')
                     db.session.add(med)
                 medecins.append(med)
             db.session.commit()

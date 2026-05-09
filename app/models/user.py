@@ -17,7 +17,7 @@ class Utilisateur(db.Model):
     }
 
 class Medecin(Utilisateur):
-    specialiste  = db.Column(db.Boolean, nullable=True) # Assuming True=Specialist, False=Generalist as per diagram
+    specialiste = db.Column('specialite', db.Boolean, nullable=True) # True=Specialist, False=Generalist
     
     __mapper_args__ = {
         'polymorphic_identity': 'medecin',
