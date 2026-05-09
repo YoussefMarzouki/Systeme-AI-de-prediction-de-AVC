@@ -7,11 +7,20 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { MriUploadComponent } from './pages/mri-upload/mri-upload.component';
 import { ValidationQueueComponent } from './pages/validation-queue/validation-queue.component';
 import { CaseEvaluationComponent } from './pages/case-evaluation/case-evaluation.component';
+import { LoginComponent } from './pages/login/login.component';
+import { AdminComponent } from './pages/admin/admin.component';
+import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
+import { authChildGuard, authGuard } from './guards/auth.guard';
+import { roleChildGuard, roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
+  { path: 'login', component: LoginComponent },
   {
     path: 'agent',
     component: MainLayoutComponent,
+    canActivate: [authGuard, roleGuard],
+    canActivateChild: [authChildGuard, roleChildGuard],
+    data: { roles: ['agent'] },
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
@@ -21,6 +30,9 @@ export const routes: Routes = [
   {
     path: 'mg',
     component: MainLayoutComponent,
+    canActivate: [authGuard, roleGuard],
+    canActivateChild: [authChildGuard, roleChildGuard],
+    data: { roles: ['mg'] },
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
@@ -33,6 +45,9 @@ export const routes: Routes = [
   {
     path: 'ms',
     component: MainLayoutComponent,
+    canActivate: [authGuard, roleGuard],
+    canActivateChild: [authChildGuard, roleChildGuard],
+    data: { roles: ['ms'] },
     children: [
       { path: '', redirectTo: 'validation-queue', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
@@ -45,6 +60,19 @@ export const routes: Routes = [
       { path: 'case-evaluation/:id', component: CaseEvaluationComponent }
     ]
   },
-  { path: '', redirectTo: '/agent/dashboard', pathMatch: 'full' },
-  { path: '**', redirectTo: '/agent/dashboard' }
+  {
+    path: 'admin',
+    component: MainLayoutComponent,
+    canActivate: [authGuard, roleGuard],
+    canActivateChild: [authChildGuard, roleChildGuard],
+    data: { roles: ['admin'] },
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: AdminDashboardComponent },
+      { path: 'patients', component: DashboardComponent },
+      { path: 'users', component: AdminComponent }
+    ]
+  },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '**', redirectTo: '/login' }
 ];

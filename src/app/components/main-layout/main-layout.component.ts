@@ -33,6 +33,8 @@ export class MainLayoutComponent implements OnInit {
         this.state.setRole('ms');
       } else if (url.startsWith('/agent')) {
         this.state.setRole('agent');
+      } else if (url.startsWith('/admin')) {
+        this.state.setRole('admin');
       }
     });
   }

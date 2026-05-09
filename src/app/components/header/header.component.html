@@ -4,11 +4,19 @@
     <div class="header-title">Clinical Information System</div>
     
     <div class="header-tabs">
-      <a *ngIf="!state.isCurrentUserSpecialiste" [routerLink]="prefix + '/dashboard'" routerLinkActive="active" class="header-tab">Dashboard</a>
-      <a *ngIf="!state.isCurrentUserSpecialiste" [routerLink]="prefix + '/registration'" routerLinkActive="active" class="header-tab">Patient Records</a>
-      <a *ngIf="state.isCurrentUserMedecin" [routerLink]="prefix + '/intake'" routerLinkActive="active" class="header-tab">CDS Analysis</a>
-      <a *ngIf="state.isCurrentUserMedecin" [routerLink]="prefix + '/rapport'" routerLinkActive="active" class="header-tab">Reports</a>
-      <a *ngIf="state.isCurrentUserSpecialiste" [routerLink]="prefix + '/validation-queue'" routerLinkActive="active" class="header-tab">Validation Queue</a>
+      <ng-container *ngIf="state.isCurrentUserAdmin; else clinicalTabs">
+        <a [routerLink]="prefix + '/dashboard'" routerLinkActive="active" class="header-tab">Dashboard</a>
+        <a [routerLink]="prefix + '/patients'" routerLinkActive="active" class="header-tab">Patient Management</a>
+        <a [routerLink]="prefix + '/users'" routerLinkActive="active" class="header-tab">User Management</a>
+      </ng-container>
+
+      <ng-template #clinicalTabs>
+        <a *ngIf="!state.isCurrentUserSpecialiste" [routerLink]="prefix + '/dashboard'" routerLinkActive="active" class="header-tab">Dashboard</a>
+        <a *ngIf="!state.isCurrentUserSpecialiste" [routerLink]="prefix + '/registration'" routerLinkActive="active" class="header-tab">Patient Records</a>
+        <a *ngIf="state.isCurrentUserDoctor" [routerLink]="prefix + '/intake'" routerLinkActive="active" class="header-tab">CDS Analysis</a>
+        <a *ngIf="state.isCurrentUserDoctor" [routerLink]="prefix + '/rapport'" routerLinkActive="active" class="header-tab">Reports</a>
+        <a *ngIf="state.isCurrentUserSpecialiste" [routerLink]="prefix + '/validation-queue'" routerLinkActive="active" class="header-tab">Validation Queue</a>
+      </ng-template>
     </div>
   </div>
 
@@ -49,7 +57,7 @@
     </button>
 
     <!-- User profile -->
-    <div class="user-profile" id="userProfile" (click)="toggleRole()" style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+    <div class="user-profile" id="userProfile" style="display: flex; align-items: center; gap: 8px;">
       <div style="display: flex; flex-direction: column; text-align: right;">
         <span style="font-size: 0.85rem; font-weight: 600; color: #1e293b;">{{ userName }}</span>
         <span style="font-size: 0.75rem; color: #64748b;">{{ userRole }}</span>

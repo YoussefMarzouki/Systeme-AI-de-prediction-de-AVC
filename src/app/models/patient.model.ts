@@ -6,4 +6,7 @@ export interface Patient {
   dateNaissance: Date | string;
   age?: number;
   sexe: string;
+  email?: string;
+  telephone?: string;
+  adresse?: string;
 }

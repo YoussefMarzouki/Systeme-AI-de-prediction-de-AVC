@@ -19,6 +19,18 @@ export class PatientService {
     return this.http.post(this.apiUrl, patient, { headers: this.state.getAuthHeaders() });
   }
 
+  getPatient(patientId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${patientId}`, { headers: this.state.getAuthHeaders() });
+  }
+
+  updatePatient(patientId: string, patient: Partial<Patient>): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${patientId}`, patient, { headers: this.state.getAuthHeaders() });
+  }
+
+  deletePatient(patientId: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${patientId}`, { headers: this.state.getAuthHeaders() });
+  }
+
   /**
    * Search for patients by name or CIN
    */

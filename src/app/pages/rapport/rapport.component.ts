@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 
@@ -9,12 +9,14 @@ import { Router, RouterLink } from '@angular/router';
   templateUrl: './rapport.component.html',
   styleUrl: './rapport.component.css'
 })
-export class RapportComponent implements OnInit {
+export class RapportComponent implements OnInit, OnDestroy {
   private readonly storageKey = 'strokeai:lastRapport';
   predictionData: any;
   patientDetails: any;
   imageUrl: string | null = null;
   currentDate = new Date();
+  exportError = '';
+  exportLoading = false;
 
   constructor(private router: Router) {
     const navigation = this.router.getCurrentNavigation();
@@ -35,11 +37,21 @@ export class RapportComponent implements OnInit {
     }
   }
 
+  ngOnDestroy(): void {
+    document.body.classList.remove('printing-rapport');
+  }
+
   private normalizePredictionData(): void {
     if (!this.predictionData) return;
 
     // Detect modifications by specialist
-    this.predictionData.is_modified = !!(this.predictionData.validation_status && this.predictionData.validation_status !== 'GENERATED');
+    this.predictionData.is_modified =
+      this.predictionData.validation_status === 'VALIDATED' ||
+      this.predictionData.validation_status === 'REJECTED';
+    this.predictionData.version_label =
+      this.predictionData.version_label ||
+      (this.predictionData.version_type === 'ORIGINAL_AI' ? 'Original AI report' : null) ||
+      (this.predictionData.version_type === 'SPECIALIST_REVIEW' ? 'Specialist-reviewed report' : null);
 
     // Unify notes field
     this.predictionData.display_notes = this.predictionData.specialist_notes || this.predictionData.rejection_notes;
@@ -100,7 +112,14 @@ export class RapportComponent implements OnInit {
     }
   }
 
-  printRapport() {
-    window.print();
+  exportPdf() {
+    this.exportError = '';
+    document.body.classList.add('printing-rapport');
+    setTimeout(() => window.print(), 50);
+    window.addEventListener(
+      'afterprint',
+      () => document.body.classList.remove('printing-rapport'),
+      { once: true }
+    );
   }
 }

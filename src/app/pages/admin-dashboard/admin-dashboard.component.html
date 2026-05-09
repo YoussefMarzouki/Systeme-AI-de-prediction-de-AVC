@@ -1,0 +1,94 @@
+<section class="admin-dashboard">
+  <div class="admin-hero">
+    <div>
+      <span class="eyebrow">Administration</span>
+      <h1>System Management Dashboard</h1>
+      <p>Choose the workspace you want to manage.</p>
+    </div>
+  </div>
+
+  <div class="management-grid">
+    <a
+      *ngFor="let card of managementCards"
+      class="management-card"
+      [routerLink]="card.route"
+      [attr.aria-label]="'Open ' + card.title"
+    >
+      <div class="card-icon" [class.user-icon]="card.icon === 'users'">
+        <svg *ngIf="card.icon === 'patients'" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M18 8v6M15 11h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <svg *ngIf="card.icon === 'users'" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="card-body">
+        <span class="card-kicker">{{ card.metric }}</span>
+        <h2>{{ card.title }}</h2>
+        <p>{{ card.description }}</p>
+      </div>
+
+      <span class="card-action">
+        Open
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </a>
+  </div>
+
+  <section class="health-section" aria-labelledby="systemHealthTitle">
+    <div class="section-header">
+      <div>
+        <span class="eyebrow">System Health</span>
+        <h2 id="systemHealthTitle">Service Availability</h2>
+      </div>
+      <button type="button" class="refresh-health-btn" (click)="loadHealth()" [disabled]="healthLoading">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 12a8 8 0 0 1 13.66-5.66M20 12a8 8 0 0 1-13.66 5.66" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M18 3v5h-5M6 21v-5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        {{ healthLoading ? 'Checking' : 'Refresh' }}
+      </button>
+    </div>
+
+    <div class="health-grid">
+      <div class="health-card"
+           *ngFor="let card of healthCards"
+           [class.is-online]="systemHealth[card.key].state === 'online' || systemHealth[card.key].ok"
+           [class.is-unknown]="systemHealth[card.key].state === 'unknown'">
+        <div class="health-icon">
+          <svg *ngIf="card.icon === 'server'" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="4" y="4" width="16" height="6" rx="2" stroke="currentColor" stroke-width="1.8"/>
+            <rect x="4" y="14" width="16" height="6" rx="2" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M8 7h.01M8 17h.01" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          </svg>
+          <svg *ngIf="card.icon === 'activity'" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 13h4l2-6 4 12 2-6h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <svg *ngIf="card.icon === 'database'" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <ellipse cx="12" cy="5" rx="7" ry="3" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M5 5v7c0 1.66 3.13 3 7 3s7-1.34 7-3V5M5 12v7c0 1.66 3.13 3 7 3s7-1.34 7-3v-7" stroke="currentColor" stroke-width="1.8"/>
+          </svg>
+        </div>
+        <div class="health-copy">
+          <span class="health-status"
+                [class.offline]="systemHealth[card.key].state === 'offline' || (!systemHealth[card.key].ok && systemHealth[card.key].state !== 'unknown')"
+                [class.unknown]="systemHealth[card.key].state === 'unknown'">
+            <span class="status-dot"></span>
+            {{ systemHealth[card.key].label }}
+          </span>
+          <h3>{{ card.title }}</h3>
+          <p>{{ card.description }}</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="health-error" *ngIf="healthError">{{ healthError }}</p>
+  </section>
+</section>

@@ -15,6 +15,11 @@
             <div>
               <h1 class="report-title">StrokeAI Assessment Report</h1>
               <p class="report-subtitle">Comprehensive Neurological Diagnostic Analysis</p>
+              <div class="report-version-strip" *ngIf="predictionData.version_label || predictionData.version_number || predictionData.rapport_status">
+                <span *ngIf="predictionData.version_number">V{{ predictionData.version_number }}</span>
+                <span *ngIf="predictionData.version_label">{{ predictionData.version_label }}</span>
+                <span *ngIf="predictionData.rapport_status">{{ predictionData.rapport_status }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -23,13 +28,14 @@
             <span class="meta-label">Report Date</span>
             <span class="meta-value">{{ currentDate | date:'mediumDate' }}</span>
           </div>
-          <button (click)="printRapport()" class="print-btn print-hide" id="printBtn">
+          <button (click)="exportPdf()" class="print-btn print-hide" id="printBtn" [disabled]="exportLoading">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M4 6V2h8v4M4 12H2V7h12v5h-2" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
               <rect x="4" y="10" width="8" height="4" rx="1" stroke="currentColor" stroke-width="1.5"/>
             </svg>
-            Export PDF
+            {{ exportLoading ? 'Exporting...' : 'Export PDF' }}
           </button>
+          <span class="export-error print-hide" *ngIf="exportError">{{ exportError }}</span>
         </div>
       </div>
     </div>
@@ -164,7 +170,7 @@
       </div>
 
       <!-- Specialist Validation -->
-      <div class="specialist-validation-card" *ngIf="predictionData.validation_status || predictionData.specialist_notes">
+      <div class="specialist-validation-card" *ngIf="predictionData.validation_status === 'VALIDATED' || predictionData.validation_status === 'REJECTED' || predictionData.specialist_notes || predictionData.rejection_notes">
         <div class="validation-header">
           <div class="validation-icon" [ngClass]="predictionData.validation_status === 'VALIDATED' ? 'success' : 'danger'">
             <svg *ngIf="predictionData.validation_status === 'VALIDATED'" width="20" height="20" viewBox="0 0 20 20" fill="none">

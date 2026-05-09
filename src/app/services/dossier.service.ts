@@ -28,4 +28,12 @@ export class DossierService {
   getEvaluatedDossiers(): Observable<any> {
     return this.http.get(`${this.apiUrl}/evaluated`, { headers: this.state.getAuthHeaders() });
   }
+
+  getDossier(dossierId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${dossierId}`, { headers: this.state.getAuthHeaders() });
+  }
+
+  updateDossier(dossierId: string, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${dossierId}`, data, { headers: this.state.getAuthHeaders() });
+  }
 }

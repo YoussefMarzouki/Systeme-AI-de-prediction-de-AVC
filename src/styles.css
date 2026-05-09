@@ -94,3 +94,43 @@ button {
 .stagger-children > *:nth-child(2) { animation-delay: 80ms; }
 .stagger-children > *:nth-child(3) { animation-delay: 160ms; }
 .stagger-children > *:nth-child(4) { animation-delay: 240ms; }
+
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  body.printing-rapport {
+    background: #ffffff !important;
+  }
+
+  body.printing-rapport app-sidebar,
+  body.printing-rapport app-header,
+  body.printing-rapport .cims-footer {
+    display: none !important;
+  }
+
+  body.printing-rapport .layout,
+  body.printing-rapport .main-area,
+  body.printing-rapport .content {
+    display: block !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  body.printing-rapport .rapport-page {
+    min-height: 0 !important;
+  }
+
+  body.printing-rapport .rapport-container {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+}

@@ -124,7 +124,10 @@ export class RegistrationComponent {
       prenom: prenom,
       cin: val.cin || null,
       dateNaissance: val.dateOfBirth || '2000-01-01',
-      sexe: sexe
+      sexe: sexe,
+      telephone: val.phoneNumber,
+      email: val.emailAddress,
+      adresse: val.homeAddress
     };
 
     // 1. Create Patient
