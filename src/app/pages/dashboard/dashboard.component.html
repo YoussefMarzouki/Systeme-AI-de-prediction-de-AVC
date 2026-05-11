@@ -4,9 +4,9 @@
     <div class="header-left">
       <div class="header-breadcrumb">
         <span class="breadcrumb-dot"></span>
-        <span class="breadcrumb-text">MÉDECIN GÉNÉRALISTE</span>
+        <span class="breadcrumb-text">{{ roleLabel | translate }}</span>
       </div>
-      <h1 class="page-title">Patient Dashboard</h1>
+      <h1 class="page-title">{{ 'DASHBOARD.TITLE' | translate }}</h1>
     </div>
     <div class="header-actions">
       <button (click)="fetchDossiers()" class="btn-refresh" id="refreshBtn">
@@ -14,7 +14,7 @@
           <path d="M2 8a6 6 0 0110.89-3.48M14 8a6 6 0 01-10.89 3.48" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           <path d="M14 2v4h-4M2 14v-4h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        Refresh
+        {{ 'DASHBOARD.REFRESH' | translate }}
       </button>
     </div>
   </div>
@@ -30,7 +30,7 @@
         </svg>
       </div>
       <div class="stat-content">
-        <span class="stat-label">Total Patients</span>
+        <span class="stat-label">{{ 'DASHBOARD.TOTAL_PATIENTS' | translate }}</span>
         <span class="stat-value">{{ records.length }}</span>
       </div>
       <div class="stat-trend up">
@@ -49,10 +49,10 @@
         </svg>
       </div>
       <div class="stat-content">
-        <span class="stat-label">High Risk Alerts</span>
+        <span class="stat-label">{{ 'DASHBOARD.HIGH_RISK_ALERTS' | translate }}</span>
         <span class="stat-value danger">{{ highRiskCount }}</span>
       </div>
-      <div class="stat-badge danger" *ngIf="highRiskCount > 0">URGENT</div>
+      <div class="stat-badge danger" *ngIf="highRiskCount > 0">{{ 'DASHBOARD.URGENT' | translate }}</div>
     </div>
 
     <!-- Medium Risk -->
@@ -64,7 +64,7 @@
         </svg>
       </div>
       <div class="stat-content">
-        <span class="stat-label">Medium Risk</span>
+        <span class="stat-label">{{ 'DASHBOARD.MEDIUM_RISK' | translate }}</span>
         <span class="stat-value warning">{{ mediumRiskCount }}</span>
       </div>
     </div>
@@ -78,7 +78,7 @@
         </svg>
       </div>
       <div class="stat-content">
-        <span class="stat-label">Low Risk / Clear</span>
+        <span class="stat-label">{{ 'DASHBOARD.LOW_RISK' | translate }}</span>
         <span class="stat-value success">{{ lowRiskCount }}</span>
       </div>
     </div>
@@ -89,19 +89,19 @@
     <div class="table-header">
       <div class="table-title-row">
         <div class="table-title-group">
-          <h2 class="table-title">Patient Assessments</h2>
-          <span class="table-count">{{ records.length }} records</span>
+          <h2 class="table-title">{{ 'DASHBOARD.PATIENT_ASSESSMENTS' | translate }}</h2>
+          <span class="table-count">{{ records.length }} {{ 'DASHBOARD.RECORDS' | translate }}</span>
         </div>
         <div class="table-filter-group" *ngIf="!shouldHideClinicalRisk">
-          <button class="filter-chip" [class.active]="activeFilter === 'all'" (click)="setFilter('all')">All</button>
+          <button class="filter-chip" [class.active]="activeFilter === 'all'" (click)="setFilter('all')">{{ 'DASHBOARD.ALL' | translate }}</button>
           <button class="filter-chip" [class.active]="activeFilter === 'high'" (click)="setFilter('high')">
-            <span class="filter-dot red"></span>High Risk
+            <span class="filter-dot red"></span>{{ 'DASHBOARD.HIGH_RISK_ALERTS' | translate }}
           </button>
           <button class="filter-chip" [class.active]="activeFilter === 'medium'" (click)="setFilter('medium')">
-            <span class="filter-dot amber"></span>Medium
+            <span class="filter-dot amber"></span>{{ 'DASHBOARD.MEDIUM_RISK' | translate }}
           </button>
           <button class="filter-chip" [class.active]="activeFilter === 'low'" (click)="setFilter('low')">
-            <span class="filter-dot green"></span>Low
+            <span class="filter-dot green"></span>{{ 'DASHBOARD.LOW_RISK' | translate }}
           </button>
         </div>
       </div>
@@ -111,12 +111,12 @@
       <table class="data-table" id="patientTable">
         <thead>
           <tr>
-            <th>Patient</th>
-            <th>Dossier Date</th>
-            <th *ngIf="!shouldHideClinicalRisk">Risk Level</th>
-            <th *ngIf="!shouldHideClinicalRisk">Probability</th>
-            <th *ngIf="!shouldHideClinicalRisk">Status</th>
-            <th class="text-right">Actions</th>
+            <th>{{ 'DASHBOARD.PATIENT' | translate }}</th>
+            <th>{{ 'DASHBOARD.DOSSIER_DATE' | translate }}</th>
+            <th *ngIf="!shouldHideClinicalRisk">{{ 'DASHBOARD.RISK_LEVEL' | translate }}</th>
+            <th *ngIf="!shouldHideClinicalRisk">{{ 'DASHBOARD.PROBABILITY' | translate }}</th>
+            <th *ngIf="!shouldHideClinicalRisk">{{ 'DASHBOARD.STATUS' | translate }}</th>
+            <th class="text-right">{{ 'DASHBOARD.ACTIONS' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -125,7 +125,7 @@
             <td [attr.colspan]="shouldHideClinicalRisk ? 3 : 6">
               <div class="loading-state">
                 <div class="loading-spinner"></div>
-                <span>Loading patient assessments...</span>
+                <span>{{ 'DASHBOARD.LOADING' | translate }}</span>
               </div>
             </td>
           </tr>
@@ -140,13 +140,13 @@
                     <path d="M18 20h12M18 26h8" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round"/>
                   </svg>
                 </div>
-                <p class="empty-title">No assessments found</p>
-                <p class="empty-desc">Run a patient intake assessment to see results here.</p>
+                <p class="empty-title">{{ 'DASHBOARD.NO_ASSESSMENTS' | translate }}</p>
+                <p class="empty-desc">{{ 'DASHBOARD.NO_ASSESSMENTS_DESC' | translate }}</p>
                 <a routerLink="/intake" class="empty-action">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                   </svg>
-                  New Intake
+                  {{ 'DASHBOARD.NEW_INTAKE' | translate }}
                 </a>
               </div>
             </td>
@@ -175,7 +175,7 @@
             <td *ngIf="!shouldHideClinicalRisk">
               <span class="risk-badge" [ngClass]="getRiskClass(rec.risk_level)">
                 <span class="risk-dot"></span>
-                {{ getRiskLabel(rec.risk_level) }}
+                {{ getRiskLabel(rec.risk_level) | translate }}
               </span>
             </td>
             <td *ngIf="!shouldHideClinicalRisk">
@@ -186,10 +186,10 @@
             <td *ngIf="!shouldHideClinicalRisk">
               <div class="flex flex-col gap-1">
                 <span class="status-badge" [ngClass]="getStatusClass(rec.dossier_status)">
-                  {{ getStatusLabel(rec.dossier_status) }}
+                  {{ getStatusLabel(rec.dossier_status) | translate }}
                 </span>
-                <span *ngIf="rec.statut_rapport === 'VALIDATED'" class="text-[10px] font-bold text-green-600 uppercase">✓ Validated <span *ngIf="rec.modifie_par_name" class="text-gray-400 font-normal">by {{ rec.modifie_par_name }}</span></span>
-                <span *ngIf="rec.statut_rapport === 'REJECTED'" class="text-[10px] font-bold text-red-600 uppercase">✗ Rejected <span *ngIf="rec.modifie_par_name" class="text-gray-400 font-normal">by {{ rec.modifie_par_name }}</span></span>
+                <span *ngIf="rec.statut_rapport === 'VALIDATED'" class="text-[10px] font-bold text-green-600 uppercase">✓ {{ 'DASHBOARD.VALIDATED' | translate }} <span *ngIf="rec.modifie_par_name" class="text-gray-400 font-normal">{{ 'DASHBOARD.BY' | translate }} {{ rec.modifie_par_name }}</span></span>
+                <span *ngIf="rec.statut_rapport === 'REJECTED'" class="text-[10px] font-bold text-red-600 uppercase">✗ {{ 'DASHBOARD.REJECTED' | translate }} <span *ngIf="rec.modifie_par_name" class="text-gray-400 font-normal">{{ 'DASHBOARD.BY' | translate }} {{ rec.modifie_par_name }}</span></span>
               </div>
             </td>
             <td class="text-right">
@@ -198,39 +198,39 @@
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path d="M9.5 3.5 12.5 6.5M2.5 13.5l3.4-.7 7.2-7.2a2.1 2.1 0 0 0-3-3L2.9 9.8l-.4 3.7Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
-                  Edit
+                  {{ 'DASHBOARD.EDIT' | translate }}
                 </button>
                 <button *ngIf="stateService.isCurrentUserDoctor && rec.dossier_status !== 'NO_DOSSIER'" (click)="viewReport(rec); $event.stopPropagation()" class="action-btn" id="viewReport_{{i}}">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path d="M2 8s2.5-5 6-5 6 5 6 5-2.5 5-6 5-6-5-6-5z" stroke="currentColor" stroke-width="1.5"/>
                     <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/>
                   </svg>
-                  Review
+                  {{ 'DASHBOARD.REVIEW' | translate }}
                 </button>
                 <button *ngIf="stateService.isCurrentUserDoctor && rec.dossier_status !== 'NO_DOSSIER'" (click)="openHistory(rec); $event.stopPropagation()" class="action-btn action-btn-history" id="viewHistory_{{i}}">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/>
                     <path d="M8 4.5V8l2.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
-                  History
+                  {{ 'DASHBOARD.HISTORY' | translate }}
                 </button>
                 <button *ngIf="stateService.isCurrentUserDoctor && rec.dossier_status !== 'PENDING_MRI'" (click)="goToIntake(rec); $event.stopPropagation()" class="action-btn" id="goToIntake_{{i}}">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                   </svg>
-                  New Intake
+                  {{ 'DASHBOARD.NEW_INTAKE' | translate }}
                 </button>
                 <button *ngIf="stateService.isCurrentUserDoctor && rec.dossier_status === 'PENDING_MRI'" (click)="goToMriUpload(rec); $event.stopPropagation()" class="action-btn" id="goToUpload_{{i}}" style="color: #6366f1;">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
-                  Upload MRI
+                  {{ 'DASHBOARD.UPLOAD_MRI' | translate }}
                 </button>
                 <button *ngIf="stateService.isCurrentUserAdmin" (click)="openDelete(rec, $event)" class="action-btn action-btn-delete" id="deletePatient_{{i}}">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path d="M3 4h10M6 4V2.8h4V4M5 6v7M8 6v7M11 6v7M4 4l.6 10h6.8L12 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
-                  Delete
+                  {{ 'DASHBOARD.DELETE' | translate }}
                 </button>
               </div>
             </td>
@@ -253,15 +253,15 @@
         </svg>
       </div>
       <div>
-        <h3>Delete patient</h3>
-        <p *ngIf="deleteRecord">This will permanently delete {{ deleteRecord.patient_name }} and all linked dossier data.</p>
+        <h3>{{ 'DASHBOARD.DELETE_TITLE' | translate }}</h3>
+        <p *ngIf="deleteRecord">{{ 'DASHBOARD.DELETE_CONFIRM' | translate:{name: deleteRecord.patient_name} }}</p>
       </div>
     </div>
     <div class="edit-error" *ngIf="deleteError">{{ deleteError }}</div>
     <div class="delete-actions">
-      <button type="button" class="edit-secondary-btn" (click)="closeDelete()" [disabled]="deleteSaving">Cancel</button>
+      <button type="button" class="edit-secondary-btn" (click)="closeDelete()" [disabled]="deleteSaving">{{ 'DASHBOARD.CANCEL' | translate }}</button>
       <button type="button" class="delete-danger-btn" (click)="deletePatient()" [disabled]="deleteSaving">
-        {{ deleteSaving ? 'Deleting...' : 'Delete patient' }}
+        {{ (deleteSaving ? 'DASHBOARD.DELETING' : 'DASHBOARD.DELETE_TITLE') | translate }}
       </button>
     </div>
   </div>
@@ -274,8 +274,8 @@
   <div class="edit-card" (click)="$event.stopPropagation()">
     <div class="edit-header">
       <div>
-        <h3>Edit patient record</h3>
-        <p *ngIf="editRecord">{{ editRecord.patient_name }} - {{ editRecord.patient_cin || 'CIN not provided' }}</p>
+        <h3>{{ 'DASHBOARD.EDIT_RECORD' | translate }}</h3>
+        <p *ngIf="editRecord">{{ editRecord.patient_name }} - {{ editRecord.patient_cin || ('DASHBOARD.CIN_NOT_PROVIDED' | translate) }}</p>
       </div>
       <button type="button" class="edit-close-btn" (click)="closeEdit()" [disabled]="editSaving" aria-label="Close">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -294,65 +294,65 @@
 
       <div class="edit-grid">
         <label class="edit-field">
-          <span>Last name</span>
+          <span>{{ 'DASHBOARD.LAST_NAME' | translate }}</span>
           <input type="text" name="nom" [(ngModel)]="editForm.nom" required />
         </label>
 
         <label class="edit-field">
-          <span>First name</span>
+          <span>{{ 'DASHBOARD.FIRST_NAME' | translate }}</span>
           <input type="text" name="prenom" [(ngModel)]="editForm.prenom" required />
         </label>
 
         <label class="edit-field">
-          <span>CIN</span>
+          <span>{{ 'DASHBOARD.CIN' | translate }}</span>
           <input type="text" name="cin" [(ngModel)]="editForm.cin" />
         </label>
 
         <label class="edit-field">
-          <span>Date of birth</span>
+          <span>{{ 'DASHBOARD.DATE_OF_BIRTH' | translate }}</span>
           <input type="date" name="dateNaissance" [(ngModel)]="editForm.dateNaissance" required />
         </label>
 
         <label class="edit-field">
-          <span>Sex</span>
+          <span>{{ 'DASHBOARD.SEX' | translate }}</span>
           <select name="sexe" [(ngModel)]="editForm.sexe" required>
-            <option value="M">Male</option>
-            <option value="F">Female</option>
+            <option value="M">{{ 'REGISTRATION.MALE' | translate }}</option>
+            <option value="F">{{ 'REGISTRATION.FEMALE' | translate }}</option>
           </select>
         </label>
 
         <label class="edit-field">
-          <span>Email</span>
+          <span>{{ 'DASHBOARD.EMAIL' | translate }}</span>
           <input type="email" name="email" [(ngModel)]="editForm.email" placeholder="patient@example.tn" />
         </label>
 
         <label class="edit-field">
-          <span>Phone number</span>
+          <span>{{ 'DASHBOARD.PHONE' | translate }}</span>
           <input type="tel" name="telephone" [(ngModel)]="editForm.telephone" placeholder="+216 20 123 456" />
         </label>
 
         <label class="edit-field edit-field-wide">
-          <span>Address</span>
-          <input type="text" name="adresse" [(ngModel)]="editForm.adresse" placeholder="Home address" />
+          <span>{{ 'DASHBOARD.ADDRESS' | translate }}</span>
+          <input type="text" name="adresse" [(ngModel)]="editForm.adresse" [placeholder]="'DASHBOARD.ADDRESS' | translate" />
         </label>
 
         <label class="edit-field" *ngIf="editRecord?.dossier_id">
-          <span>Record status</span>
+          <span>{{ 'DASHBOARD.RECORD_STATUS' | translate }}</span>
           <select name="statut" [(ngModel)]="editForm.statut">
-            <option value="OUVERT">Open</option>
-            <option value="PENDING_MRI">Pending MRI</option>
-            <option value="FERME">Closed</option>
-            <option value="CLOSED">Closed</option>
-            <option value="VALIDATED">Validated</option>
-            <option value="REJECTED">Rejected</option>
+            <option value="OUVERT">{{ 'STATUS.OPEN' | translate }}</option>
+            <option value="PENDING_MRI">{{ 'STATUS.PENDING_MRI' | translate }}</option>
+            <option value="FERME">{{ 'STATUS.CLOSED' | translate }}</option>
+            <option value="CLOSED">{{ 'STATUS.CLOSED' | translate }}</option>
+            <option value="VALIDATED">{{ 'STATUS.VALIDATED' | translate }}</option>
+            <option value="REJECTED">{{ 'STATUS.REJECTED' | translate }}</option>
           </select>
         </label>
       </div>
 
       <div class="edit-actions">
-        <button type="button" class="edit-secondary-btn" (click)="closeEdit()" [disabled]="editSaving">Cancel</button>
+        <button type="button" class="edit-secondary-btn" (click)="closeEdit()" [disabled]="editSaving">{{ 'DASHBOARD.CANCEL' | translate }}</button>
         <button type="submit" class="edit-primary-btn" [disabled]="editSaving">
-          {{ editSaving ? 'Saving...' : 'Save changes' }}
+          {{ (editSaving ? 'DASHBOARD.SAVING' : 'DASHBOARD.SAVE_CHANGES') | translate }}
         </button>
       </div>
     </form>
@@ -371,7 +371,7 @@
         </svg>
       </div>
       <div>
-        <h3 class="history-title">Consultation History</h3>
+        <h3 class="history-title">{{ 'DASHBOARD.CONSULTATION_HISTORY' | translate }}</h3>
         <p class="history-subtitle" *ngIf="historyData">{{ historyData.patient_name }}</p>
       </div>
     </div>
@@ -390,21 +390,21 @@
     <div class="history-patient-details">
       <span class="history-patient-name">{{ historyData.patient_name }}</span>
       <div class="history-patient-meta">
-        <span *ngIf="historyData.patient_cin">CIN: {{ historyData.patient_cin }}</span>
-        <span *ngIf="historyData.patient_age">Age: {{ historyData.patient_age }}</span>
-        <span *ngIf="historyData.patient_sexe">Sex: {{ historyData.patient_sexe }}</span>
+        <span *ngIf="historyData.patient_cin">{{ 'DASHBOARD.CIN' | translate }}: {{ historyData.patient_cin }}</span>
+        <span *ngIf="historyData.patient_age">{{ 'REGISTRATION.AGE' | translate }}: {{ historyData.patient_age }}</span>
+        <span *ngIf="historyData.patient_sexe">{{ 'DASHBOARD.SEX' | translate }}: {{ (historyData.patient_sexe === 'M' ? 'REGISTRATION.MALE' : 'REGISTRATION.FEMALE') | translate }}</span>
       </div>
     </div>
     <div class="history-consultation-count">
       <span class="count-value">{{ historyData.total_consultations }}</span>
-      <span class="count-label">Consultations</span>
+      <span class="count-label">{{ 'DASHBOARD.CONSULTATIONS' | translate }}</span>
     </div>
   </div>
 
   <!-- Loading State -->
   <div class="history-loading" *ngIf="historyLoading">
     <div class="loading-spinner"></div>
-    <span>Loading history...</span>
+    <span>{{ 'DASHBOARD.LOADING_HISTORY' | translate }}</span>
   </div>
 
   <!-- Empty State -->
@@ -413,7 +413,7 @@
       <circle cx="20" cy="20" r="16" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4 4"/>
       <path d="M14 18h12M14 24h8" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
-    <p>No consultation history available</p>
+    <p>{{ 'DASHBOARD.NO_HISTORY' | translate }}</p>
   </div>
 
   <!-- Timeline -->
@@ -434,7 +434,7 @@
           </div>
           <span class="risk-badge" [ngClass]="getRiskClass(c.risk_level || 'UNKNOWN')">
             <span class="risk-dot"></span>
-            {{ c.risk_level || 'PENDING' }}
+            {{ (c.risk_level ? 'RISK.' + c.risk_level : 'RISK.UNKNOWN') | translate }}
           </span>
         </div>
 

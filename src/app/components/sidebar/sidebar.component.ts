@@ -4,10 +4,12 @@ import { CommonModule } from '@angular/common';
 import { StateService } from '../../services/state.service';
 import { AuthService } from '../../services/auth.service';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css'
 })
@@ -24,27 +26,27 @@ export class SidebarComponent implements DoCheck {
 
       if (this.state.isCurrentUserAdmin) {
         this.navItems = [
-          { label: 'Dashboard', icon: 'dashboard', route: `${prefix}/dashboard` },
-          { label: 'Patient Management', icon: 'patients', route: `${prefix}/patients` },
-          { label: 'User Management', icon: 'admin', route: `${prefix}/users` }
+          { label: 'SIDEBAR.DASHBOARD', icon: 'dashboard', route: `${prefix}/dashboard` },
+          { label: 'SIDEBAR.PATIENT_MANAGEMENT', icon: 'patients', route: `${prefix}/patients` },
+          { label: 'SIDEBAR.USER_MANAGEMENT', icon: 'admin', route: `${prefix}/users` }
         ];
         return;
       }
 
       const items = this.state.isCurrentUserSpecialiste
         ? [
-            { label: 'Dashboard', icon: 'dashboard', route: `${prefix}/dashboard` },
-            { label: 'Registration', icon: 'registration', route: `${prefix}/registration` },
-            { label: 'Patient Intake', icon: 'intake', route: `${prefix}/intake` },
-            { label: 'Validation Queue', icon: 'validation', route: `${prefix}/validation-queue` }
+            { label: 'SIDEBAR.DASHBOARD', icon: 'dashboard', route: `${prefix}/dashboard` },
+            { label: 'SIDEBAR.REGISTRATION', icon: 'registration', route: `${prefix}/registration` },
+            { label: 'SIDEBAR.PATIENT_INTAKE', icon: 'intake', route: `${prefix}/intake` },
+            { label: 'SIDEBAR.VALIDATION_QUEUE', icon: 'validation', route: `${prefix}/validation-queue` }
           ]
         : [
-            { label: 'Dashboard', icon: 'dashboard', route: `${prefix}/dashboard` },
-            { label: 'Registration', icon: 'registration', route: `${prefix}/registration` }
+            { label: 'SIDEBAR.DASHBOARD', icon: 'dashboard', route: `${prefix}/dashboard` },
+            { label: 'SIDEBAR.REGISTRATION', icon: 'registration', route: `${prefix}/registration` }
           ];
 
       if (this.state.isCurrentUserMedecin) {
-        items.push({ label: 'Patient Intake', icon: 'intake', route: `${prefix}/intake` });
+        items.push({ label: 'SIDEBAR.PATIENT_INTAKE', icon: 'intake', route: `${prefix}/intake` });
       }
 
       this.navItems = items;

@@ -1,66 +1,82 @@
 <header class="header">
   
   <div class="header-left">
-    <div class="header-title">Clinical Information System</div>
+    <div class="header-title">{{ 'HEADER.TITLE' | translate }}</div>
     
     <div class="header-tabs">
       <ng-container *ngIf="state.isCurrentUserAdmin; else clinicalTabs">
-        <a [routerLink]="prefix + '/dashboard'" routerLinkActive="active" class="header-tab">Dashboard</a>
-        <a [routerLink]="prefix + '/patients'" routerLinkActive="active" class="header-tab">Patient Management</a>
-        <a [routerLink]="prefix + '/users'" routerLinkActive="active" class="header-tab">User Management</a>
+        <a [routerLink]="prefix + '/dashboard'" routerLinkActive="active" class="header-tab">{{ 'HEADER.DASHBOARD' | translate }}</a>
+        <a [routerLink]="prefix + '/patients'" routerLinkActive="active" class="header-tab">{{ 'HEADER.PATIENT_MANAGEMENT' | translate }}</a>
+        <a [routerLink]="prefix + '/users'" routerLinkActive="active" class="header-tab">{{ 'HEADER.USER_MANAGEMENT' | translate }}</a>
       </ng-container>
 
       <ng-template #clinicalTabs>
-        <a *ngIf="!state.isCurrentUserSpecialiste" [routerLink]="prefix + '/dashboard'" routerLinkActive="active" class="header-tab">Dashboard</a>
-        <a *ngIf="!state.isCurrentUserSpecialiste" [routerLink]="prefix + '/registration'" routerLinkActive="active" class="header-tab">Patient Records</a>
-        <a *ngIf="state.isCurrentUserDoctor" [routerLink]="prefix + '/intake'" routerLinkActive="active" class="header-tab">CDS Analysis</a>
-        <a *ngIf="state.isCurrentUserDoctor" [routerLink]="prefix + '/rapport'" routerLinkActive="active" class="header-tab">Reports</a>
-        <a *ngIf="state.isCurrentUserSpecialiste" [routerLink]="prefix + '/validation-queue'" routerLinkActive="active" class="header-tab">Validation Queue</a>
+        <a *ngIf="!state.isCurrentUserSpecialiste" [routerLink]="prefix + '/dashboard'" routerLinkActive="active" class="header-tab">{{ 'HEADER.DASHBOARD' | translate }}</a>
+        <a *ngIf="!state.isCurrentUserSpecialiste" [routerLink]="prefix + '/registration'" routerLinkActive="active" class="header-tab">{{ 'HEADER.PATIENT_RECORDS' | translate }}</a>
+        <a *ngIf="state.isCurrentUserDoctor" [routerLink]="prefix + '/intake'" routerLinkActive="active" class="header-tab">{{ 'HEADER.CDS_ANALYSIS' | translate }}</a>
+        <a *ngIf="state.isCurrentUserDoctor" [routerLink]="prefix + '/rapport'" routerLinkActive="active" class="header-tab">{{ 'HEADER.REPORTS' | translate }}</a>
+        <a *ngIf="state.isCurrentUserSpecialiste" [routerLink]="prefix + '/validation-queue'" routerLinkActive="active" class="header-tab">{{ 'HEADER.VALIDATION_QUEUE' | translate }}</a>
       </ng-template>
     </div>
   </div>
 
   <div class="header-right">
-    <!-- Search bar -->
-    <div class="search-container">
-      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
-      <input type="text" placeholder="Search patients..." class="search-input" id="globalSearch" />
-    </div>
-
-    <!-- Notification bell -->
-    <button class="icon-btn" id="notificationBtn" aria-label="Notifications">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-      </svg>
-      <span class="notification-dot"></span>
-    </button>
-
     <!-- Settings -->
-    <button class="icon-btn" id="settingsBtn" aria-label="Settings">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3"></circle>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-      </svg>
-    </button>
+    <div class="settings-container">
+      <button class="icon-btn" id="settingsBtn" [attr.aria-label]="'HEADER.SETTINGS' | translate" (click)="toggleSettings()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+      
+      <div class="settings-dropdown" *ngIf="showSettings">
+        <div class="dropdown-section">
+          <div class="dropdown-header">{{ 'HEADER.SELECT_LANGUAGE' | translate }}</div>
+          <button (click)="changeLanguage('en')" [class.active]="languageService.getCurrentLanguage() === 'en'">
+            <span class="flag">🇺🇸</span> {{ 'LANGUAGES.EN' | translate }}
+          </button>
+          <button (click)="changeLanguage('fr')" [class.active]="languageService.getCurrentLanguage() === 'fr'">
+            <span class="flag">🇫🇷</span> {{ 'LANGUAGES.FR' | translate }}
+          </button>
+          <button (click)="changeLanguage('ar')" [class.active]="languageService.getCurrentLanguage() === 'ar'">
+            <span class="flag">🇹🇳</span> {{ 'LANGUAGES.AR' | translate }}
+          </button>
+        </div>
+
+        <div class="dropdown-divider"></div>
+
+        <div class="dropdown-section">
+          <div class="dropdown-header">{{ 'THEME.THEME' | translate }}</div>
+          <button (click)="toggleTheme()">
+            <span class="theme-icon">
+              <svg *ngIf="!themeService.isDark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+              <svg *ngIf="themeService.isDark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+            </span>
+            {{ (themeService.isDark ? 'THEME.LIGHT_MODE' : 'THEME.DARK_MODE') | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
     
-    <!-- Help -->
-    <button class="icon-btn" id="helpBtn" aria-label="Help">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-      </svg>
-    </button>
 
     <!-- User profile -->
     <div class="user-profile" id="userProfile" style="display: flex; align-items: center; gap: 8px;">
-      <div style="display: flex; flex-direction: column; text-align: right;">
+      <div style="display: flex; flex-direction: column; text-align: right;" class="user-info-text">
         <span style="font-size: 0.85rem; font-weight: 600; color: #1e293b;">{{ userName }}</span>
-        <span style="font-size: 0.75rem; color: #64748b;">{{ userRole }}</span>
+        <span style="font-size: 0.75rem; color: #64748b;">{{ userRole | translate }}</span>
       </div>
       <div class="user-avatar-wrap">
         <div class="user-avatar">

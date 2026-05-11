@@ -2,13 +2,13 @@
   <!-- Breadcrumb -->
   <div class="breadcrumb">
     <span class="breadcrumb-dot"></span>
-    <span class="breadcrumb-text">PATIENTS › NEW REGISTRATION</span>
+    <span class="breadcrumb-text">{{ 'REGISTRATION.BREADCRUMB' | translate }}</span>
   </div>
 
   <!-- Page Title -->
   <div class="page-header">
-    <h1 class="page-title">New Patient Registration</h1>
-    <p class="page-subtitle">Complete the intake process for a new clinical record.</p>
+    <h1 class="page-title">{{ 'REGISTRATION.TITLE' | translate }}</h1>
+    <p class="page-subtitle">{{ 'REGISTRATION.SUBTITLE' | translate }}</p>
   </div>
 
   <div class="content-grid">
@@ -24,37 +24,37 @@
               <path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             </svg>
           </div>
-          <h2 class="card-title">Demographics</h2>
+          <h2 class="card-title">{{ 'REGISTRATION.DEMOGRAPHICS' | translate }}</h2>
         </div>
 
         <form [formGroup]="registrationForm">
           <div class="form-row two-col">
             <div class="form-group">
-              <label class="form-label">FULL LEGAL NAME</label>
-              <input type="text" formControlName="fullLegalName" placeholder="e.g. Johnathan Doe" class="form-input" [class.error-input]="registrationForm.get('fullLegalName')?.invalid && registrationForm.get('fullLegalName')?.touched" />
-              <div *ngIf="registrationForm.get('fullLegalName')?.errors?.['noSpace'] && registrationForm.get('fullLegalName')?.touched" class="error-message" style="color: #ef4444; font-size: 0.85rem; margin-top: 4px;">Please enter your full name (first and last).</div>
+              <label class="form-label">{{ 'REGISTRATION.FULL_NAME' | translate }}</label>
+              <input type="text" formControlName="fullLegalName" [placeholder]="'REGISTRATION.FULL_NAME_PLACEHOLDER' | translate" class="form-input" [class.error-input]="registrationForm.get('fullLegalName')?.invalid && registrationForm.get('fullLegalName')?.touched" />
+              <div *ngIf="registrationForm.get('fullLegalName')?.errors?.['noSpace'] && registrationForm.get('fullLegalName')?.touched" class="error-message" style="color: #ef4444; font-size: 0.85rem; margin-top: 4px;">{{ 'REGISTRATION.FULL_NAME_ERROR' | translate }}</div>
             </div>
             <div class="form-group">
-              <label class="form-label">NATIONAL ID</label>
+              <label class="form-label">{{ 'REGISTRATION.NATIONAL_ID' | translate }}</label>
               <input type="text" formControlName="cin" (blur)="onCheckCin()" placeholder="AB123456" class="form-input" [class.error-input]="cinExistsError" />
-              <div *ngIf="cinExistsError" class="error-message" style="color: #ef4444; font-size: 0.85rem; margin-top: 4px;">This CIN is already saved.</div>
+              <div *ngIf="cinExistsError" class="error-message" style="color: #ef4444; font-size: 0.85rem; margin-top: 4px;">{{ 'REGISTRATION.NATIONAL_ID_ERROR' | translate }}</div>
             </div>
           </div>
 
           <div class="form-row two-col">
             <div class="form-group">
-              <label class="form-label">DATE OF BIRTH</label>
+              <label class="form-label">{{ 'REGISTRATION.DATE_OF_BIRTH' | translate }}</label>
               <div class="input-with-icon">
                 <input type="date" formControlName="dateOfBirth" placeholder="mm/dd/yyyy" class="form-input" [class.error-input]="registrationForm.get('dateOfBirth')?.invalid && registrationForm.get('dateOfBirth')?.touched" />
               </div>
-              <div *ngIf="registrationForm.get('dateOfBirth')?.errors?.['futureDate'] && registrationForm.get('dateOfBirth')?.touched" class="error-message" style="color: #ef4444; font-size: 0.85rem; margin-top: 4px;">Date of birth cannot be in the future.</div>
+              <div *ngIf="registrationForm.get('dateOfBirth')?.errors?.['futureDate'] && registrationForm.get('dateOfBirth')?.touched" class="error-message" style="color: #ef4444; font-size: 0.85rem; margin-top: 4px;">{{ 'REGISTRATION.DATE_OF_BIRTH_ERROR' | translate }}</div>
             </div>
             <div class="form-group">
-              <label class="form-label">GENDER IDENTITY</label>
+              <label class="form-label">{{ 'REGISTRATION.GENDER' | translate }}</label>
               <select formControlName="genderIdentity" class="form-input form-select">
-                <option value="" disabled selected>Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
+                <option value="" disabled selected>{{ 'REGISTRATION.SELECT_GENDER' | translate }}</option>
+                <option value="male">{{ 'REGISTRATION.MALE' | translate }}</option>
+                <option value="female">{{ 'REGISTRATION.FEMALE' | translate }}</option>
               </select>
             </div>
           </div>
@@ -71,20 +71,20 @@
               <path d="M6 16c0-2.21 1.79-4 4-4s4 1.79 4 4" stroke="currentColor" stroke-width="1.5"/>
             </svg>
           </div>
-          <h2 class="card-title">Contact Details</h2>
+          <h2 class="card-title">{{ 'REGISTRATION.CONTACT_DETAILS' | translate }}</h2>
         </div>
 
         <form [formGroup]="registrationForm">
           <div class="form-group">
-            <label class="form-label">PHONE NUMBER</label>
+            <label class="form-label">{{ 'REGISTRATION.PHONE_NUMBER' | translate }}</label>
             <input type="tel" formControlName="phoneNumber" placeholder="+216 20 123 456" class="form-input" />
           </div>
           <div class="form-group">
-            <label class="form-label">EMAIL ADDRESS</label>
+            <label class="form-label">{{ 'REGISTRATION.EMAIL' | translate }}</label>
             <input type="email" formControlName="emailAddress" placeholder="patient@example.tn" class="form-input" />
           </div>
           <div class="form-group">
-            <label class="form-label">HOME ADDRESS</label>
+            <label class="form-label">{{ 'REGISTRATION.ADDRESS' | translate }}</label>
             <input type="text" formControlName="homeAddress" placeholder="e.g. 2000 Bardo, Tunis" class="form-input" />
           </div>
         </form>
@@ -98,21 +98,21 @@
               <path d="M10 2l2.47 4.56L18 7.64l-4 3.56 1.06 5.8L10 14.27 4.94 17l1.06-5.8-4-3.56 5.53-1.08z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="currentColor" fill-opacity="0.15"/>
             </svg>
           </div>
-          <h2 class="card-title red-title">Emergency Contact</h2>
+          <h2 class="card-title red-title">{{ 'REGISTRATION.EMERGENCY_CONTACT' | translate }}</h2>
         </div>
 
         <form [formGroup]="registrationForm">
           <div class="form-row three-col">
             <div class="form-group">
-              <label class="form-label">CONTACT NAME</label>
+              <label class="form-label">{{ 'REGISTRATION.CONTACT_NAME' | translate }}</label>
               <input type="text" formControlName="emergencyContactName" placeholder="Full Name" class="form-input" />
             </div>
             <div class="form-group">
-              <label class="form-label">RELATIONSHIP</label>
+              <label class="form-label">{{ 'REGISTRATION.RELATIONSHIP' | translate }}</label>
               <input type="text" formControlName="emergencyRelationship" placeholder="e.g. Spouse, Parent" class="form-input" />
             </div>
             <div class="form-group">
-              <label class="form-label">PHONE NUMBER</label>
+              <label class="form-label">{{ 'REGISTRATION.PHONE_NUMBER' | translate }}</label>
               <input type="tel" formControlName="emergencyPhone" placeholder="+216 98 123 456" class="form-input" />
             </div>
           </div>
@@ -125,11 +125,11 @@
 
   <!-- Action Bar -->
   <div class="action-bar">
-    <button class="btn btn-ghost" type="button" (click)="onDiscard()">Discard</button>
+    <button class="btn btn-ghost" type="button" (click)="onDiscard()">{{ 'REGISTRATION.DISCARD' | translate }}</button>
     <div class="action-bar-right">
 
       <button class="btn btn-primary" type="button" [disabled]="cinExistsError || isSubmitting || registrationForm.invalid" (click)="onCompleteRegistration()">
-        Complete Registration
+        {{ 'REGISTRATION.COMPLETE' | translate }}
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <path d="M13.5 4.5l-7 7L3 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>

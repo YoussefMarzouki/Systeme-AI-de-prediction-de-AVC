@@ -3,9 +3,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #111827;
-  color: #111827;
+  background: var(--color-bg-main, #f8fafc);
+  color: var(--color-text-body, #111827);
   font-family: Inter, "Segoe UI", system-ui, sans-serif;
+  position: relative;
+  overflow: hidden;
 }
 
 .login-panel {
@@ -14,7 +16,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   overflow: hidden;
-  background: #ffffff;
+  background: var(--color-bg-card, #ffffff);
 }
 
 .mri-side {
@@ -91,35 +93,24 @@
 
 .brand-signature {
   position: absolute;
-  left: 32px;
-  top: 32px;
-  z-index: 10;
+  left: 24px;
+  top: 24px;
+  z-index: 100;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
   color: #ffffff;
-  padding: 12px 20px;
+  padding: 8px 16px;
   border-radius: 16px;
   backdrop-filter: blur(8px);
-  
 }
 
-.brand-mark {
-  width: 44px;
-  height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  background: #0ea5e9;
-  color: #ffffff;
-  box-shadow: 0 8px 16px -4px rgba(14, 165, 233, 0.5);
+.brand-logo {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
 }
 
-.brand-mark svg {
-  width: 28px;
-  height: 28px;
-}
 
 .brand-signature strong,
 .brand-signature small {
@@ -147,7 +138,7 @@
   align-items: center;
   justify-content: center;
   padding: 48px;
-  background: #ffffff;
+  background: var(--color-bg-card, #ffffff);
 }
 
 .form-card {
@@ -160,7 +151,7 @@
 
 .login-heading h1 {
   margin: 0 0 12px;
-  color: #1f2937;
+  color: var(--color-text-main, #1f2937);
   font-size: 32px;
   font-weight: 850;
   letter-spacing: -0.5px;
@@ -168,7 +159,7 @@
 
 .login-heading p {
   margin: 0;
-  color: #6b7280;
+  color: var(--color-text-muted, #6b7280);
   font-size: 18px;
   line-height: 1.6;
 }
@@ -187,7 +178,7 @@
 
 .field-group label,
 .role-label {
-  color: #374151;
+  color: var(--color-text-body, #374151);
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 1px;
@@ -199,10 +190,10 @@
 .password-control {
   width: 100%;
   height: 54px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-border, #e5e7eb);
   border-radius: 12px;
-  background: #f9fafb;
-  color: #111827;
+  background: var(--color-bg-input, #f9fafb);
+  color: var(--color-text-body, #111827);
   font-size: 16px;
   outline: none;
   transition: all 0.2s ease;
@@ -413,4 +404,133 @@
   .mri-side {
     height: 300px;
   }
+}
+
+/* Page Settings */
+.page-settings {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 100;
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  background: var(--color-bg-card, #ffffff);
+  border-radius: 12px;
+  cursor: pointer;
+  color: var(--color-text-muted, #475569);
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.icon-btn:hover {
+  background: var(--color-bg-main, #f1f5f9);
+  color: var(--color-text-main, #0f172a);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+.settings-container {
+  position: relative;
+}
+
+.settings-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 12px;
+  background: var(--color-bg-card, #ffffff);
+  border-radius: 14px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--color-border, #e2e8f0);
+  width: 240px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  animation: slideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.dropdown-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-header {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-muted, #64748b);
+  padding: 10px 14px;
+  letter-spacing: 0.05em;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--color-border, #e2e8f0);
+  margin: 10px 0;
+}
+
+.settings-dropdown button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+  color: var(--color-text-body, #334155);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.settings-dropdown button:hover {
+  background: var(--color-bg-main, #f1f5f9);
+  color: var(--color-primary, #0ea5e9);
+}
+
+.settings-dropdown button.active {
+  background: rgba(14, 165, 233, 0.08);
+  color: var(--color-primary, #0ea5e9);
+  font-weight: 600;
+}
+
+.flag { font-size: 20px; }
+.theme-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--color-text-muted, #64748b);
+}
+
+/* RTL Support for Login Settings */
+:host-context(html[dir="rtl"]) .page-settings {
+  right: auto;
+  left: 24px;
+}
+
+:host-context(html[dir="rtl"]) .settings-dropdown {
+  right: auto;
+  left: 0;
+}
+
+:host-context(html[dir="rtl"]) .settings-dropdown button {
+  text-align: right;
+  flex-direction: row-reverse;
 }

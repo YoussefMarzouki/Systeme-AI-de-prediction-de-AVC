@@ -1,8 +1,65 @@
 <div class="login-shell">
+  <!-- Top-right Settings -->
+  <div class="page-settings">
+    <div class="settings-container">
+      <button class="icon-btn" id="settingsBtn" [attr.aria-label]="'HEADER.SETTINGS' | translate"
+        (click)="toggleSettings()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+          </path>
+        </svg>
+      </button>
+
+      <div class="settings-dropdown" *ngIf="showSettings">
+        <div class="dropdown-section">
+          <div class="dropdown-header">{{ 'HEADER.SELECT_LANGUAGE' | translate }}</div>
+          <button (click)="changeLanguage('en')" [class.active]="languageService.getCurrentLanguage() === 'en'">
+            <span class="flag">🇺🇸</span> {{ 'LANGUAGES.EN' | translate }}
+          </button>
+          <button (click)="changeLanguage('fr')" [class.active]="languageService.getCurrentLanguage() === 'fr'">
+            <span class="flag">🇫🇷</span> {{ 'LANGUAGES.FR' | translate }}
+          </button>
+          <button (click)="changeLanguage('ar')" [class.active]="languageService.getCurrentLanguage() === 'ar'">
+            <span class="flag">🇹🇳</span> {{ 'LANGUAGES.AR' | translate }}
+          </button>
+        </div>
+
+        <div class="dropdown-divider"></div>
+
+        <div class="dropdown-section">
+          <div class="dropdown-header">{{ 'THEME.THEME' | translate }}</div>
+          <button (click)="toggleTheme()">
+            <span class="theme-icon">
+              <svg *ngIf="!themeService.isDark" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+              <svg *ngIf="themeService.isDark" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+            </span>
+            {{ (themeService.isDark ? 'THEME.LIGHT_MODE' : 'THEME.DARK_MODE') | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
   <section class="login-panel" aria-label="Clinical authentication">
     <aside class="mri-side" aria-label="MRI preview">
       <img src="/LoginImage.png" alt="StrokeAI MRI login visual" class="mri-image" />
-      
+
       <div class="mri-frame">
         <div class="scan-cross horizontal"></div>
         <div class="scan-cross vertical"></div>
@@ -10,15 +67,10 @@
       </div>
 
       <div class="brand-signature">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M9 5.5v13M15 5.5v13M5.5 11.8h13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <path d="M7.5 4h9A3.5 3.5 0 0 1 20 7.5v9a3.5 3.5 0 0 1-3.5 3.5h-9A3.5 3.5 0 0 1 4 16.5v-9A3.5 3.5 0 0 1 7.5 4Z" stroke="currentColor" stroke-width="1.6"/>
-          </svg>
-        </span>
+        <img src="/logo.png" alt="StrokeAI Logo" class="brand-logo" />
         <span>
           <strong>StrokeAI</strong>
-          <small>Clinical Systems</small>
+          <small>{{ 'LOGIN.STROKE_PREDICTION_SYSTEM' | translate }}</small>
         </span>
       </div>
     </aside>
@@ -26,64 +78,53 @@
     <div class="form-side">
       <div class="form-card">
         <header class="login-heading">
-          <h1>Clinical Gateway</h1>
-          <p>Authenticate to access StrokeAI diagnostic tools.</p>
+          <h1>{{ 'LOGIN.TITLE' | translate }}</h1>
+          <p>{{ 'LOGIN.SUBTITLE' | translate }}</p>
         </header>
 
         <div class="error-banner" *ngIf="errorMessage">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 8v5M12 17h.01M10.3 4.5 2.7 18a1.7 1.7 0 0 0 1.5 2.5h15.6a1.7 1.7 0 0 0 1.5-2.5L13.7 4.5a1.9 1.9 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path
+              d="M12 8v5M12 17h.01M10.3 4.5 2.7 18a1.7 1.7 0 0 0 1.5 2.5h15.6a1.7 1.7 0 0 0 1.5-2.5L13.7 4.5a1.9 1.9 0 0 0-3.4 0Z"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
           <span>{{ errorMessage }}</span>
         </div>
 
         <form (ngSubmit)="onSubmit()" class="login-form">
           <div class="field-group">
-            <label for="email">Clinical ID</label>
-            <input
-              id="email"
-              type="email"
-              [(ngModel)]="email"
-              name="email"
-              placeholder="Enter practitioner ID"
-              autocomplete="email"
-            />
+            <label for="email">{{ 'LOGIN.CLINICAL_ID' | translate }}</label>
+            <input id="email" type="email" [(ngModel)]="email" name="email"
+              [placeholder]="'LOGIN.CLINICAL_ID_PLACEHOLDER' | translate" autocomplete="email" />
           </div>
 
           <div class="field-group">
-            <label for="password">Password</label>
+            <label for="password">{{ 'LOGIN.PASSWORD' | translate }}</label>
             <div class="password-control">
-              <input
-                id="password"
-                [type]="showPassword ? 'text' : 'password'"
-                [(ngModel)]="password"
-                name="password"
-                placeholder="Password"
-                autocomplete="current-password"
-              />
-              <button type="button" class="password-toggle" (click)="togglePassword()" [attr.aria-label]="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'">
+              <input id="password" [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" name="password"
+                [placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate" autocomplete="current-password" />
+              <button type="button" class="password-toggle" (click)="togglePassword()"
+                [attr.aria-label]="(showPassword ? 'LOGIN.HIDE_PASSWORD' : 'LOGIN.SHOW_PASSWORD') | translate">
                 <svg *ngIf="!showPassword" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor" stroke-width="1.8"/>
-                  <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor"
+                    stroke-width="1.8" />
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
                 </svg>
                 <svg *ngIf="showPassword" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="m4 4 16 16M9.4 9.4A3.6 3.6 0 0 0 12 15.6c1 0 1.9-.4 2.6-1.1M7.2 7.7C4.2 9.5 2.5 12 2.5 12s3.5 6 9.5 6c1.8 0 3.3-.5 4.6-1.2M10.8 6.1c.4-.1.8-.1 1.2-.1 6 0 9.5 6 9.5 6s-.8 1.4-2.3 2.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  <path
+                    d="m4 4 16 16M9.4 9.4A3.6 3.6 0 0 0 12 15.6c1 0 1.9-.4 2.6-1.1M7.2 7.7C4.2 9.5 2.5 12 2.5 12s3.5 6 9.5 6c1.8 0 3.3-.5 4.6-1.2M10.8 6.1c.4-.1.8-.1 1.2-.1 6 0 9.5 6 9.5 6s-.8 1.4-2.3 2.8"
+                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
                 </svg>
               </button>
             </div>
           </div>
 
           <div class="role-group">
-            <span class="role-label">System Role</span>
+            <span class="role-label">{{ 'LOGIN.SYSTEM_ROLE' | translate }}</span>
             <div class="role-row">
-              <button
-                *ngFor="let role of roles"
-                type="button"
-                class="role-option"
-                [class.active]="selectedRole === role.key"
-                (click)="selectRole(role.key)"
-              >
-                {{ role.label }}
+              <button *ngFor="let role of roles" type="button" class="role-option"
+                [class.active]="selectedRole === role.key" (click)="selectRole(role.key)">
+                {{ role.label | translate }}
               </button>
             </div>
           </div>
@@ -91,16 +132,19 @@
           <div class="session-row">
             <label class="remember-option">
               <input type="checkbox" />
-              <span>Remember terminal</span>
+              <span>{{ 'LOGIN.REMEMBER_TERMINAL' | translate }}</span>
             </label>
-            <a href="#" aria-label="Need assistance">Need assistance?</a>
+            <a href="#" [attr.aria-label]="'LOGIN.NEED_ASSISTANCE' | translate">{{ 'LOGIN.NEED_ASSISTANCE' | translate
+              }}</a>
           </div>
 
           <button type="submit" class="submit-button" [disabled]="isLoading">
-            <span>{{ isLoading ? 'Authenticating...' : 'Authenticate Session' }}</span>
+            <span>{{ (isLoading ? 'LOGIN.AUTHENTICATING' : 'LOGIN.AUTHENTICATE_SESSION') | translate }}</span>
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M12 3 5 6v5c0 4.4 2.9 8.4 7 9.7 4.1-1.3 7-5.3 7-9.7V6l-7-3Z" stroke="currentColor" stroke-width="1.8"/>
-              <path d="m9 12 2 2 4-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 3 5 6v5c0 4.4 2.9 8.4 7 9.7 4.1-1.3 7-5.3 7-9.7V6l-7-3Z" stroke="currentColor"
+                stroke-width="1.8" />
+              <path d="m9 12 2 2 4-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
           </button>
         </form>

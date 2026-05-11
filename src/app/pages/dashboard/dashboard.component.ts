@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { forkJoin, of } from 'rxjs';
 
 import { PatientService } from '../../services/patient.service';
@@ -12,7 +13,7 @@ import { StateService } from '../../services/state.service';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, RouterModule, TranslateModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -59,6 +60,12 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchDossiers();
+  }
+
+  get roleLabel(): string {
+    if (this.stateService.isCurrentUserAdmin) return 'ROLES.ADMIN';
+    if (this.stateService.isCurrentUserSpecialiste) return 'ROLES.SPECIALIST';
+    return 'ROLES.GENERALIST';
   }
 
   get shouldHideClinicalRisk(): boolean {
@@ -143,12 +150,12 @@ export class DashboardComponent implements OnInit {
 
   getRiskLabel(level: string): string {
     const normalized = this.normalizeRiskLevel(level);
-    if (normalized === 'VERY_HIGH') return 'Very high';
-    if (normalized === 'HIGH') return 'High';
-    if (normalized === 'MEDIUM') return 'Medium';
-    if (normalized === 'LOW') return 'Low';
-    if (normalized === 'UNCERTAIN') return 'Uncertain';
-    return 'Unknown';
+    if (normalized === 'VERY_HIGH') return 'RISK.VERY_HIGH';
+    if (normalized === 'HIGH') return 'RISK.HIGH';
+    if (normalized === 'MEDIUM') return 'RISK.MEDIUM';
+    if (normalized === 'LOW') return 'RISK.LOW';
+    if (normalized === 'UNCERTAIN') return 'RISK.UNCERTAIN';
+    return 'RISK.UNKNOWN';
   }
 
   getStatusClass(status: string): string {
@@ -167,20 +174,20 @@ export class DashboardComponent implements OnInit {
     switch (normalized) {
       case 'OUVERT':
       case 'OPEN':
-        return 'Active';
+        return 'STATUS.OPEN';
       case 'CLOSED':
       case 'FERME':
-        return 'Closed';
+        return 'STATUS.CLOSED';
       case 'PENDING_MRI':
-        return 'Pending MRI';
+        return 'STATUS.PENDING_MRI';
       case 'NO_DOSSIER':
-        return 'New Patient';
+        return 'STATUS.NO_DOSSIER';
       case 'VALIDATED':
-        return 'Validated';
+        return 'STATUS.VALIDATED';
       case 'REJECTED':
-        return 'Rejected';
+        return 'STATUS.REJECTED';
       default:
-        return normalized ? normalized.replace(/_/g, ' ') : 'Unknown';
+        return 'STATUS.UNKNOWN';
     }
   }
 

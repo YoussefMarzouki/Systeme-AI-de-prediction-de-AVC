@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { SystemHealth, SystemHealthService } from '../../services/system-health.service';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslateModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css'
 })
@@ -21,15 +23,15 @@ export class AdminDashboardComponent implements OnInit {
 
   managementCards = [
     {
-      title: 'Patient Management',
-      description: 'Review, select, and update patient records and medical dossier information.',
+      titleKey: 'ADMIN_DASHBOARD.PATIENT_MGMT',
+      descKey: 'ADMIN_DASHBOARD.PATIENT_DESC',
       route: '/admin/patients',
       icon: 'patients',
       metric: 'Records'
     },
     {
-      title: 'User Management',
-      description: 'Create, update, search, and remove authorized system accounts.',
+      titleKey: 'ADMIN_DASHBOARD.USER_MGMT',
+      descKey: 'ADMIN_DASHBOARD.USER_DESC',
       route: '/admin/users',
       icon: 'users',
       metric: 'Accounts'
@@ -39,20 +41,20 @@ export class AdminDashboardComponent implements OnInit {
   healthCards = [
     {
       key: 'backend' as const,
-      title: 'Backend',
-      description: 'Flask API service',
+      titleKey: 'ADMIN_DASHBOARD.BACKEND',
+      descKey: 'ADMIN_DASHBOARD.BACKEND_DESC',
       icon: 'server'
     },
     {
       key: 'prediction' as const,
-      title: 'Prediction Service',
-      description: 'AI model microservice',
+      titleKey: 'ADMIN_DASHBOARD.PREDICTION',
+      descKey: 'ADMIN_DASHBOARD.PREDICTION_DESC',
       icon: 'activity'
     },
     {
       key: 'database' as const,
-      title: 'Database',
-      description: 'PostgreSQL connection, checked through backend',
+      titleKey: 'ADMIN_DASHBOARD.DATABASE',
+      descKey: 'ADMIN_DASHBOARD.DATABASE_DESC',
       icon: 'database'
     }
   ];

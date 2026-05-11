@@ -1,9 +1,9 @@
 <section class="admin-dashboard">
   <div class="admin-hero">
     <div>
-      <span class="eyebrow">Administration</span>
-      <h1>System Management Dashboard</h1>
-      <p>Choose the workspace you want to manage.</p>
+      <span class="eyebrow">{{ 'ADMIN_DASHBOARD.EYEBROW' | translate }}</span>
+      <h1>{{ 'ADMIN_DASHBOARD.TITLE' | translate }}</h1>
+      <p>{{ 'ADMIN_DASHBOARD.SUBTITLE' | translate }}</p>
     </div>
   </div>
 
@@ -12,7 +12,7 @@
       *ngFor="let card of managementCards"
       class="management-card"
       [routerLink]="card.route"
-      [attr.aria-label]="'Open ' + card.title"
+      [attr.aria-label]="('ADMIN_DASHBOARD.OPEN' | translate) + ' ' + (card.titleKey | translate)"
     >
       <div class="card-icon" [class.user-icon]="card.icon === 'users'">
         <svg *ngIf="card.icon === 'patients'" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -29,12 +29,12 @@
 
       <div class="card-body">
         <span class="card-kicker">{{ card.metric }}</span>
-        <h2>{{ card.title }}</h2>
-        <p>{{ card.description }}</p>
+        <h2>{{ card.titleKey | translate }}</h2>
+        <p>{{ card.descKey | translate }}</p>
       </div>
 
       <span class="card-action">
-        Open
+        {{ 'ADMIN_DASHBOARD.OPEN' | translate }}
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -45,15 +45,15 @@
   <section class="health-section" aria-labelledby="systemHealthTitle">
     <div class="section-header">
       <div>
-        <span class="eyebrow">System Health</span>
-        <h2 id="systemHealthTitle">Service Availability</h2>
+        <span class="eyebrow">{{ 'ADMIN_DASHBOARD.SYSTEM_HEALTH' | translate }}</span>
+        <h2 id="systemHealthTitle">{{ 'ADMIN_DASHBOARD.SERVICE_AVAILABILITY' | translate }}</h2>
       </div>
       <button type="button" class="refresh-health-btn" (click)="loadHealth()" [disabled]="healthLoading">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M4 12a8 8 0 0 1 13.66-5.66M20 12a8 8 0 0 1-13.66 5.66" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
           <path d="M18 3v5h-5M6 21v-5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        {{ healthLoading ? 'Checking' : 'Refresh' }}
+        {{ (healthLoading ? 'ADMIN_DASHBOARD.UNKNOWN' : 'ADMIN_DASHBOARD.REFRESH') | translate }}
       </button>
     </div>
 
@@ -81,10 +81,10 @@
                 [class.offline]="systemHealth[card.key].state === 'offline' || (!systemHealth[card.key].ok && systemHealth[card.key].state !== 'unknown')"
                 [class.unknown]="systemHealth[card.key].state === 'unknown'">
             <span class="status-dot"></span>
-            {{ systemHealth[card.key].label }}
+            {{ 'ADMIN_DASHBOARD.' + (systemHealth[card.key].state | uppercase) | translate }}
           </span>
-          <h3>{{ card.title }}</h3>
-          <p>{{ card.description }}</p>
+          <h3>{{ card.titleKey | translate }}</h3>
+          <p>{{ card.descKey | translate }}</p>
         </div>
       </div>
     </div>

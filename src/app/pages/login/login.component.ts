@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LanguageService } from '../../services/language.service';
+import { ThemeService } from '../../services/theme.service';
 import { AuthService, type AppRole } from '../../services/auth.service';
 
 type LoginRole = Exclude<AppRole, 'unknown'>;
@@ -9,7 +12,7 @@ type LoginRole = Exclude<AppRole, 'unknown'>;
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -19,23 +22,40 @@ export class LoginComponent {
   errorMessage = '';
   isLoading = false;
   showPassword = false;
-  selectedRole: LoginRole = 'ms';
+  selectedRole: LoginRole = 'agent';
+  showSettings = false;
 
   roles: { key: LoginRole; label: string }[] = [
-    { key: 'mg', label: 'Generalist' },
-    { key: 'ms', label: 'Specialist' },
-    { key: 'admin', label: 'Admin' },
-    { key: 'agent', label: 'Agent' }
+    { key: 'agent', label: 'ROLES.AGENT' },
+    { key: 'mg', label: 'ROLES.DOCTOR' },
+    { key: 'ms', label: 'ROLES.SPECIALIST' },
+    { key: 'admin', label: 'ROLES.ADMIN' }
   ];
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private translate: TranslateService,
+    public languageService: LanguageService,
+    public themeService: ThemeService
   ) {
     if (this.authService.isLoggedIn) {
       this.router.navigateByUrl(this.authService.getLandingRoute());
     }
+  }
+
+  toggleSettings(): void {
+    this.showSettings = !this.showSettings;
+  }
+
+  changeLanguage(lang: string): void {
+    this.languageService.setLanguage(lang);
+    this.showSettings = false;
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 
   selectRole(role: LoginRole): void {
@@ -52,7 +72,7 @@ export class LoginComponent {
     const email = this.email.trim();
 
     if (!email || !this.password) {
-      this.errorMessage = 'Veuillez saisir votre identifiant clinique et votre mot de passe.';
+      this.errorMessage = this.translate.instant('LOGIN.ERR_REQUIRED');
       return;
     }
 
@@ -63,7 +83,7 @@ export class LoginComponent {
         if (actualRole !== this.selectedRole) {
           this.authService.clearSession();
           this.isLoading = false;
-          this.errorMessage = 'Le role selectionne ne correspond pas au compte saisi.';
+          this.errorMessage = this.translate.instant('LOGIN.ERR_ROLE_MISMATCH');
           return;
         }
 
@@ -73,7 +93,7 @@ export class LoginComponent {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err.error?.error || 'Authentification echouee. Verifiez vos coordonnees.';
+        this.errorMessage = err.error?.error || this.translate.instant('LOGIN.ERR_AUTH_FAILED');
       }
     });
   }

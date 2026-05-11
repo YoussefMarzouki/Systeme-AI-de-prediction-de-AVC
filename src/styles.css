@@ -39,6 +39,30 @@
   /* Layout */
   --sidebar-width: 260px;
   --header-height: 64px;
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #94a3b8;
+}
+
+/* Dark Mode Overrides */
+.dark-mode {
+  --color-bg-main: #0f172a; /* Slate 900 */
+  --color-bg-card: #1e293b; /* Slate 800 */
+  --color-bg-input: #334155; /* Slate 700 */
+  --color-bg-sidebar: #0f172a; /* Slate 900 */
+  
+  --color-primary: #3b82f6; /* Blue 500 */
+  --color-primary-hover: #60a5fa; /* Blue 400 */
+  --color-primary-light: rgba(59, 130, 246, 0.1);
+  
+  --color-text-main: #f8fafc; /* Slate 50 */
+  --color-text-body: #cbd5e1; /* Slate 300 */
+  --color-text-muted: #94a3b8; /* Slate 400 */
+  
+  --color-border: #334155; /* Slate 700 */
+
+  /* Dark mode scrollbar */
+  --scrollbar-thumb: #334155;
+  --scrollbar-thumb-hover: #475569;
 }
 
 /* ── Reset ─────────────────────────────────── */
@@ -66,11 +90,11 @@ html, body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--scrollbar-thumb);
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* ── Form Globals ──────────────────────────── */
@@ -133,4 +157,24 @@ button {
     border: 0 !important;
     box-shadow: none !important;
   }
+}
+
+/* ── RTL Support ───────────────────────────── */
+[dir="rtl"] {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+[dir="rtl"] .sidebar {
+  border-right: none;
+  border-left: 1px solid var(--color-border);
+}
+
+[dir="rtl"] .nav-icon {
+  margin-right: 0;
+  margin-left: 12px;
+}
+
+[dir="rtl"] .user-avatar-wrap {
+  margin-right: 8px;
+  margin-left: 0;
 }

@@ -23,11 +23,12 @@ import { Router } from '@angular/router';
 import { PatientService } from '../../services/patient.service';
 import { DossierService } from '../../services/dossier.service';
 import { StateService } from '../../services/state.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-registration',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule],
   templateUrl: './registration.component.html',
   styleUrl: './registration.component.css'
 })

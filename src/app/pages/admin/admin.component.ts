@@ -5,10 +5,12 @@ import { UtilisateurService } from '../../services/utilisateur.service';
 import { Utilisateur } from '../../models/utilisateur.model';
 import { AuthService } from '../../services/auth.service';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.css'
 })
@@ -93,9 +95,9 @@ export class AdminComponent implements OnInit {
 
   getRoleLabel(type: string): string {
     switch (type) {
-      case 'medecin': return 'Doctor';
-      case 'agent_accueil': return 'Agent';
-      case 'admin': return 'Admin';
+      case 'medecin': return 'DOCTOR';
+      case 'agent_accueil': return 'AGENT';
+      case 'admin': return 'ADMIN';
       default: return type;
     }
   }
