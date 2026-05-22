@@ -43,4 +43,14 @@ export class PredictionService {
     };
     return this.http.post(`${this.apiUrl}/${this.state.dossierId}/predict`, payload, { headers: this.state.getAuthHeaders() });
   }
+
+  /**
+   * Finalize batch predictions by saving the merged prediction to the backend.
+   */
+  finalizePrediction(prediction: any): Observable<any> {
+    const payload = {
+      prediction: prediction
+    };
+    return this.http.post(`${this.apiUrl}/${this.state.dossierId}/predict/finalize`, payload, { headers: this.state.getAuthHeaders() });
+  }
 }

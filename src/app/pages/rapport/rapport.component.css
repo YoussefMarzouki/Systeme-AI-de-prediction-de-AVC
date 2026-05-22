@@ -617,6 +617,154 @@
   font-weight: 500;
 }
 
+/* ── Volumetric Scan Directory Badge ────────── */
+.slice-count-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  background: var(--color-primary-light, #eff6ff);
+  color: var(--color-primary, #1d4ed8);
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 12px;
+  border: 1px solid rgba(29, 78, 216, 0.15);
+  margin-left: 12px;
+}
+
+/* ── Volumetric Scan Interactive Viewer (Single Slice Navigation) ── */
+.mri-viewer-container {
+  width: 100%;
+  margin-bottom: 16px;
+  background: #090d16;
+  border-radius: 6px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  overflow: hidden;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.mri-viewer-display {
+  position: relative;
+  width: 100%;
+  height: 380px; /* Slightly taller for higher fidelity detailed scanning, matching modern UI */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000000;
+}
+
+.mri-viewer-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Arrow buttons */
+.mri-viewer-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(21, 70, 184, 0.85); /* Cohesive StrokeAI brand indigo */
+  border: none;
+  color: #ffffff;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 20;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mri-viewer-arrow:hover {
+  background: rgb(21, 70, 184);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.mri-viewer-arrow:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.left-arrow {
+  left: 20px;
+}
+
+.right-arrow {
+  right: 20px;
+}
+
+/* Primary Pathology Badge */
+.slice-primary-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+  background: var(--color-primary, #1d4ed8);
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Overlay footer inside the viewer */
+.mri-viewer-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+  padding: 16px 20px;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.mri-viewer-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mri-viewer-tag {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.mri-viewer-risk {
+  font-size: 13px;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Risk Colors */
+.risk-text-high {
+  color: #ef4444; /* Vivid premium red */
+  font-weight: 700;
+}
+
+.risk-text-medium {
+  color: #f59e0b; /* Vibrant gold */
+  font-weight: 700;
+}
+
+.risk-text-low {
+  color: #10b981; /* Premium emerald */
+  font-weight: 700;
+}
+
+.risk-text-unknown {
+  color: var(--color-text-muted, #64748b);
+  font-weight: 500;
+}
+
 /* ── Responsive & Print ───────────────────── */
 @media print {
   .rapport-container {

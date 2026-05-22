@@ -1261,3 +1261,86 @@
   .edit-secondary-btn,
   .edit-primary-btn { width: 100%; }
 }
+
+:host-context(html[dir="rtl"]) .dashboard {
+  direction: rtl;
+  text-align: right;
+}
+
+:host-context(html[dir="rtl"]) .page-header,
+:host-context(html[dir="rtl"]) .table-title-row,
+:host-context(html[dir="rtl"]) .table-title-group,
+:host-context(html[dir="rtl"]) .table-filter-group {
+  direction: rtl;
+}
+
+:host-context(html[dir="rtl"]) .patient-cell,
+:host-context(html[dir="rtl"]) .probability-cell,
+:host-context(html[dir="rtl"]) .risk-badge,
+:host-context(html[dir="rtl"]) .status-badge,
+:host-context(html[dir="rtl"]) .action-btn,
+:host-context(html[dir="rtl"]) .delete-header,
+:host-context(html[dir="rtl"]) .edit-header,
+:host-context(html[dir="rtl"]) .history-header-content,
+:host-context(html[dir="rtl"]) .history-patient-card,
+:host-context(html[dir="rtl"]) .timeline-card-header,
+:host-context(html[dir="rtl"]) .timeline-date-group,
+:host-context(html[dir="rtl"]) .rapport-status-row,
+:host-context(html[dir="rtl"]) .timeline-footer {
+  flex-direction: row-reverse;
+}
+
+:host-context(html[dir="rtl"]) .header-left,
+:host-context(html[dir="rtl"]) .table-title-group {
+  margin-left: auto;
+}
+
+:host-context(html[dir="rtl"]) .header-actions,
+:host-context(html[dir="rtl"]) .table-filter-group {
+  margin-right: auto;
+}
+
+:host-context(html[dir="rtl"]) .data-table {
+  direction: rtl;
+}
+
+:host-context(html[dir="rtl"]) .data-table th,
+:host-context(html[dir="rtl"]) .data-table td {
+  text-align: right;
+}
+
+:host-context(html[dir="rtl"]) .data-table th.text-right,
+:host-context(html[dir="rtl"]) .data-table td.text-right {
+  text-align: left;
+}
+
+:host-context(html[dir="rtl"]) .action-group {
+  justify-content: flex-start;
+  flex-direction: row-reverse;
+}
+
+:host-context(html[dir="rtl"]) .stat-card {
+  align-items: flex-end;
+  text-align: right;
+}
+
+:host-context(html[dir="rtl"]) .history-panel {
+  right: auto;
+  left: 0;
+  transform: translateX(-100%);
+  box-shadow: 8px 0 32px rgba(0, 0, 0, 0.12);
+}
+
+:host-context(html[dir="rtl"]) .history-panel.open {
+  transform: translateX(0);
+}
+
+:host-context(html[dir="rtl"]) .timeline-item {
+  flex-direction: row-reverse;
+}
+
+:host-context(html[dir="rtl"]) .edit-field input,
+:host-context(html[dir="rtl"]) .edit-field select {
+  direction: rtl;
+  text-align: right;
+}

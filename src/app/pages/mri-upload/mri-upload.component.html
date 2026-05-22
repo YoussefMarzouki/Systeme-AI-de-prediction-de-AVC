@@ -55,9 +55,14 @@
       <div class="upload-text">
         <span class="highlight">Click to upload</span> or drag and drop
       </div>
-      <div class="upload-hint">1.5T or 3T structural MRI scan (e.g. T1, T2, FLAIR). JPG, PNG, DICOM.</div>
+      <div class="upload-hint">Upload up to 5 structural MRI slices (e.g. T1, T2, FLAIR). JPG, PNG, DICOM.</div>
       
-      <input type="file" class="file-input" (change)="onFileSelect($event)" accept="image/*,.dcm" id="mriUpload" />
+      <input type="file" class="file-input" (change)="onFileSelect($event)" accept="image/*,.dcm" id="mriUpload" multiple />
+    </div>
+
+    <div class="slice-counter" style="margin-top: 12px; display: flex; justify-content: space-between; font-size: 13px; color: var(--color-text-muted);">
+      <span>Uploaded slices: <strong>{{ uploadedFiles.length }} / 5</strong></span>
+      <span *ngIf="uploadedFiles.length === 5" style="color: var(--color-success-text); font-weight: 600;">Maximum limit reached</span>
     </div>
 
     <div class="file-list" *ngIf="uploadedFiles.length > 0">
@@ -89,7 +94,7 @@
   <div class="action-footer">
     <button class="btn btn-secondary" (click)="onDoItLater()">Do it later & Return</button>
     <button class="btn btn-primary" 
-            [disabled]="isSubmitting || uploadedFiles.length === 0 || uploadedFiles[0].status === 'Uploading...'"
+            [disabled]="isSubmitting || uploadedFiles.length === 0 || hasUploadingFiles() || uploadedFiles.length > 5"
             (click)="onSubmitAnalysis()" 
             id="analyzeBtn">
       <span class="spinner" *ngIf="isSubmitting"></span>

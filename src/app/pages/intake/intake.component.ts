@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { PatientService } from '../../services/patient.service';
 import { DossierService } from '../../services/dossier.service';
@@ -17,10 +18,17 @@ interface UploadedFile {
   url?: string;
 }
 
+interface SymptomOption {
+  labelKey: string;
+  value: string;
+  icon: string;
+  checked: boolean;
+}
+
 @Component({
   selector: 'app-intake',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule],
   templateUrl: './intake.component.html',
   styleUrl: './intake.component.css'
 })
@@ -38,15 +46,15 @@ export class IntakeComponent {
     cin: ''
   };
 
-  symptoms = [
-    { label: 'Balance/Vision Impairment', icon: 'eye', checked: false },
-    { label: 'Facial Droop', icon: 'face', checked: false },
-    { label: 'Arm Weakness', icon: 'arm', checked: false },
-    { label: 'Speech Difficulty', icon: 'speech', checked: false },
-    { label: 'Severe Headache', icon: 'head', checked: false },
-    { label: 'Leg Weakness', icon: 'leg', checked: false },
-    { label: 'Confusion', icon: 'brain', checked: false },
-    { label: 'Numbness', icon: 'numb', checked: false }
+  symptoms: SymptomOption[] = [
+    { labelKey: 'INTAKE.SYMPTOM_BALANCE_VISION', value: 'Balance/Vision Impairment', icon: 'eye', checked: false },
+    { labelKey: 'INTAKE.SYMPTOM_FACIAL_DROOP', value: 'Facial Droop', icon: 'face', checked: false },
+    { labelKey: 'INTAKE.SYMPTOM_ARM_WEAKNESS', value: 'Arm Weakness', icon: 'arm', checked: false },
+    { labelKey: 'INTAKE.SYMPTOM_SPEECH_DIFFICULTY', value: 'Speech Difficulty', icon: 'speech', checked: false },
+    { labelKey: 'INTAKE.SYMPTOM_SEVERE_HEADACHE', value: 'Severe Headache', icon: 'head', checked: false },
+    { labelKey: 'INTAKE.SYMPTOM_LEG_WEAKNESS', value: 'Leg Weakness', icon: 'leg', checked: false },
+    { labelKey: 'INTAKE.SYMPTOM_CONFUSION', value: 'Confusion', icon: 'brain', checked: false },
+    { labelKey: 'INTAKE.SYMPTOM_NUMBNESS', value: 'Numbness', icon: 'numb', checked: false }
   ];
 
   uploadedFiles: UploadedFile[] = [];
@@ -59,7 +67,8 @@ export class IntakeComponent {
     public stateService: StateService,
     private imageIrmService: ImageIrmService,
     private donneesCliniquesService: DonneesCliniquesService,
-    private predictionService: PredictionService
+    private predictionService: PredictionService,
+    private translate: TranslateService
   ) {
     this.intakeForm = this.fb.group({
       patientSearch: [''],
@@ -201,7 +210,7 @@ export class IntakeComponent {
     if (this.isSubmitting) return;
     this.isSubmitting = true;
 
-    const activeSymptoms = this.symptoms.filter(s => s.checked).map(s => s.label);
+    const activeSymptoms = this.symptoms.filter(s => s.checked).map(s => s.value);
     const tensionValue = this.intakeForm.get('tension')?.value;
     const onsetTime = this.intakeForm.get('symptomOnsetTime')?.value;
     
@@ -249,7 +258,7 @@ export class IntakeComponent {
             this.stateService.setPatientId(res.patient_id);
             this.createDossierAndContinue(fastData, notes);
           },
-          error: () => { this.isSubmitting = false; alert("Failed to create manual patient."); }
+          error: () => { this.isSubmitting = false; alert(this.translate.instant('INTAKE.ERR_CREATE_PATIENT')); }
         });
       } else {
         // Patient exists, just create dossier
@@ -269,7 +278,7 @@ export class IntakeComponent {
       },
       error: () => {
         this.isSubmitting = false;
-        alert("Failed to create dossier.");
+        alert(this.translate.instant('INTAKE.ERR_CREATE_DOSSIER'));
       }
     });
   }
@@ -295,13 +304,13 @@ export class IntakeComponent {
           });
         } else {
           this.isSubmitting = false;
-          alert("Failed to save clinical data.");
+          alert(this.translate.instant('INTAKE.ERR_SAVE_CLINICAL_DATA'));
         }
       },
       error: (err) => {
         console.error('Save symptoms error:', err);
         this.isSubmitting = false;
-        alert("Wait, there was an issue saving clinical data.");
+        alert(this.translate.instant('INTAKE.ERR_SAVE_CLINICAL_DATA_ISSUE'));
       }
     });
   }

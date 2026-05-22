@@ -275,3 +275,53 @@
   .table-title-row { flex-direction: column; align-items: flex-start; gap: 12px; }
   .table-filter-group { flex-wrap: wrap; }
 }
+
+:host-context(html[dir="rtl"]) .dashboard {
+  direction: rtl;
+  text-align: right;
+}
+
+:host-context(html[dir="rtl"]) .page-header,
+:host-context(html[dir="rtl"]) .table-title-row,
+:host-context(html[dir="rtl"]) .table-title-group,
+:host-context(html[dir="rtl"]) .table-filter-group {
+  direction: rtl;
+}
+
+:host-context(html[dir="rtl"]) .header-left,
+:host-context(html[dir="rtl"]) .table-title-group {
+  margin-left: auto;
+}
+
+:host-context(html[dir="rtl"]) .header-actions,
+:host-context(html[dir="rtl"]) .table-filter-group {
+  margin-right: auto;
+}
+
+:host-context(html[dir="rtl"]) .header-breadcrumb,
+:host-context(html[dir="rtl"]) .btn-refresh,
+:host-context(html[dir="rtl"]) .filter-chip,
+:host-context(html[dir="rtl"]) .patient-cell,
+:host-context(html[dir="rtl"]) .probability-cell,
+:host-context(html[dir="rtl"]) .risk-badge {
+  flex-direction: row-reverse;
+}
+
+:host-context(html[dir="rtl"]) .data-table {
+  direction: rtl;
+}
+
+:host-context(html[dir="rtl"]) .data-table th,
+:host-context(html[dir="rtl"]) .data-table td {
+  text-align: right;
+}
+
+:host-context(html[dir="rtl"]) .data-table th.text-right,
+:host-context(html[dir="rtl"]) .data-table td.text-right {
+  text-align: left;
+}
+
+:host-context(html[dir="rtl"]) .relative.z-10.flex,
+:host-context(html[dir="rtl"]) .flex.justify-between {
+  flex-direction: row-reverse;
+}

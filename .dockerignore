@@ -1,0 +1,11 @@
+node_modules/
+.angular/
+dist/
+.git/
+.gitignore
+.editorconfig
+.vscode/
+build_log.txt
+build_output.txt
+FILES.md
+README.md

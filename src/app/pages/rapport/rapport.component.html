@@ -79,11 +79,62 @@
               </svg>
             </div>
             <h3 class="analysis-title">MRI Analysis</h3>
+            <span *ngIf="predictionData.all_slices && predictionData.all_slices.length > 1" class="slice-count-badge">
+              {{ predictionData.all_slices.length }} Slices
+            </span>
           </div>
 
-          <div *ngIf="imageUrl" class="mri-preview">
-            <img [src]="imageUrl" alt="Patient MRI Scan" class="mri-image"/>
+          <!-- Volumetric Scan Interactive Viewer (Single Slice Navigation) -->
+          <div *ngIf="predictionData.all_slices && predictionData.all_slices.length > 0; else singleMriFallback" class="mri-viewer-container">
+            <div class="mri-viewer-display">
+              <!-- PRIMARY PATHOLOGY badge on the active slice -->
+              <div class="slice-primary-badge" *ngIf="predictionData.all_slices[currentSliceIndex].imageUrl === imageUrl">
+                PRIMARY PATHOLOGY
+              </div>
+
+              <!-- Main Slice Image -->
+              <img [src]="predictionData.all_slices[currentSliceIndex].imageUrl" 
+                   alt="MRI Slice {{ currentSliceIndex + 1 }}" 
+                   class="mri-viewer-image"/>
+
+              <!-- Individual Slice Details Overlay at bottom -->
+              <div class="mri-viewer-overlay">
+                <div class="mri-viewer-meta">
+                  <span class="mri-viewer-tag">Slice {{ currentSliceIndex + 1 }} of {{ totalSlices }}</span>
+                  <span class="mri-viewer-risk" [ngClass]="getSliceRiskColorClass(predictionData.all_slices[currentSliceIndex].probability)">
+                    {{ predictionData.all_slices[currentSliceIndex].probability | percent:'1.1-2' }} Risk
+                  </span>
+                </div>
+              </div>
+
+              <!-- Left Arrow Button -->
+              <button *ngIf="currentSliceIndex > 0" 
+                      (click)="prevSlice()" 
+                      class="mri-viewer-arrow left-arrow" 
+                      title="Previous Slice">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+
+              <!-- Right Arrow Button -->
+              <button *ngIf="currentSliceIndex < totalSlices - 1" 
+                      (click)="nextSlice()" 
+                      class="mri-viewer-arrow right-arrow" 
+                      title="Next Slice">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+            </div>
           </div>
+
+          <!-- Single MRI Fallback -->
+          <ng-template #singleMriFallback>
+            <div *ngIf="imageUrl" class="mri-preview">
+              <img [src]="imageUrl" alt="Patient MRI Scan" class="mri-image"/>
+            </div>
+          </ng-template>
           <div *ngIf="!imageUrl" class="mri-placeholder">
             <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
               <rect x="4" y="4" width="24" height="24" rx="4" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4 3"/>
@@ -102,7 +153,7 @@
               </div>
             </div>
             <div class="metric-row">
-              <span class="metric-label">Image Probability</span>
+              <span class="metric-label">{{ (predictionData.all_slices && predictionData.all_slices.length > 1) ? 'Image Probability (Avg)' : 'Image Probability' }}</span>
               <span class="metric-value highlight-indigo">{{ predictionData.image_probability != null ? (predictionData.image_probability | percent:'1.1-2') : 'N/A' }}</span>
             </div>
           </div>

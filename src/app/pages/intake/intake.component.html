@@ -3,10 +3,10 @@
   <div class="page-header">
     <div class="header-breadcrumb">
       <span class="breadcrumb-dot"></span>
-      <span class="breadcrumb-text">CLINICAL INTAKE</span>
+      <span class="breadcrumb-text">{{ 'INTAKE.BREADCRUMB' | translate }}</span>
     </div>
-    <h1 class="page-title">New Patient Intake</h1>
-    <p class="page-subtitle">Acute Stroke Assessment Protocol — Select an existing patient to begin analysis, or enter details manually.</p>
+    <h1 class="page-title">{{ 'INTAKE.TITLE' | translate }}</h1>
+    <p class="page-subtitle">{{ 'INTAKE.SUBTITLE' | translate }}</p>
   </div>
 
   <div class="form-content">
@@ -20,11 +20,11 @@
             <path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
         </div>
-        <h2 class="card-title">Patient Selection</h2>
+        <h2 class="card-title">{{ 'INTAKE.PATIENT_SELECTION' | translate }}</h2>
       </div>
 
       <form [formGroup]="intakeForm">
-        <label class="form-label">SEARCH PATIENT BY NAME OR CIN</label>
+        <label class="form-label">{{ 'INTAKE.SEARCH_PATIENT' | translate }}</label>
         <div class="search-row">
           <div class="search-input-wrap">
             <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -33,7 +33,7 @@
             </svg>
             <input type="text"
                    formControlName="patientSearch"
-                   placeholder="e.g. John Doe or CIN number"
+                   [placeholder]="'INTAKE.SEARCH_PLACEHOLDER' | translate"
                    class="form-input search-input"
                    (keyup.enter)="onSearchPatient()" />
           </div>
@@ -49,45 +49,45 @@
             </svg>
           </div>
           <div class="patient-detail">
-            <span class="patient-detail-label">PATIENT NAME</span>
+            <span class="patient-detail-label">{{ 'INTAKE.PATIENT_NAME' | translate }}</span>
             <span class="patient-detail-value">{{ selectedPatient.name }}</span>
           </div>
           <div class="patient-detail">
-            <span class="patient-detail-label">DATE OF BIRTH</span>
+            <span class="patient-detail-label">{{ 'INTAKE.DATE_OF_BIRTH' | translate }}</span>
             <span class="patient-detail-value">{{ selectedPatient.dob }}</span>
           </div>
           <div class="patient-detail">
-            <span class="patient-detail-label">NATIONAL ID</span>
+            <span class="patient-detail-label">{{ 'INTAKE.NATIONAL_ID' | translate }}</span>
             <span class="patient-detail-value patient-cin">{{ selectedPatient.cin }}</span>
           </div>
-          <button type="button" class="change-patient-btn" (click)="onChangePatient()">Change Patient</button>
+          <button type="button" class="change-patient-btn" (click)="onChangePatient()">{{ 'INTAKE.CHANGE_PATIENT' | translate }}</button>
         </div>
 
         <!-- Patient Not Found — Manual Entry -->
         <div class="not-found-prompt" *ngIf="!patientFound && !showManualEntry">
           <button type="button" class="link-btn" (click)="onPatientNotFound()">
-            Patient not in system? Enter details manually
+            {{ 'INTAKE.MANUAL_ENTRY_LINK' | translate }}
           </button>
         </div>
 
         <!-- Manual Demographics Entry (fallback) -->
         <div class="manual-entry" *ngIf="showManualEntry">
           <div class="manual-entry-header">
-            <span class="manual-entry-badge">MANUAL ENTRY</span>
-            <span class="manual-entry-desc">Patient not found — please fill in demographics below.</span>
+            <span class="manual-entry-badge">{{ 'INTAKE.MANUAL_ENTRY' | translate }}</span>
+            <span class="manual-entry-desc">{{ 'INTAKE.MANUAL_ENTRY_DESC' | translate }}</span>
           </div>
           <div class="form-row three-col">
             <div class="form-group">
-              <label class="form-label">FULL NAME</label>
-              <input type="text" formControlName="fullName" placeholder="e.g. John Doe" class="form-input" />
+              <label class="form-label">{{ 'INTAKE.FULL_NAME' | translate }}</label>
+              <input type="text" formControlName="fullName" [placeholder]="'INTAKE.FULL_NAME_PLACEHOLDER' | translate" class="form-input" />
             </div>
             <div class="form-group">
-              <label class="form-label">DATE OF BIRTH</label>
+              <label class="form-label">{{ 'INTAKE.DATE_OF_BIRTH' | translate }}</label>
               <input type="date" formControlName="dateOfBirth" placeholder="mm/dd/yyyy" class="form-input" />
             </div>
             <div class="form-group">
-              <label class="form-label">NATIONAL ID</label>
-              <input type="text" formControlName="cin" placeholder="e.g. AB123456" class="form-input" />
+              <label class="form-label">{{ 'INTAKE.NATIONAL_ID' | translate }}</label>
+              <input type="text" formControlName="cin" [placeholder]="'INTAKE.NATIONAL_ID_PLACEHOLDER' | translate" class="form-input" />
             </div>
           </div>
         </div>
@@ -102,7 +102,7 @@
             <path d="M10 2l1.5 4.5H16l-3.5 2.5 1.5 4.5L10 11l-4 2.5 1.5-4.5L4 6.5h4.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="currentColor" fill-opacity="0.15"/>
           </svg>
         </div>
-        <h2 class="card-title">Clinical Symptoms</h2>
+        <h2 class="card-title">{{ 'INTAKE.CLINICAL_SYMPTOMS' | translate }}</h2>
       </div>
 
       <div class="symptoms-grid">
@@ -142,7 +142,7 @@
               <path d="M9 3v12M4 8h10M6 5.5l6 7M12 5.5l-6 7" stroke="#475569" stroke-width="1.5" stroke-dasharray="1 3" stroke-linecap="round"/>
             </svg>
           </span>
-          <span class="symptom-label">{{ symptom.label }}</span>
+          <span class="symptom-label">{{ symptom.labelKey | translate }}</span>
           <div class="symptom-checkbox" [class.checked]="symptom.checked">
             <svg *ngIf="symptom.checked" width="12" height="12" viewBox="0 0 12 12" fill="none">
               <path d="M2.5 6l3 3 4.5-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -155,7 +155,7 @@
       <form [formGroup]="intakeForm">
         <div class="onset-row">
           <div class="form-group onset-time">
-            <label class="form-label">TIME OF SYMPTOM ONSET</label>
+            <label class="form-label">{{ 'INTAKE.SYMPTOM_ONSET_TIME' | translate }}</label>
             <div class="time-input-wrap">
               <input type="time" formControlName="symptomOnsetTime" class="form-input" placeholder="--:-- --" />
             </div>
@@ -165,14 +165,14 @@
         <div class="vital-signs-row" style="margin-top: 1.5rem;">
           <div class="form-group" style="width: 100%;">
             <label class="form-label" style="display: flex; justify-content: space-between;">
-              BLOOD PRESSURE
+              {{ 'INTAKE.BLOOD_PRESSURE' | translate }}
               <span style="color: #ef4444; font-weight: 600;">{{ intakeForm.get('tension')?.value }} mmHg</span>
             </label>
             <input type="range" formControlName="tension" min="70" max="250" step="1" style="width: 100%; margin-top: 0.75rem;" />
             <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #64748b; margin-top: 0.5rem; text-transform: uppercase;">
-              <span>70 Low</span>
-              <span>120 Normal</span>
-              <span>250+ High Risk</span>
+              <span>{{ 'INTAKE.BP_LOW' | translate }}</span>
+              <span>{{ 'INTAKE.BP_NORMAL' | translate }}</span>
+              <span>{{ 'INTAKE.BP_HIGH_RISK' | translate }}</span>
             </div>
           </div>
         </div>
@@ -187,12 +187,12 @@
             <path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
         </div>
-        <h2 class="card-title">Triage Notes</h2>
+        <h2 class="card-title">{{ 'INTAKE.TRIAGE_NOTES' | translate }}</h2>
       </div>
 
       <form [formGroup]="intakeForm">
         <textarea formControlName="triageNotes"
-                  placeholder="Enter additional clinical observations, medications, or relevant patient history..."
+                  [placeholder]="'INTAKE.TRIAGE_NOTES_PLACEHOLDER' | translate"
                   class="form-textarea"
                   rows="5"></textarea>
       </form>
@@ -202,11 +202,11 @@
 
   <!-- Action Bar -->
   <div class="action-bar">
-    <button class="btn btn-ghost" type="button" (click)="onDiscardDraft()">Discard Draft</button>
+    <button class="btn btn-ghost" type="button" (click)="onDiscardDraft()">{{ 'INTAKE.DISCARD_DRAFT' | translate }}</button>
     <div class="action-bar-right">
       <button class="btn btn-primary" type="button" (click)="onSubmitAnalysis()" id="analyzeBtn" [disabled]="isSubmitting">
         <span *ngIf="isSubmitting" class="spinner"></span>
-        {{ isSubmitting ? 'Saving...' : 'Next: Upload MRI' }}
+        {{ (isSubmitting ? 'INTAKE.SAVING' : 'INTAKE.NEXT_UPLOAD_MRI') | translate }}
       </button>
     </div>
   </div>

@@ -27,14 +27,14 @@ export class AdminDashboardComponent implements OnInit {
       descKey: 'ADMIN_DASHBOARD.PATIENT_DESC',
       route: '/admin/patients',
       icon: 'patients',
-      metric: 'Records'
+      metricKey: 'ADMIN_DASHBOARD.RECORDS'
     },
     {
       titleKey: 'ADMIN_DASHBOARD.USER_MGMT',
       descKey: 'ADMIN_DASHBOARD.USER_DESC',
       route: '/admin/users',
       icon: 'users',
-      metric: 'Accounts'
+      metricKey: 'ADMIN_DASHBOARD.ACCOUNTS'
     }
   ];
 

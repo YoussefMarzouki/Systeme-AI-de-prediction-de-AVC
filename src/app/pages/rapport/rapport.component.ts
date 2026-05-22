@@ -18,6 +18,9 @@ export class RapportComponent implements OnInit, OnDestroy {
   exportError = '';
   exportLoading = false;
 
+  currentSliceIndex = 0;
+  totalSlices = 0;
+
   constructor(private router: Router) {
     const navigation = this.router.getCurrentNavigation();
     if (navigation?.extras.state) {
@@ -34,6 +37,33 @@ export class RapportComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (!this.predictionData) {
       console.warn("No prediction data provided.");
+    } else {
+      this.initializeSliceViewer();
+    }
+  }
+
+  initializeSliceViewer(): void {
+    const slices = this.predictionData.all_slices || [];
+    this.totalSlices = slices.length;
+    
+    // Set starting slice index to the representative one matching this.imageUrl
+    if (this.totalSlices > 0 && this.imageUrl) {
+      const idx = slices.findIndex((s: any) => s.imageUrl === this.imageUrl);
+      if (idx !== -1) {
+        this.currentSliceIndex = idx;
+      }
+    }
+  }
+
+  prevSlice(): void {
+    if (this.currentSliceIndex > 0) {
+      this.currentSliceIndex--;
+    }
+  }
+
+  nextSlice(): void {
+    if (this.currentSliceIndex < this.totalSlices - 1) {
+      this.currentSliceIndex++;
     }
   }
 
@@ -110,6 +140,13 @@ export class RapportComponent implements OnInit, OnDestroy {
       default:
         return 'risk-unknown';
     }
+  }
+
+  getSliceRiskColorClass(prob: number): string {
+    if (prob == null) return 'risk-text-unknown';
+    if (prob >= 0.6) return 'risk-text-high';
+    if (prob >= 0.2) return 'risk-text-medium';
+    return 'risk-text-low';
   }
 
   exportPdf() {

@@ -330,3 +330,44 @@ tr:hover td {
 .btn-cancel:hover { background: #e0e0e0; }
 .btn-submit:hover { box-shadow: 0 4px 12px rgba(21,101,192,0.3); }
 .btn-danger:hover { background: #b71c1c; }
+
+:host-context(html[dir="rtl"]) .admin-page {
+  direction: rtl;
+  text-align: right;
+}
+
+:host-context(html[dir="rtl"]) .page-header,
+:host-context(html[dir="rtl"]) .toolbar,
+:host-context(html[dir="rtl"]) .modal-actions {
+  direction: rtl;
+}
+
+:host-context(html[dir="rtl"]) .search-icon {
+  margin-right: 0;
+  margin-left: 8px;
+}
+
+:host-context(html[dir="rtl"]) .search-box input,
+:host-context(html[dir="rtl"]) .form-group input,
+:host-context(html[dir="rtl"]) .form-group select {
+  direction: rtl;
+  text-align: right;
+}
+
+:host-context(html[dir="rtl"]) table {
+  direction: rtl;
+}
+
+:host-context(html[dir="rtl"]) th,
+:host-context(html[dir="rtl"]) td {
+  text-align: right;
+}
+
+:host-context(html[dir="rtl"]) .actions-cell {
+  justify-content: flex-start;
+}
+
+:host-context(html[dir="rtl"]) .checkbox-label {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}

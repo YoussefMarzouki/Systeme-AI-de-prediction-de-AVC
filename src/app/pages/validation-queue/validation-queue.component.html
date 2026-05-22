@@ -4,9 +4,9 @@
     <div class="header-left">
       <div class="header-breadcrumb">
         <span class="breadcrumb-dot"></span>
-        <span class="breadcrumb-text">MÉDECIN SPÉCIALISTE</span>
+        <span class="breadcrumb-text">{{ 'VALIDATION_QUEUE.SPECIALIST' | translate }}</span>
       </div>
-      <h1 class="page-title">Pending Validation Queue</h1>
+      <h1 class="page-title">{{ 'VALIDATION_QUEUE.TITLE' | translate }}</h1>
     </div>
     <div class="header-actions">
       <button class="btn-refresh" (click)="loadQueue()">
@@ -14,7 +14,7 @@
           <path d="M2 8a6 6 0 0110.89-3.48M14 8a6 6 0 01-10.89 3.48" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           <path d="M14 2v4h-4M2 14v-4h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        Refresh
+        {{ 'VALIDATION_QUEUE.REFRESH' | translate }}
       </button>
     </div>
   </div>
@@ -24,18 +24,18 @@
     <div class="table-header">
       <div class="table-title-row">
         <div class="table-title-group">
-          <h2 class="table-title">Patient Assessments Queue</h2>
-          <span class="table-count">{{ cases.length }} records</span>
+          <h2 class="table-title">{{ 'VALIDATION_QUEUE.PATIENT_ASSESSMENTS_QUEUE' | translate }}</h2>
+          <span class="table-count">{{ cases.length }} {{ 'VALIDATION_QUEUE.RECORDS' | translate }}</span>
         </div>
         <div class="table-filter-group">
           <button class="filter-chip" [class.active]="currentTab === 'PENDING_VALIDATION'" (click)="setTab('PENDING_VALIDATION')">
-            Pending
+            {{ 'VALIDATION_QUEUE.PENDING' | translate }}
           </button>
           <button class="filter-chip" [class.active]="currentTab === 'VALIDATED'" (click)="setTab('VALIDATED')">
-            <span class="filter-dot green"></span> Validated
+            <span class="filter-dot green"></span> {{ 'VALIDATION_QUEUE.VALIDATED' | translate }}
           </button>
           <button class="filter-chip" [class.active]="currentTab === 'REJECTED'" (click)="setTab('REJECTED')">
-            <span class="filter-dot red"></span> Rejected
+            <span class="filter-dot red"></span> {{ 'VALIDATION_QUEUE.REJECTED' | translate }}
           </button>
         </div>
       </div>
@@ -45,12 +45,12 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>Patient</th>
-            <th>Modality</th>
-            <th>AI Score</th>
-            <th>Time Since Onset</th>
-            <th>Status</th>
-            <th class="text-right">Actions</th>
+            <th>{{ 'VALIDATION_QUEUE.PATIENT' | translate }}</th>
+            <th>{{ 'VALIDATION_QUEUE.MODALITY' | translate }}</th>
+            <th>{{ 'VALIDATION_QUEUE.AI_SCORE' | translate }}</th>
+            <th>{{ 'VALIDATION_QUEUE.TIME_SINCE_ONSET' | translate }}</th>
+            <th>{{ 'VALIDATION_QUEUE.STATUS' | translate }}</th>
+            <th class="text-right">{{ 'VALIDATION_QUEUE.ACTIONS' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -65,11 +65,11 @@
                   </div>
                   <div class="patient-info">
                     <span class="patient-name">{{case.patient_name}}</span>
-                    <span class="patient-cin">ID: {{case.patient_id}} - {{case.patient_gender}}, {{case.patient_age}}</span>
+                    <span class="patient-cin">{{ 'VALIDATION_QUEUE.ID' | translate }}: {{case.patient_id}} - {{case.patient_gender}}, {{case.patient_age}}</span>
                   </div>
                 </div>
               </td>
-              <td><span class="date-cell">{{case.modality}}</span></td>
+              <td><span class="date-cell">{{ getModalityKey(case.modality) | translate }}</span></td>
               <td>
                 <div class="probability-cell">
                   <span class="probability-value text-base">{{getAiScore(case) ?? 'N/A'}}<ng-container *ngIf="getAiScore(case) !== null">%</ng-container></span>
@@ -77,10 +77,10 @@
               </td>
               <td><span class="date-cell font-medium">{{case.time_since_onset}}</span></td>
               <td>
-                <span *ngIf="case.status === 'very-high-risk'" class="risk-badge risk-high"><span class="risk-dot"></span>Very High Risk</span>
-                <span *ngIf="case.status === 'high-risk'" class="risk-badge risk-medium"><span class="risk-dot"></span>High Risk</span>
-                <span *ngIf="case.status === 'medium'" class="risk-badge risk-unknown">Medium</span>
-                <span *ngIf="case.status === 'low'" class="risk-badge risk-low"><span class="risk-dot"></span>Low</span>
+                <span *ngIf="case.status === 'very-high-risk'" class="risk-badge risk-high"><span class="risk-dot"></span>{{ getRiskLabelKey(case.status) | translate }}</span>
+                <span *ngIf="case.status === 'high-risk'" class="risk-badge risk-medium"><span class="risk-dot"></span>{{ getRiskLabelKey(case.status) | translate }}</span>
+                <span *ngIf="case.status === 'medium'" class="risk-badge risk-unknown">{{ getRiskLabelKey(case.status) | translate }}</span>
+                <span *ngIf="case.status === 'low'" class="risk-badge risk-low"><span class="risk-dot"></span>{{ getRiskLabelKey(case.status) | translate }}</span>
               </td>
               <td class="text-right">
                 <svg class="w-5 h-5 text-gray-400 inline transition-transform" [ngClass]="{'rotate-180': expandedCaseId === case.dossier_id}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -102,44 +102,44 @@
                       </div>
                       <div>
                         <h2 class="text-lg font-bold text-gray-900 m-0">{{case.patient_name}}</h2>
-                        <p class="text-sm text-gray-500 m-0 mt-1">ID: {{case.patient_id}} - {{case.modality}} - {{case.patient_gender}}, {{case.patient_age}}</p>
+                        <p class="text-sm text-gray-500 m-0 mt-1">{{ 'VALIDATION_QUEUE.ID' | translate }}: {{case.patient_id}} - {{ getModalityKey(case.modality) | translate }} - {{case.patient_gender}}, {{case.patient_age}}</p>
                       </div>
                     </div>
                     <div>
-                       <span *ngIf="case.status === 'very-high-risk'" class="bg-red-100 text-red-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">● Very High Risk</span>
-                       <span *ngIf="case.status === 'high-risk'" class="bg-gray-200 text-gray-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">High Risk</span>
+                       <span *ngIf="case.status === 'very-high-risk'" class="bg-red-100 text-red-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">● {{ getRiskLabelKey(case.status) | translate }}</span>
+                       <span *ngIf="case.status === 'high-risk'" class="bg-gray-200 text-gray-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">{{ getRiskLabelKey(case.status) | translate }}</span>
                     </div>
                   </div>
             
                   <div *ngIf="case.status === 'very-high-risk'" class="grid grid-cols-3 gap-4 mb-6 relative z-10">
                     <div class="bg-gray-50 rounded-xl p-4">
-                      <div class="text-sm text-gray-500 mb-1">AI Probability (LVO)</div>
+                      <div class="text-sm text-gray-500 mb-1">{{ 'VALIDATION_QUEUE.AI_PROBABILITY_LVO' | translate }}</div>
                       <div class="text-3xl font-bold text-[#8A1538]">{{case.ai_irm_score || getAiScore(case)}}%</div>
                     </div>
                     <div class="bg-gray-50 rounded-xl p-4">
-                      <div class="text-sm text-gray-500 mb-1">Time Since Onset</div>
+                      <div class="text-sm text-gray-500 mb-1">{{ 'VALIDATION_QUEUE.TIME_SINCE_ONSET' | translate }}</div>
                       <div class="text-2xl font-bold text-gray-900 mt-1">{{case.time_since_onset}}</div>
                     </div>
                     <div class="bg-gray-50 rounded-xl p-4">
-                      <div class="text-sm text-gray-500 mb-1">Fused Score</div>
+                      <div class="text-sm text-gray-500 mb-1">{{ 'VALIDATION_QUEUE.FUSED_SCORE' | translate }}</div>
                       <div class="text-2xl font-bold text-gray-900 mt-1">{{ ((case.ai_probability_score || 0) * 100) | number:'1.0-0' }}%</div>
                     </div>
                   </div>
             
                   <div *ngIf="case.status === 'high-risk'" class="flex flex-col gap-4 mb-6 relative z-10">
                     <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                      <span class="text-gray-500 text-sm">AI Probability (ICH)</span>
+                      <span class="text-gray-500 text-sm">{{ 'VALIDATION_QUEUE.AI_PROBABILITY_ICH' | translate }}</span>
                       <span class="text-2xl font-bold text-gray-900">{{case.ai_irm_score || getAiScore(case)}}%</span>
                     </div>
                     <div class="flex justify-between items-center pb-2">
-                      <span class="text-gray-500 text-sm">Time Since Onset</span>
+                      <span class="text-gray-500 text-sm">{{ 'VALIDATION_QUEUE.TIME_SINCE_ONSET' | translate }}</span>
                       <span class="text-xl font-semibold text-gray-900">{{case.time_since_onset}}</span>
                     </div>
                   </div>
 
                   <div *ngIf="case.status === 'medium' || case.status === 'low'" class="flex flex-col gap-4 mb-6 relative z-10">
                     <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                      <span class="text-gray-500 text-sm">AI Probability</span>
+                      <span class="text-gray-500 text-sm">{{ 'VALIDATION_QUEUE.AI_PROBABILITY' | translate }}</span>
                       <span class="text-2xl font-bold text-gray-900">{{getAiScore(case)}}%</span>
                     </div>
                   </div>
@@ -152,7 +152,7 @@
                     <div *ngIf="case.status !== 'very-high-risk'"></div>
                     
                     <a [routerLink]="['/ms/case-evaluation', case.dossier_id]" [class]="case.status === 'very-high-risk' ? 'bg-[#1a56db] hover:bg-blue-700 text-white px-6 py-2.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 cursor-pointer no-underline' : 'bg-gray-100 hover:bg-gray-200 text-blue-700 px-6 py-2.5 rounded-full text-sm font-medium transition-colors cursor-pointer w-full text-center block no-underline'">
-                      {{ currentTab === 'PENDING_VALIDATION' ? 'Review Case' : 'View Report' }} <svg *ngIf="case.status === 'very-high-risk'" class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                      {{ (currentTab === 'PENDING_VALIDATION' ? 'VALIDATION_QUEUE.REVIEW_CASE' : 'VALIDATION_QUEUE.VIEW_REPORT') | translate }} <svg *ngIf="case.status === 'very-high-risk'" class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     </a>
                   </div>
                 </div>

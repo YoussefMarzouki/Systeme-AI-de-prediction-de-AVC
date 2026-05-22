@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 
 import { PatientService } from '../../services/patient.service';
 import { DossierService } from '../../services/dossier.service';
@@ -96,14 +97,29 @@ export class MriUploadComponent implements OnInit {
     event.preventDefault();
     this.isDragOver = false;
     if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
-      this.uploadFile(event.dataTransfer.files[0]);
+      this.handleFiles(event.dataTransfer.files);
     }
   }
 
   onFileSelect(event: any): void {
     if (event.target.files && event.target.files.length > 0) {
-      this.uploadFile(event.target.files[0]);
+      this.handleFiles(event.target.files);
     }
+  }
+
+  private handleFiles(files: FileList | File[]): void {
+    const remainingSlots = 5 - this.uploadedFiles.length;
+    if (remainingSlots <= 0) {
+      alert("You have already uploaded the maximum limit of 5 images.");
+      return;
+    }
+
+    const filesToUpload = Array.from(files).slice(0, remainingSlots);
+    if (files.length > remainingSlots) {
+      alert(`Only the first ${remainingSlots} image(s) were accepted. You can upload a maximum of 5 images.`);
+    }
+
+    filesToUpload.forEach(file => this.uploadFile(file));
   }
 
   private uploadFile(file: File): void {
@@ -141,6 +157,10 @@ export class MriUploadComponent implements OnInit {
     this.uploadedFiles.splice(index, 1);
   }
 
+  hasUploadingFiles(): boolean {
+    return this.uploadedFiles.some(file => file.status === 'Uploading...');
+  }
+
   onDoItLater(): void {
     // Return to dashboard
     this.router.navigate([`${this.stateService.routePrefix}/dashboard`]);
@@ -150,33 +170,73 @@ export class MriUploadComponent implements OnInit {
     if (this.isSubmitting) return;
     this.isSubmitting = true;
 
-    let imageUrl: string | null = null;
-    if (this.uploadedFiles.length > 0 && this.uploadedFiles[0].url) {
-      imageUrl = this.uploadedFiles[0].url;
+    // Filter successfully uploaded images
+    const validFileUrls = this.uploadedFiles
+      .filter(file => file.status === 'Success' && file.url)
+      .map(file => file.url as string);
+
+    if (validFileUrls.length === 0) {
+      alert("Please upload at least one MRI image to proceed with the analysis.");
+      this.isSubmitting = false;
+      return;
     }
 
-    if (!imageUrl) {
-        alert("Please upload an MRI image to proceed with the analysis.");
-        this.isSubmitting = false;
-        return;
-    }
+    // Call all image predictions in parallel
+    const predictionRequests = validFileUrls.map(url => 
+      this.predictionService.predictImage(url)
+    );
 
-    // Only call image prediction — symptom analysis was already done in ngOnInit
-    this.predictionService.predictImage(imageUrl).subscribe({
-      next: (imageRes) => {
+    forkJoin(predictionRequests).subscribe({
+      next: (responses: any[]) => {
         this.isSubmitting = false;
-        const imageResult = imageRes.prediction || imageRes;
+        
+        // Map raw responses to clean result structures
+        const sliceResults = responses.map((res, index) => {
+          const prediction = res.prediction || res;
+          return {
+            ...prediction,
+            imageUrl: validFileUrls[index]
+          };
+        });
 
-        // Merge cached symptom analysis with image prediction
+        // Log each slice analysis output for easy debugging
+        console.log("=== MRI Slice Analysis Outputs ===");
+        sliceResults.forEach((slice, index) => {
+          const originalFile = this.uploadedFiles.find(f => f.url === slice.imageUrl);
+          console.log(`Slice ${index + 1} [${originalFile?.name || 'File'}]:`, {
+            probability: slice.probability,
+            confidence: slice.confidence,
+            class: slice.predicted_class || 'N/A'
+          });
+        });
+
+        // Compute average probability and confidence across all slices (Option B)
+        const avgProbability = sliceResults.reduce((sum, item) => sum + item.probability, 0) / sliceResults.length;
+        const avgConfidence = sliceResults.reduce((sum, item) => sum + item.confidence, 0) / sliceResults.length;
+
+        // Log the averaged results
+        console.log("=== Aggregated (Average) Scores ===");
+        console.log(`Average MRI Stroke Probability: ${avgProbability}`);
+        console.log(`Average Prediction Confidence: ${avgConfidence}`);
+
+        // Find the worst-case slice (highest stroke risk probability) to use as visual and metadata representative
+        const highestRiskSlice = sliceResults.reduce((max, current) => 
+          (current.probability > max.probability) ? current : max
+        , sliceResults[0]);
+
+        // Merge cached symptom analysis with the averaged predictions
         const mergedPrediction = {
-          ...imageResult,
+          ...highestRiskSlice, // Keep visual and structural info from representative slice
+          probability: avgProbability, // Override with average probability across all slices
+          confidence: avgConfidence, // Override with average confidence across all slices
           symptom_probability: this.symptomAnalysisData?.symptom_probability ?? this.symptomAnalysisData?.probability ?? null,
           symptom_urgency: this.symptomAnalysisData?.urgency ?? this.symptomAnalysisData?.symptom_urgency ?? null,
           symptom_response: this.symptomAnalysisData?.response ?? this.symptomAnalysisData?.symptom_response ?? null,
           symptom_usage: this.symptomAnalysisData?.usage ?? this.symptomAnalysisData?.symptom_usage ?? null,
+          all_slices: sliceResults // Store details of all slices for potential use in reports
         };
 
-        // Compute a simple fused probability if both are available
+        // Compute the fused probability
         if (mergedPrediction.probability != null && mergedPrediction.symptom_probability != null) {
           mergedPrediction.image_probability = mergedPrediction.probability;
           mergedPrediction.fused_probability = (
@@ -184,22 +244,42 @@ export class MriUploadComponent implements OnInit {
           );
         }
 
-        this.router.navigate([`${this.stateService.routePrefix}/rapport`], {
-          state: {
-            prediction: mergedPrediction,
-            patientDetails: {
-              nom: this.patientName,
-              tension: this.tensionValue,
-              symptoms: [this.symptomsText || 'General assessment']
-            },
-            imageUrl: imageUrl
+        // Save the merged prediction to the backend first!
+        this.predictionService.finalizePrediction(mergedPrediction).subscribe({
+          next: () => {
+            this.router.navigate([`${this.stateService.routePrefix}/rapport`], {
+              state: {
+                prediction: mergedPrediction,
+                patientDetails: {
+                  nom: this.patientName,
+                  tension: this.tensionValue,
+                  symptoms: [this.symptomsText || 'General assessment']
+                },
+                imageUrl: highestRiskSlice.imageUrl // Display the highest risk slice image primarily
+              }
+            });
+          },
+          error: (finalizeErr) => {
+            console.error('Failed to save aggregated prediction on backend:', finalizeErr);
+            // Navigate anyway as a fallback
+            this.router.navigate([`${this.stateService.routePrefix}/rapport`], {
+              state: {
+                prediction: mergedPrediction,
+                patientDetails: {
+                  nom: this.patientName,
+                  tension: this.tensionValue,
+                  symptoms: [this.symptomsText || 'General assessment']
+                },
+                imageUrl: highestRiskSlice.imageUrl
+              }
+            });
           }
         });
       },
       error: (err) => {
-        console.error('Image prediction failed:', err);
+        console.error('Image batch prediction failed:', err);
         this.isSubmitting = false;
-        alert("Wait, there was an issue processing the image prediction.");
+        alert("Wait, there was an issue processing the image prediction batch.");
       }
     });
   }

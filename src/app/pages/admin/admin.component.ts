@@ -95,9 +95,9 @@ export class AdminComponent implements OnInit {
 
   getRoleLabel(type: string): string {
     switch (type) {
-      case 'medecin': return 'DOCTOR';
-      case 'agent_accueil': return 'AGENT';
-      case 'admin': return 'ADMIN';
+      case 'medecin': return 'USER_MANAGEMENT.DOCTOR';
+      case 'agent_accueil': return 'USER_MANAGEMENT.RECEPTION_AGENT';
+      case 'admin': return 'USER_MANAGEMENT.ADMINISTRATOR';
       default: return type;
     }
   }

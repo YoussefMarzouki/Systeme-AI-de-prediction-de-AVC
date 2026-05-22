@@ -299,3 +299,42 @@
     flex-direction: column;
   }
 }
+
+:host-context(html[dir="rtl"]) .admin-dashboard {
+  direction: rtl;
+  text-align: right;
+}
+
+:host-context(html[dir="rtl"]) .admin-hero,
+:host-context(html[dir="rtl"]) .section-header,
+:host-context(html[dir="rtl"]) .health-card {
+  direction: rtl;
+}
+
+:host-context(html[dir="rtl"]) .health-status,
+:host-context(html[dir="rtl"]) .refresh-health-btn,
+:host-context(html[dir="rtl"]) .card-action {
+  flex-direction: row-reverse;
+}
+
+:host-context(html[dir="rtl"]) .admin-hero > div,
+:host-context(html[dir="rtl"]) .section-header > div {
+  margin-left: auto;
+}
+
+:host-context(html[dir="rtl"]) .refresh-health-btn {
+  margin-right: auto;
+}
+
+:host-context(html[dir="rtl"]) .health-copy,
+:host-context(html[dir="rtl"]) .card-body {
+  text-align: right;
+}
+
+:host-context(html[dir="rtl"]) .card-action {
+  align-self: flex-end;
+}
+
+:host-context(html[dir="rtl"]) .card-action svg {
+  transform: scaleX(-1);
+}
