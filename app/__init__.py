@@ -36,11 +36,15 @@ swagger_template = {
     "basePath": "/",
     "schemes": ["http"],
     "tags": [
+        {"name": "Authentication", "description": "Authentification des utilisateurs"},
         {"name": "Patients", "description": "Gestion des patients"},
         {"name": "Dossiers", "description": "Gestion des dossiers médicaux"},
         {"name": "Données Cliniques", "description": "Gestion des données cliniques et symptômes"},
         {"name": "Images IRM", "description": "Gestion des images IRM"},
-        {"name": "Prédictions", "description": "Module IA de prédiction"}
+        {"name": "Prédictions", "description": "Module IA de prédiction"},
+        {"name": "Rapports", "description": "Gestion des rapports médicaux et de leur validation"},
+        {"name": "System", "description": "Statut et informations système"},
+        {"name": "Utilisateurs", "description": "Gestion des utilisateurs (Médecins, Experts, Administrateurs)"}
     ]
 }
 

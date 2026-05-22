@@ -12,6 +12,16 @@ dossier_service = DossierService(dossier_repo)
 
 @dossier_bp.route('/api/v1/dossiers', methods=['GET'])
 def list_dossiers():
+    """Récupérer la liste de tous les dossiers patients
+    ---
+    tags:
+      - Dossiers
+    responses:
+      200:
+        description: Liste des dossiers récupérée avec succès
+      500:
+        description: Erreur serveur
+    """
     try:
         dossiers = dossier_service.list_dossiers()
         return jsonify({"status": "success", "dossiers": dossiers}), 200
@@ -67,6 +77,21 @@ def create_dossier():
 
 @dossier_bp.route('/api/v1/dossiers/<string:dossier_id>', methods=['GET'])
 def get_dossier(dossier_id):
+    """Récupérer un dossier spécifique par son ID
+    ---
+    tags:
+      - Dossiers
+    parameters:
+      - name: dossier_id
+        in: path
+        type: string
+        required: true
+    responses:
+      200:
+        description: Dossier trouvé
+      404:
+        description: Dossier introuvable
+    """
     try:
         dossier = dossier_service.get_dossier(dossier_id)
         return jsonify({"status": "success", "dossier": dossier}), 200
@@ -76,6 +101,33 @@ def get_dossier(dossier_id):
 
 @dossier_bp.route('/api/v1/dossiers/<string:dossier_id>', methods=['PUT'])
 def update_dossier(dossier_id):
+    """Mettre à jour les informations d'un dossier
+    ---
+    tags:
+      - Dossiers
+    parameters:
+      - name: dossier_id
+        in: path
+        type: string
+        required: true
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            statut:
+              type: string
+              example: "COMPLETED"
+            notes:
+              type: string
+              example: "Mise à jour des notes du dossier"
+    responses:
+      200:
+        description: Dossier mis à jour avec succès
+      400:
+        description: Erreur de validation ou mise à jour
+    """
     data = request.json or {}
     try:
         dossier = dossier_service.update_dossier(dossier_id, data)
@@ -87,6 +139,21 @@ def update_dossier(dossier_id):
 
 @dossier_bp.route('/api/v1/dossiers/<string:dossier_id>', methods=['DELETE'])
 def delete_dossier(dossier_id):
+    """Supprimer un dossier patient
+    ---
+    tags:
+      - Dossiers
+    parameters:
+      - name: dossier_id
+        in: path
+        type: string
+        required: true
+    responses:
+      200:
+        description: Dossier supprimé avec succès
+      400:
+        description: Erreur lors de la suppression
+    """
     try:
         dossier_service.delete_dossier(dossier_id)
         return jsonify({"status": "success", "message": "Dossier supprime"}), 200

@@ -239,3 +239,145 @@ def run_prediction(dossier_id):
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@prediction_bp.route('/api/v1/dossiers/<string:dossier_id>/predict/finalize', methods=['POST'])
+def finalize_prediction(dossier_id):
+    """Enregistrer la prédiction finale combinée pour un dossier (contenant tous les slices)
+    ---
+    tags:
+      - Prédictions
+    parameters:
+      - name: dossier_id
+        in: path
+        type: string
+        required: true
+        description: ID du dossier patient
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          required:
+            - prediction
+          properties:
+            prediction:
+              type: object
+              description: L'objet de prédiction fusionné contenant all_slices, risk_level, fused_probability, etc.
+              example:
+                risk_level: "HIGH"
+                fused_probability: 0.85
+                image_probability: 0.90
+                symptom_probability: 0.78
+                confidence: 0.92
+                predicted_class: "Ischemic"
+                all_slices: [
+                  {
+                    imageUrl: "https://res.cloudinary.com/xxx/image1.jpg",
+                    probability: 0.90,
+                    confidence: 0.95,
+                    predicted_class: "Ischemic"
+                  }
+                ]
+    responses:
+      200:
+        description: Prédiction finale enregistrée avec succès
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: "success"
+            dossier_id:
+              type: string
+              example: "uuid-du-dossier"
+            rapport_id:
+              type: string
+              example: "uuid-du-rapport"
+      400:
+        description: Aucune donnée fournie ou données invalides
+      404:
+        description: Dossier introuvable
+      500:
+        description: Erreur interne du serveur
+    """
+    data = request.json or {}
+    prediction = data.get('prediction')
+    
+    if not prediction:
+        return jsonify({"error": "No prediction data provided"}), 400
+        
+    try:
+        from app.models.rapport import Rapport
+        from app.models.dossier_patient import DossierPatient
+        from app.models.user import Medecin
+        from app.models.analyses import AnalyseIA, AnalyseSymptomes, EvaluationRisque
+
+        dossier = DossierPatient.query.get(dossier_id)
+        if not dossier:
+            return jsonify({"error": "Dossier introuvable"}), 404
+            
+        medecin_referent = dossier.medecin_id
+        if not medecin_referent:
+            first_medecin = Medecin.query.first()
+            medecin_referent = first_medecin.id if first_medecin else 'SYSTEM'
+            
+        rapport = Rapport.query.filter_by(dossier_id=dossier_id).first()
+        if not rapport:
+            rapport = Rapport(
+                medecin_id=medecin_referent,
+                dossier_id=dossier_id,
+                statut='GENERATED',
+                contenu=prediction
+            )
+            db.session.add(rapport)
+        else:
+            rapport.contenu = prediction
+            rapport.statut = 'UPDATED'
+            
+        # Update EvaluationRisque to match
+        latest_image = ImageIRM.query.filter_by(dossier_id=dossier_id).order_by(ImageIRM.dateAcquisition.desc()).first()
+        analyse_ia_record = None
+        if latest_image:
+            analyse_ia_record = AnalyseIA.query.filter_by(image_id=latest_image.idImage).first()
+
+        latest_donnees = DonneesCliniques.query.filter_by(dossier_id=dossier_id).order_by(DonneesCliniques.dateSaisie.desc()).first()
+        analyse_symptomes_record = None
+        if latest_donnees:
+            analyse_symptomes_record = AnalyseSymptomes.query.filter_by(donnees_cliniques_id=latest_donnees.id).first()
+
+        score_global = prediction.get(
+            "fused_probability",
+            prediction.get("image_probability", prediction.get("symptom_probability", 0.0))
+        )
+        risk_level = prediction.get("risk_level", "UNKNOWN")
+
+        eval_record = EvaluationRisque.query.filter_by(dossier_id=dossier_id).first()
+        if eval_record:
+            eval_record.scoreGlobal = score_global
+            eval_record.niveau = risk_level
+            if analyse_ia_record:
+                eval_record.analyse_ia_id = analyse_ia_record.idAnalyse
+            if analyse_symptomes_record:
+                eval_record.analyse_symptomes_id = analyse_symptomes_record.id
+        else:
+            eval_record = EvaluationRisque(
+                scoreGlobal=score_global,
+                niveau=risk_level,
+                dossier_id=dossier_id,
+                analyse_ia_id=analyse_ia_record.idAnalyse if analyse_ia_record else None,
+                analyse_symptomes_id=analyse_symptomes_record.id if analyse_symptomes_record else None
+            )
+            db.session.add(eval_record)
+
+        db.session.commit()
+        return jsonify({
+            "status": "success",
+            "dossier_id": dossier_id,
+            "rapport_id": rapport.idRapport
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500

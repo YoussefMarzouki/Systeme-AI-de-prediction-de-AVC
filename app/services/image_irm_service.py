@@ -90,19 +90,6 @@ class ImageIRMService:
             raise Exception("Image IRM introuvable")
         self.irm_repo.delete(image)
 
-    def request_mri(self, data: dict) -> dict:
-        # Simulate an MRI request
-        patient_id = data.get('patientId')
-        priority = data.get('priority', 'NORMAL')
-        notes = data.get('notes', '')
-        
-        return {
-            "status": "pending",
-            "patientId": patient_id,
-            "requestId": f"REQ-{int(datetime.utcnow().timestamp())}",
-            "message": "MRI request successfully simulated."
-        }
-
     def upload_mri(self, patient_id: str, file) -> str:
         dossier = self._get_or_create_dossier(patient_id)
         

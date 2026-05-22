@@ -8,6 +8,41 @@ system_bp = Blueprint("system", __name__)
 
 @system_bp.route("/api/v1/system/health", methods=["GET"])
 def get_system_health():
+    """Vérifier le statut de santé du système et de la base de données
+    ---
+    tags:
+      - System
+    responses:
+      200:
+        description: Statut de santé récupéré avec succès
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: "success"
+            health:
+              type: object
+              properties:
+                backend:
+                  type: object
+                  properties:
+                    ok:
+                      type: boolean
+                    label:
+                      type: string
+                    state:
+                      type: string
+                database:
+                  type: object
+                  properties:
+                    ok:
+                      type: boolean
+                    label:
+                      type: string
+                    state:
+                      type: string
+    """
     backend_ok = True
     database_ok = False
 

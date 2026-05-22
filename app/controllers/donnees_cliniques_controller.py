@@ -13,6 +13,16 @@ donnees_service = DonneesCliniquesService(donnees_repo, dossier_repo)
 
 @donnees_cliniques_bp.route('/api/v1/donnees-cliniques', methods=['GET'])
 def list_donnees_cliniques():
+    """Récupérer toutes les entrées de données cliniques
+    ---
+    tags:
+      - Données Cliniques
+    responses:
+      200:
+        description: Liste des données cliniques
+      500:
+        description: Erreur serveur
+    """
     try:
         entries = donnees_service.list_donnees_cliniques()
         return jsonify({"status": "success", "donnees_cliniques": entries}), 200
@@ -99,6 +109,21 @@ def get_donnees_cliniques(dossier_id):
 
 @donnees_cliniques_bp.route('/api/v1/donnees-cliniques/<string:donnees_id>', methods=['GET'])
 def get_donnees_cliniques_by_id(donnees_id):
+    """Récupérer une entrée spécifique de données cliniques par ID
+    ---
+    tags:
+      - Données Cliniques
+    parameters:
+      - name: donnees_id
+        in: path
+        type: string
+        required: true
+    responses:
+      200:
+        description: Données cliniques trouvées
+      404:
+        description: Données cliniques introuvables
+    """
     try:
         donnees = donnees_service.get_donnees_cliniques(donnees_id)
         return jsonify({"status": "success", "donnees_cliniques": donnees}), 200
@@ -108,6 +133,39 @@ def get_donnees_cliniques_by_id(donnees_id):
 
 @donnees_cliniques_bp.route('/api/v1/donnees-cliniques/<string:donnees_id>', methods=['PUT'])
 def update_donnees_cliniques(donnees_id):
+    """Mettre à jour une entrée de données cliniques
+    ---
+    tags:
+      - Données Cliniques
+    parameters:
+      - name: donnees_id
+        in: path
+        type: string
+        required: true
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            fast:
+              type: string
+              example: "Paralysie faciale"
+            tension:
+              type: string
+              example: "130/85"
+            age:
+              type: integer
+              example: 66
+            notes:
+              type: string
+              example: "Notes médicales mises à jour"
+    responses:
+      200:
+        description: Données cliniques mises à jour avec succès
+      400:
+        description: Erreur lors de la mise à jour
+    """
     data = request.json or {}
     try:
         donnees = donnees_service.update_donnees_cliniques(donnees_id, data)
@@ -119,6 +177,21 @@ def update_donnees_cliniques(donnees_id):
 
 @donnees_cliniques_bp.route('/api/v1/donnees-cliniques/<string:donnees_id>', methods=['DELETE'])
 def delete_donnees_cliniques(donnees_id):
+    """Supprimer une entrée de données cliniques
+    ---
+    tags:
+      - Données Cliniques
+    parameters:
+      - name: donnees_id
+        in: path
+        type: string
+        required: true
+    responses:
+      200:
+        description: Données cliniques supprimées avec succès
+      400:
+        description: Erreur lors de la suppression
+    """
     try:
         donnees_service.delete_donnees_cliniques(donnees_id)
         return jsonify({"status": "success", "message": "Donnees cliniques supprimees"}), 200

@@ -11,6 +11,16 @@ patient_service = PatientService(patient_repo)
 
 @patient_bp.route('/api/v1/patients', methods=['GET'])
 def list_patients():
+    """Récupérer la liste de tous les patients
+    ---
+    tags:
+      - Patients
+    responses:
+      200:
+        description: Liste des patients récupérée avec succès
+      500:
+        description: Erreur serveur
+    """
     try:
         patients = patient_service.list_patients()
         return jsonify({"status": "success", "patients": patients}), 200
@@ -102,6 +112,42 @@ def get_patient(patient_id):
 
 @patient_bp.route('/api/v1/patients/<string:patient_id>', methods=['PUT'])
 def update_patient(patient_id):
+    """Mettre à jour les informations démographiques d'un patient
+    ---
+    tags:
+      - Patients
+    parameters:
+      - name: patient_id
+        in: path
+        type: string
+        required: true
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            nom:
+              type: string
+              example: "Smith"
+            prenom:
+              type: string
+              example: "Jane"
+            telephone:
+              type: string
+              example: "+21699999999"
+            adresse:
+              type: string
+              example: "Tunis, Tunisie"
+            email:
+              type: string
+              example: "jane.smith@email.com"
+    responses:
+      200:
+        description: Patient mis à jour avec succès
+      400:
+        description: Erreur lors de la mise à jour
+    """
     data = request.json or {}
     try:
         patient = patient_service.update_patient(patient_id, data)
@@ -113,6 +159,21 @@ def update_patient(patient_id):
 
 @patient_bp.route('/api/v1/patients/<string:patient_id>', methods=['DELETE'])
 def delete_patient(patient_id):
+    """Supprimer un patient de la base
+    ---
+    tags:
+      - Patients
+    parameters:
+      - name: patient_id
+        in: path
+        type: string
+        required: true
+    responses:
+      200:
+        description: Patient supprimé avec succès
+      400:
+        description: Erreur lors de la suppression
+    """
     try:
         patient_service.delete_patient(patient_id)
         return jsonify({"status": "success", "message": "Patient supprime"}), 200

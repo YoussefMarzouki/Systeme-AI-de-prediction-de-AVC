@@ -10,6 +10,16 @@ irm_service = ImageIRMService(irm_repo)
 
 @image_irm_bp.route('/api/v1/images-irm', methods=['GET'])
 def list_images_irm():
+    """Récupérer la liste des images IRM de la base
+    ---
+    tags:
+      - Images IRM
+    responses:
+      200:
+        description: Liste des images IRM récupérée avec succès
+      500:
+        description: Erreur serveur
+    """
     try:
         images = irm_service.list_images()
         return jsonify({"status": "success", "images": images}), 200
@@ -105,6 +115,21 @@ def add_image_metadata(dossier_id):
 
 @image_irm_bp.route('/api/v1/images-irm/<string:image_id>', methods=['GET'])
 def get_image_irm(image_id):
+    """Récupérer les métadonnées d'une image IRM par son ID
+    ---
+    tags:
+      - Images IRM
+    parameters:
+      - name: image_id
+        in: path
+        type: string
+        required: true
+    responses:
+      200:
+        description: Image IRM trouvée
+      404:
+        description: Image IRM introuvable
+    """
     try:
         image = irm_service.get_image(image_id)
         return jsonify({"status": "success", "image": image}), 200
@@ -114,6 +139,33 @@ def get_image_irm(image_id):
 
 @image_irm_bp.route('/api/v1/images-irm/<string:image_id>', methods=['PUT'])
 def update_image_irm(image_id):
+    """Mettre à jour les métadonnées d'une image IRM
+    ---
+    tags:
+      - Images IRM
+    parameters:
+      - name: image_id
+        in: path
+        type: string
+        required: true
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            cheminStockage:
+              type: string
+              example: "https://res.cloudinary.com/xxx/image-updated.jpg"
+            formatFichier:
+              type: string
+              example: "DICOM"
+    responses:
+      200:
+        description: Image IRM mise à jour avec succès
+      400:
+        description: Erreur lors de la mise à jour
+    """
     data = request.json or {}
     try:
         image = irm_service.update_image(image_id, data)
@@ -125,6 +177,21 @@ def update_image_irm(image_id):
 
 @image_irm_bp.route('/api/v1/images-irm/<string:image_id>', methods=['DELETE'])
 def delete_image_irm(image_id):
+    """Supprimer une image IRM de la base
+    ---
+    tags:
+      - Images IRM
+    parameters:
+      - name: image_id
+        in: path
+        type: string
+        required: true
+    responses:
+      200:
+        description: Image IRM supprimée avec succès
+      400:
+        description: Erreur lors de la suppression
+    """
     try:
         irm_service.delete_image(image_id)
         return jsonify({"status": "success", "message": "Image IRM supprimee"}), 200
