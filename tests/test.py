@@ -10,7 +10,7 @@ from tests.test_model import load_and_predict
 from config import Config
 
 def main():
-    dataset_root = Config.IMAGE_DATASET_DIR
+    dataset_root = Config.TEST_IMAGE_DATASET_DIR
     sample_images = sorted(dataset_root.rglob("*"))
     sample_images = [p for p in sample_images if p.is_file()]
     if not sample_images:

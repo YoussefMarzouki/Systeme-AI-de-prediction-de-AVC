@@ -1,3 +1,15 @@
+"""
+symptom_processor.py
+====================
+Two processors are provided:
+
+* ``SymptomProcessor``    – legacy sklearn pipeline (kept for backward compat /
+                            image-fusion workflow).
+* ``RAGSymptomProcessor`` – new processor that converts a structured symptom
+                            dict or free text into a natural-language French
+                            description ready to be sent to the Groq RAG engine.
+"""
+
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
@@ -6,78 +18,89 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.impute import SimpleImputer
 
-class SymptomProcessor:
-    def __init__(self):
-        self.numerical_features = ['age', 'avg_glucose_level', 'bmi']
-        self.categorical_features = [
-            'gender',
-            'hypertension',
-            'heart_disease',
-            'ever_married',
-            'work_type',
-            'Residence_type',
-            'smoking_status',
-        ]
-        self._fallback_numerical_features = ['age', 'blood_pressure', 'cholesterol']
-        self._fallback_categorical_features = ['gender', 'hypertension', 'heart_disease']
-        self.selected_numerical_features = []
-        self.selected_categorical_features = []
-        self.preprocessor = None
 
-    def _select_available_features(self, df):
-        num = [c for c in self.numerical_features if c in df.columns]
-        cat = [c for c in self.categorical_features if c in df.columns]
+# ---------------------------------------------------------------------------
+# New: RAG-aware processor
+# ---------------------------------------------------------------------------
 
-        if not num and not cat:
-            num = [c for c in self._fallback_numerical_features if c in df.columns]
-            cat = [c for c in self._fallback_categorical_features if c in df.columns]
+class RAGSymptomProcessor:
+    """
+    Convert a symptom dictionary (or plain string) into a natural-language
+    French description that the SymptomRAG engine can evaluate.
 
-        if not num and not cat:
-            raise ValueError("No usable symptom features found in dataframe.")
+    Accepted symptom keys (all optional):
+        age, gender/sexe, onset/debut (when symptoms started),
+        face/visage, arm/bras, speech/parole, vision, balance/equilibre,
+        headache/cephalee, hypertension, heart_disease/cardiopathie,
+        diabetes/diabete, smoking/tabac, other/autre, free_text
 
-        self.selected_numerical_features = num
-        self.selected_categorical_features = cat
-        return num, cat
-    
-    def fit(self, df):
-        """Fit preprocessor on training data"""
-        df = df.copy()
-        if 'bmi' in df.columns:
-            df['bmi'] = pd.to_numeric(df['bmi'], errors='coerce')
+    If ``free_text`` is supplied, it is appended verbatim after the structured
+    description.
+    """
 
-        num_features, cat_features = self._select_available_features(df)
+    # Mapping of English/mixed keys → French label used in the description
+    _LABELS = {
+        "age":           "Âge",
+        "gender":        "Sexe",
+        "sexe":          "Sexe",
+        "onset":         "Début des symptômes",
+        "debut":         "Début des symptômes",
+        "face":          "Visage (déviation/asymétrie)",
+        "visage":        "Visage (déviation/asymétrie)",
+        "arm":           "Bras/jambe (faiblesse)",
+        "bras":          "Bras/jambe (faiblesse)",
+        "speech":        "Parole (difficulté à parler/comprendre)",
+        "parole":        "Parole (difficulté à parler/comprendre)",
+        "vision":        "Vision",
+        "balance":       "Équilibre/vertiges",
+        "equilibre":     "Équilibre/vertiges",
+        "headache":      "Céphalée brutale inhabituelle",
+        "cephalee":      "Céphalée brutale inhabituelle",
+        "hypertension":  "Hypertension (HTA)",
+        "heart_disease": "Cardiopathie",
+        "cardiopathie":  "Cardiopathie",
+        "diabetes":      "Diabète",
+        "diabete":       "Diabète",
+        "smoking":       "Tabac",
+        "tabac":         "Tabac",
+        "cholesterol":   "Cholestérol",
+        "avg_glucose_level": "Glycémie moyenne",
+        "bmi":           "IMC",
+        "other":         "Autres symptômes",
+        "autre":         "Autres symptômes",
+    }
 
-        numerical_transformer = Pipeline([
-            ('imputer', SimpleImputer(strategy='median')),
-            ('scaler', StandardScaler())
-        ])
-        
-        categorical_transformer = Pipeline([
-            ('imputer', SimpleImputer(strategy='most_frequent')),
-            ('onehot', OneHotEncoder(drop='first', sparse_output=False, handle_unknown='ignore'))
-        ])
-        
-        transformers = []
-        if num_features:
-            transformers.append(('num', numerical_transformer, num_features))
-        if cat_features:
-            transformers.append(('cat', categorical_transformer, cat_features))
-        self.preprocessor = ColumnTransformer(transformers)
-        
-        X_processed = self.preprocessor.fit_transform(df[num_features + cat_features])
-        return X_processed
-    
-    def transform(self, df):
-        """Transform data"""
-        if self.preprocessor is None:
-            raise ValueError("Processor not fitted. Call fit() first.")
-        df = df.copy()
-        if 'bmi' in df.columns:
-            df['bmi'] = pd.to_numeric(df['bmi'], errors='coerce')
+    def to_text(self, symptoms: "dict | str") -> str:
+        """
+        Convert *symptoms* to a natural-language description.
 
-        for col in self.selected_numerical_features + self.selected_categorical_features:
-            if col not in df.columns:
-                df[col] = np.nan
+        Parameters
+        ----------
+        symptoms : dict | str
+            Structured dict or already-formatted free text.
 
-        cols = self.selected_numerical_features + self.selected_categorical_features
-        return self.preprocessor.transform(df[cols])
+        Returns
+        -------
+        str
+            French natural-language description.
+        """
+        if isinstance(symptoms, str):
+            return symptoms.strip()
+
+        lines: list[str] = ["Description des symptômes du patient :"]
+
+        free_text = symptoms.pop("free_text", None) if isinstance(symptoms, dict) else None
+
+        for key, value in symptoms.items():
+            if value is None or str(value).strip() == "":
+                continue
+            label = self._LABELS.get(key.lower(), key)
+            lines.append(f"  - {label} : {value}")
+
+        if free_text:
+            lines.append(f"\nInformation complémentaire : {free_text.strip()}")
+
+        return "\n".join(lines)
+
+
+

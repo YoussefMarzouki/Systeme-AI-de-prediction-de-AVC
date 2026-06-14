@@ -1,6 +1,9 @@
 from pathlib import Path
 
 import cv2
+# Prevent OpenCV from competing with PyTorch workers leading to deadlocks/crashes
+cv2.setNumThreads(0)
+
 import numpy as np
 import torch
 from loguru import logger

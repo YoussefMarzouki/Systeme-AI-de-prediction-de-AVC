@@ -16,8 +16,8 @@ from models.image_classifier import StrokeImageClassifier
 from config import Config
 
 def _resolve_class_names():
-    """Infer class names from the training dataset directory."""
-    dataset_dir = Config.IMAGE_DATASET_DIR
+    """Infer class names from the configured test dataset directory."""
+    dataset_dir = Config.TEST_IMAGE_DATASET_DIR
     if dataset_dir.exists():
         classes = sorted([p.name for p in dataset_dir.iterdir() if p.is_dir()])
         if classes:
@@ -34,10 +34,48 @@ def _resolve_class_names():
 
 def _load_state_dict(path, device):
     """Load either a pure state_dict or a checkpoint dictionary."""
-    loaded = torch.load(path, map_location=device)
+    try:
+        loaded = torch.load(path, map_location=device, weights_only=True)
+    except TypeError:
+        # Older torch versions do not support `weights_only`.
+        loaded = torch.load(path, map_location=device)
     if isinstance(loaded, dict) and "model_state_dict" in loaded:
         return loaded["model_state_dict"]
     return loaded
+
+
+def _infer_num_classes_from_state_dict(state_dict):
+    """Infer output dimension from known or discovered classifier-weight keys."""
+    preferred_keys = (
+        "backbone.fc.4.weight",  # current ResNet head in this project
+        "backbone.fc.weight",    # plain ResNet fc layer
+        "classifier.11.weight",  # legacy head used in older checkpoints
+    )
+    for key in preferred_keys:
+        tensor = state_dict.get(key)
+        if isinstance(tensor, torch.Tensor) and tensor.ndim == 2:
+            return int(tensor.shape[0])
+
+    candidates = []
+    for key, tensor in state_dict.items():
+        if not isinstance(tensor, torch.Tensor):
+            continue
+        if tensor.ndim != 2 or not key.endswith(".weight"):
+            continue
+        if "classifier" not in key and ".fc" not in key and "head" not in key:
+            continue
+        candidates.append((int(tensor.shape[0]), key))
+
+    if not candidates:
+        sample_keys = list(state_dict.keys())[:10]
+        raise KeyError(
+            "Could not infer classifier output layer from checkpoint state_dict. "
+            f"Sample keys: {sample_keys}"
+        )
+
+    # In this codebase the final layer has the smallest output dimension (num_classes).
+    inferred_num_classes, _ = min(candidates, key=lambda item: item[0])
+    return inferred_num_classes
 
 
 def load_and_predict(image_path):
@@ -50,12 +88,12 @@ def load_and_predict(image_path):
     device = Config.DEVICE
     class_names = _resolve_class_names()
     state_dict = _load_state_dict(Config.IMAGE_MODEL_PATH, device)
-    checkpoint_num_classes = int(state_dict["classifier.11.weight"].shape[0])
+    checkpoint_num_classes = _infer_num_classes_from_state_dict(state_dict)
     if checkpoint_num_classes != len(class_names):
         raise ValueError(
             "Model/output-class mismatch. "
             f"Checkpoint has {checkpoint_num_classes} classes, dataset expects {len(class_names)} "
-            f"({class_names}). Retrain image model with dataset: {Config.IMAGE_DATASET_DIR}"
+            f"({class_names}). Ensure test dataset classes match the model classes: {Config.TEST_IMAGE_DATASET_DIR}"
         )
 
     model = StrokeImageClassifier(num_classes=len(class_names), pretrained=False)
@@ -89,7 +127,7 @@ def load_and_predict(image_path):
     }
 
 if __name__ == "__main__":
-    dataset_root = Config.IMAGE_DATASET_DIR
+    dataset_root = Config.TEST_IMAGE_DATASET_DIR
     sample_images = sorted(dataset_root.glob("*/*"))
     if sample_images:
         image_path = sample_images[0]

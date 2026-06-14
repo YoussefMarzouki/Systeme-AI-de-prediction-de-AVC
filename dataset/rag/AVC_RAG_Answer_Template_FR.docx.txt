@@ -1,0 +1,117 @@
+================================================================================
+         RÉPONSE STRUCTURÉE – ÉVALUATION ÉDUCATIVE DES SYMPTÔMES D'AVC (RAG)
+                     Protocole Tunisien | Version RAG : [v1.0 – JJ/MM/AAAA]
+================================================================================
+
+⚠️  IMPORTANT – LIRE EN PREMIER
+────────────────────────────────────────────────────────────────────────────────
+- Je ne suis pas un professionnel de santé et je ne peux pas poser de diagnostic.
+- FENÊTRE CRITIQUE : La thrombolyse (traitement dissolvant le caillot) n'est
+  possible que dans les 4h30 suivant le début des symptômes.
+- CONDITION CHIRURGICALE : En cas d'AVC hémorragique ou de complication
+  nécessitant une intervention, celle-ci ne peut être réalisée QUE si un
+  neurochirurgien est disponible sur place ou dans la structure d'accueil.
+  Ne pas transférer vers un établissement sans neurochirurgien si une
+  intervention neurochirurgicale est envisagée.
+================================================================================
+
+
+1) RÉSUMÉ – TRIAGE RAPIDE
+────────────────────────────────────────────────────────────────────────────────
+Niveau d'urgence    : URGENCE IMMÉDIATE/
+                      URGENCE À ÉVALUER RAPIDEMENT/
+                      FAIBLE PROBABILITÉ — SURVEILLANCE REQUISE
+                    → Niveau retenu : ___________________________________
+
+Temps écoulé depuis début des symptômes : [HH:MM]
+Fenêtre thrombolyse : OUVERTE (< 4h30) / FERMÉE (> 4h30) / INCONNUE
+                    → Statut retenu : ___________________________________
+
+Pourquoi (très bref) : ___________________________________
+
+Pertinence des sources RAG : Élevée / Moyenne / Faible
+                           → Niveau retenu : ___________________________________
+
+
+2) VOS SYMPTÔMES (CE QUE J'AI COMPRIS)
+────────────────────────────────────────────────────────────────────────────────
+Âge / Sexe (si fourni)         : ___________________________________
+Moment de début (date/heure)   : ___________________________________
+Durée depuis début             : ___________ [CRITIQUE pour fenêtre thérapeutique]
+Installation                   : Soudain / Progressif / Inconnu
+
+Symptômes principaux rapportés :
+  - Visage        [bouche de travers ?]          : OUI / NON / INCONNU
+  - Bras / Jambe  [faiblesse d'un côté ?]        : OUI / NON / INCONNU
+  - Parole        [difficulté parler/comprendre?] : OUI / NON / INCONNU
+  - Vision        [perte de vision / diplopie ?]  : OUI / NON / INCONNU
+  - Équilibre     [vertiges, chute ?]             : OUI / NON / INCONNU
+  - Céphalée brutale inhabituelle                 : OUI / NON / INCONNU
+  - Autres        : ___________________________________
+
+Facteurs de risque mentionnés :
+  HTA             : OUI / NON / INCONNU
+  Diabète         : OUI / NON / INCONNU
+  Tabac           : OUI / NON / INCONNU
+  Fibrillation auriculaire : OUI / NON / INCONNU
+  Cholestérol     : OUI / NON / INCONNU
+  Antécédent AVC/AIT : OUI / NON / INCONNU
+  Autre           : ___________________________________
+
+
+3) DÉPISTAGE RAPIDE — FAST / VITE
+────────────────────────────────────────────────────────────────────────────────
+  F — Face    / Visage   : ___________________________________
+  A — Arm     / Bras     : ___________________________________
+  S — Speech  / Parole   : ___________________________________
+  T — Time    / Temps    : Heure de début : _______ | Temps écoulé : _______
+                           ⏱️  Fenêtre thrombolyse 4h30 — toujours considérer urgence
+
+  Résultat FAST : POSITIF / DOUTEUX / NÉGATIF
+                → ___________________________________
+
+
+4) RAISONNEMENT (BASÉ SUR LES SOURCES RETROUVÉES)
+────────────────────────────────────────────────────────────────────────────────
+Interprétation :
+  [Expliquer en termes simples pourquoi ces symptômes peuvent correspondre
+  (ou non) à un AVC ou un AIT, sans poser de diagnostic.
+  Mentionner explicitement si un AIT (Accident Ischémique Transitoire) est
+  possible — symptômes régressifs mais risque de récidive grave dans les 48h.]
+
+
+5) QUESTIONS DE CLARIFICATION (MAX 3)
+────────────────────────────────────────────────────────────────────────────────
+  1) À quelle heure EXACTEMENT les symptômes ont-ils commencé ?
+  2) Les symptômes sont-ils apparus soudainement et d'un seul côté du corps ?
+  3) Y a-t-il actuellement un trouble de la parole ou une asymétrie du visage ?
+
+
+6) DIAGNOSTICS DIFFÉRENTIELS (SANS DIAGNOSTIC — ÉDUCATIF)
+────────────────────────────────────────────────────────────────────────────────
+Certaines pathologies peuvent imiter un AVC :
+  - AIT (Accident Ischémique Transitoire) — symptômes régressifs mais DANGER RÉEL :
+    risque d'AVC constitué dans les 48h → urgence même si tout semble normal
+  - Migraine avec aura
+  - Hypoglycémie (vérifier glycémie capillaire en urgence)
+  - Crise d'épilepsie avec déficit post-critique (Todd)
+  - Vertige vestibulaire périphérique
+  - Tumeur cérébrale / hématome sous-dural
+  - Encéphalopathie hypertensive
+
+  ⚠️  Rappel : plusieurs de ces pathologies nécessitent aussi une prise en charge
+  urgente. En cas de doute, toujours orienter vers les urgences.
+
+
+7) SOURCES (OBLIGATOIRE)
+────────────────────────────────────────────────────────────────────────────────
+. https://entraide-esi-ide.com/les-accidents-vasculaires-cerebraux-avc/
+
+. https://www.hug.ch/sites/interhug/files/documents/avc_fr.pdf
+
+. https://www.medecinesfax.org/useruploads/files/1%20AVC.pdf
+
+
+================================================================================
+        keep using this template only,don t add a comment from you
+================================================================================

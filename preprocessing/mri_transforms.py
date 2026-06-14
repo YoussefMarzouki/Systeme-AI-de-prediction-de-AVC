@@ -48,14 +48,22 @@ class MRITransforms:
     @staticmethod
     def get_train_transforms():
         return A.Compose([
-            # MRI-specific preprocessing
-            ZScoreNormalize(p=1.0),
+            # Resize FIRST to drastically speed up processing
             A.Resize(224, 224),
+            # MRI-specific preprocessing on the smaller image
+            ZScoreNormalize(p=1.0),
             
             # Strong MRI-appropriate augmentations
             A.HorizontalFlip(p=0.5),
             A.VerticalFlip(p=0.3),
             A.RandomRotate90(p=0.5),
+            
+            # Geometric distortions (effective for anatomical variation)
+            A.OneOf([
+                A.GridDistortion(num_steps=5, distort_limit=0.05, p=1.0),
+                A.ElasticTransform(alpha=1, sigma=50, p=1.0),
+                A.Perspective(scale=(0.05, 0.1), p=1.0),
+            ], p=0.3),
             
             # Intensity augmentations (crucial for MRI generalization)
             A.RandomBrightnessContrast(
@@ -78,7 +86,13 @@ class MRITransforms:
             ),
             
             # Final normalization (ImageNet stats for pretrained models)
-            A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            # Since ZScoreNormalize outputs [0, 1] float32, we must set max_pixel_value=1.0
+            # to avoid scaling issues (default is 255.0 which expects uint8 [0, 255])
+            A.Normalize(
+                mean=[0.485, 0.456, 0.406], 
+                std=[0.229, 0.224, 0.225],
+                max_pixel_value=1.0
+            ),
             ToTensorV2()
         ])
     
@@ -86,9 +100,13 @@ class MRITransforms:
     def get_val_transforms():
         return A.Compose([
             # Same preprocessing as training (crucial for consistency)
-            ZScoreNormalize(p=1.0),
             A.Resize(224, 224),
-            A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            ZScoreNormalize(p=1.0),
+            A.Normalize(
+                mean=[0.485, 0.456, 0.406], 
+                std=[0.229, 0.224, 0.225],
+                max_pixel_value=1.0
+            ),
             ToTensorV2()
         ])
     

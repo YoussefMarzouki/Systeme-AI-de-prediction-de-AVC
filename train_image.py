@@ -11,18 +11,12 @@ from training.image_trainer import ImageTrainer
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Train MRI image model with cross-validation")
+    parser = argparse.ArgumentParser(description="Train MRI image model")
     parser.add_argument(
         "--images-dir",
         type=str,
         default=str(Config.IMAGE_DATASET_DIR),
         help="Path to class-organized MRI images directory",
-    )
-    parser.add_argument(
-        "--folds",
-        type=int,
-        default=10,
-        help="Number of cross-validation folds",
     )
     return parser.parse_args()
 
@@ -35,13 +29,12 @@ def main():
     for key, value in Config.get_config_summary().items():
         logger.info(f"{key}: {value}")
     logger.info(f"images_dir: {args.images_dir}")
-    logger.info(f"folds: {args.folds}")
 
     trainer = ImageTrainer(images_dir=args.images_dir)
-    cv_score = trainer.train_domain_aware_kfold(n_splits=args.folds)
+    test_f1 = trainer.train()
 
     summary = {
-        "final_f1_score": float(cv_score),
+        "final_f1_score": float(test_f1),
         "epochs": Config.EPOCHS,
         "learning_rate": Config.LR,
         "batch_size": Config.BATCH_SIZE,
@@ -53,7 +46,7 @@ def main():
         json.dump(summary, handle, indent=2)
 
     logger.info("=== Training Complete ===")
-    logger.info("Mean CV F1 Score: {:.4f}", cv_score)
+    logger.info("Test F1 Score: {:.4f}", test_f1)
     logger.info("Summary saved to: {}", summary_path)
 
 

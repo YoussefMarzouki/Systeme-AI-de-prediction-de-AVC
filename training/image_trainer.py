@@ -47,79 +47,91 @@ class ImageTrainer:
             torch.backends.cudnn.deterministic = True
             torch.backends.cudnn.benchmark = False
 
-    def train_domain_aware_kfold(self, n_splits=5, test_split_ratio=0.2):
-        """Train using stratified K-fold with optional scanner-aware grouping."""
-        del test_split_ratio  # Kept for backward compatibility in caller API.
-
-        logger.info("Starting image training with K-fold cross-validation")
-        base_dataset = MRIDataset(self.images_dir, transform=None, split="all", verbose=True)
-        self._validate_expected_classes(base_dataset.classes)
-
-        all_indices = np.arange(len(base_dataset))
-        all_labels = np.array([label for _, label in base_dataset.samples], dtype=np.int64)
-        effective_splits = self._resolve_n_splits(all_labels, n_splits)
-        split_iterator = self._build_split_iterator(
-            all_indices,
-            all_labels,
-            base_dataset.samples,
-            effective_splits,
+    def train(self):
+        """Train using explicit train/valid/test split directories."""
+        logger.info("Starting image training with explicit train/valid/test splits")
+        
+        train_dir = self.images_dir / "train"
+        valid_dir = self.images_dir / "valid"
+        test_dir = self.images_dir / "test"
+        
+        if not train_dir.exists() or not valid_dir.exists() or not test_dir.exists():
+            raise FileNotFoundError(f"Dataset directory {self.images_dir} must contain 'train', 'valid', and 'test' subdirectories.")
+            
+        train_dataset = MRIDataset(
+            train_dir,
+            transform=MRITransforms.get_train_transforms(),
+            split="train",
+            class_names=list(Config.EXPECTED_IMAGE_CLASSES),
+            verbose=True,
+        )
+        self._validate_expected_classes(train_dataset.classes)
+        
+        val_dataset = MRIDataset(
+            valid_dir,
+            transform=MRITransforms.get_val_transforms(),
+            split="val",
+            class_names=list(Config.EXPECTED_IMAGE_CLASSES),
+            verbose=True,
+        )
+        
+        test_dataset = MRIDataset(
+            test_dir,
+            transform=MRITransforms.get_val_transforms(),
+            split="test",
+            class_names=list(Config.EXPECTED_IMAGE_CLASSES),
+            verbose=True,
+        )
+        
+        logger.info(
+            "Split sizes | train={} valid={} test={}",
+            len(train_dataset),
+            len(val_dataset),
+            len(test_dataset),
         )
 
-        cv_results = []
-        best_overall_f1 = -1.0
-        best_overall_state = None
+        train_loader = self._create_dataloader(
+            train_dataset,
+            shuffle=True,
+            seed=Config.SEED,
+        )
+        val_loader = self._create_dataloader(
+            val_dataset,
+            shuffle=False,
+            seed=Config.SEED + 1000,
+        )
+        test_loader = self._create_dataloader(
+            test_dataset,
+            shuffle=False,
+            seed=Config.SEED + 2000,
+        )
 
-        for fold_idx, (train_idx, val_idx) in enumerate(split_iterator, start=1):
-            fold_name = f"F{fold_idx}"
-            logger.info("Starting fold {}/{}", fold_idx, effective_splits)
-
-            train_dataset = base_dataset.subset(
-                train_idx,
-                split="train",
-                transform=MRITransforms.get_train_transforms(),
-            )
-            val_dataset = base_dataset.subset(
-                val_idx,
-                split="val",
-                transform=MRITransforms.get_val_transforms(),
-            )
-
-            train_loader = self._create_dataloader(
-                train_dataset,
-                shuffle=True,
-                seed=Config.SEED + fold_idx,
-            )
-            val_loader = self._create_dataloader(
-                val_dataset,
-                shuffle=False,
-                seed=Config.SEED + fold_idx + 1000,
-            )
-
-            model = self._build_model(num_classes=base_dataset.get_num_classes())
-            fold_result, fold_best_state = self._train_fold(
-                model=model,
-                train_loader=train_loader,
-                val_loader=val_loader,
-                fold_name=fold_name,
-            )
-            cv_results.append(fold_result)
-
-            if fold_result["f1"] > best_overall_f1:
-                best_overall_f1 = fold_result["f1"]
-                best_overall_state = fold_best_state
-                torch.save(best_overall_state, Config.IMAGE_MODEL_PATH)
-                logger.info("Updated best model at {}", Config.IMAGE_MODEL_PATH)
-
-        if not cv_results:
-            raise RuntimeError("No folds were executed. Check dataset and split settings.")
-
-        all_f1_scores = [result["f1"] for result in cv_results]
-        mean_f1 = float(np.mean(all_f1_scores))
-        std_f1 = float(np.std(all_f1_scores))
-
-        logger.info("Cross-validation F1: {:.4f} +/- {:.4f}", mean_f1, std_f1)
-        self._save_training_results(cv_results=cv_results, mean_f1=mean_f1, std_f1=std_f1)
-        return mean_f1
+        model = self._build_model(num_classes=train_dataset.get_num_classes())
+        fold_result, best_state = self._train_fold(
+            model=model,
+            train_loader=train_loader,
+            val_loader=val_loader,
+            fold_name="training",
+        )
+        
+        # Load the best model state to evaluate on the test set
+        model.load_state_dict(best_state)
+        torch.save(best_state, Config.IMAGE_MODEL_PATH)
+        logger.info("Saved best model at {}", Config.IMAGE_MODEL_PATH)
+        
+        # Evaluate on test set
+        criterion = nn.CrossEntropyLoss()
+        test_loss, test_metrics = self._evaluate(model, test_loader, criterion)
+        logger.info("Test set evaluation: loss={:.4f} f1={:.4f} acc={:.4f}", test_loss, test_metrics["f1"], test_metrics["accuracy"])
+        
+        fold_result["test_f1"] = float(test_metrics["f1"])
+        fold_result["test_accuracy"] = float(test_metrics["accuracy"])
+        fold_result["test_metrics"] = dict(test_metrics)
+        
+        cv_results = [fold_result]
+        self._save_training_results(cv_results=cv_results, mean_f1=fold_result["f1"], std_f1=0.0)
+        
+        return fold_result["test_f1"]
 
     def _validate_expected_classes(self, discovered_classes):
         if not Config.ENFORCE_EXPECTED_IMAGE_CLASSES:
@@ -157,6 +169,9 @@ class ImageTrainer:
         return effective_splits
 
     def _build_split_iterator(self, indices, labels, samples, n_splits):
+        labels_array = np.asarray(labels, dtype=np.int64)
+        num_classes = int(len(np.unique(labels_array)))
+
         if Config.DOMAIN_AWARE_TRAINING and StratifiedGroupKFold is not None:
             groups = np.array(
                 [self._extract_scanner_name(Path(path).name) for path, _ in samples],
@@ -174,13 +189,28 @@ class ImageTrainer:
                     shuffle=True,
                     random_state=Config.SEED,
                 )
-                return splitter.split(indices, labels, groups=groups)
-            logger.warning(
-                "Domain-aware split disabled: groups are not usable (need >= {} groups, got {}, max group size={})",
-                n_splits,
-                len(unique_groups),
-                int(np.max(group_counts)) if len(group_counts) else 0,
-            )
+                grouped_splits = list(splitter.split(indices, labels_array, groups=groups))
+                problematic_folds = self._find_folds_missing_classes(
+                    grouped_splits,
+                    labels_array,
+                    num_classes,
+                )
+                if not problematic_folds:
+                    return grouped_splits
+
+                logger.warning(
+                    "Domain-aware split produced folds with missing classes ({} problematic folds, examples={}). "
+                    "Falling back to StratifiedKFold for stable validation metrics.",
+                    len(problematic_folds),
+                    problematic_folds[:3],
+                )
+            else:
+                logger.warning(
+                    "Domain-aware split disabled: groups are not usable (need >= {} groups, got {}, max group size={})",
+                    n_splits,
+                    len(unique_groups),
+                    int(np.max(group_counts)) if len(group_counts) else 0,
+                )
 
         logger.info("Using StratifiedKFold split")
         splitter = StratifiedKFold(
@@ -188,7 +218,22 @@ class ImageTrainer:
             shuffle=True,
             random_state=Config.SEED,
         )
-        return splitter.split(indices, labels)
+        return list(splitter.split(indices, labels_array))
+
+    def _find_folds_missing_classes(self, split_iterator, labels, num_classes):
+        problematic_folds = []
+        for fold_idx, (_, val_idx) in enumerate(split_iterator, start=1):
+            fold_counts = np.bincount(labels[val_idx], minlength=num_classes)
+            missing_classes = [int(class_idx) for class_idx in np.where(fold_counts == 0)[0].tolist()]
+            if missing_classes:
+                problematic_folds.append(
+                    {
+                        "fold": int(fold_idx),
+                        "val_size": int(len(val_idx)),
+                        "missing_class_indices": missing_classes,
+                    }
+                )
+        return problematic_folds
 
     def _extract_scanner_name(self, filename):
         stem = Path(filename).stem

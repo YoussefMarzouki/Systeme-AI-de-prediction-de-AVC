@@ -1,19 +1,25 @@
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# Environments
 .env
 .venv/
+venv/
+ENV/
 
-# Data / models
-data/
-datasets/
-*.pt
-*.pth
-*.h5
-models/
+# IDEs and editors
+.vscode/
+.idea/
 
-# Jupyter
-.ipynb_checkpoints/
+# Datasets and large assets (from .dockerignore)
+dataset/image trainning/
+models/*.rar
+models/__pycache__/
 
-# Logs
-logs/
+# Testing and builds
+.pytest_cache/
+*.egg-info/
+dist/
+build/

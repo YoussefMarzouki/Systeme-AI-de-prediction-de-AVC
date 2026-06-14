@@ -1,0 +1,446 @@
+ACCIDENT VASCULAIRE CÉRÉBRAL (AVC) - BASE DE CONNAISSANCES RAG
+1. DÉFINITIONS ET CLASSIFICATION
+1.1 Définition Générale
+AVC = déficit neurologique soudain d’origine vasculaire impliquant une lésion parenchymateuse cérébrale et une lésion vasculaire sous-jacente.
+1.2 Types d’AVC
+Type
+Fréquence
+Mécanisme
+AVC ischémique
+80%
+Occlusion artérielle par thrombose/embolie → ischémie → infarctus cérébral
+Hémorragie intraparenchymateuse
+15%
+Rupture vaisseau intracérébral → irruption sang dans parenchyme
+Hémorragie sous-arachnoïdienne (HSA)
+5%
+Rupture vaisseau espace sous-arachnoïdien → diffusion dans LCR
+1.3 Accident Ischémique Transitoire (AIT)
+Épisode bref (< 1 heure) de déficit neurologique d’origine ischémique focale
+Sans lésion cérébrale visible en imagerie
+Urgence: 30% des infarctus précédés d’AIT; 10% risque d’infarctus dans le mois suivant
+2. VASCULARISATION CÉRÉBRALE
+2.1 Artères Cérébrales - Système Carotidien
+Artère
+Origine
+Territoire
+Artère Carotide Interne (ACI)
+Bifurcation carotidienne C4
+Donne 4 branches terminales: ACA, ACM, AChA, ACPo
+Artère Cérébrale Antérieure (ACA)
+Branche médiale ACI
+Face interne lobe frontal/pariétal, 7/8 antérieurs corps calleux
+Artère Cérébrale Moyenne (ACM)
+Branche principale ACI
+Face externe hémisphères (frontal, pariétal, temporal), territoire capsulo-lenticulo-strié
+Artère Choroïdienne Antérieure
+Branche postérieure ACI
+Uncus, amygdale, voies optiques, capsule interne
+Artère Communicante Postérieure
+Branche terminale ACI
+Bandelettes optiques, thalamus antérieur, hypothalamus
+2.2 Artères Cérébrales - Système Vertébro-Basilaire
+Artère
+Origine
+Territoire
+Artères Vertébrales
+Artères sous-clavières
+Fusionnent en tronc basilaire; donnent PICA
+Tronc Basilaire
+Fusion vertébrales
+Donne AICA, ACS, 2 ACP
+Artère Cérébrale Postérieure (ACP)
+Terminaison tronc basilaire
+Cortex temporal inféro-interne, lobe occipital, thalamus, splénium corps calleux
+PICA
+Segment V4 vertébrale
+Face inférieure hémisphères/vermis cérébelleux
+AICA
+Tronc basilaire
+Face antérieure cervelet, artère labyrinthique
+ACS
+Avant terminaison tronc basilaire
+Face supérieure cervelet
+2.3 Polygone de Willis
+Anastomose à la base du cerveau:
+Avant: ACA + artère communicante antérieure
+Arrière: 2 ACP
+Latéralement: 2 artères communicantes postérieures
+Fonction: Suppléance circulation cérébrale
+2.4 Veines Cérébrales
+Veines Superficielles (inconstantes):
+Drainage cortex → sinus dure-mériens
+Partie supérieure → SSS; moyenne → sinus caverneux; inférieure → sinus transverse
+Veine anastomotique supérieure de Trolard: VCMS ↔ SSS
+Veine anastomotique inférieure de Labbé: VCMS ↔ sinus transverse
+Veines Profondes (constantes):
+Veine cérébrale interne → grande veine de Galien
+Veine basilaire de Rosenthal → grande veine de Galien
+Grande veine de Galien → sinus droit
+Sinus Veineux:
+SSS, sinus sagittal inférieur, torcular, sinus transverse, sinus sigmoïde
+Sinus caverneux: loge médiale (ACI, VI); loge latérale (V1, IV, III, V2)
+3. SOMATOTOPIE CORTICALE
+3.1 Aire Motrice Primaire (Aire 4 de Brodmann)
+Localisation: Circonvolution frontale ascendante
+Origine faisceau pyramidal (cellules de Betz)
+Homunculus moteur: pied (lobule paracentral) → membre supérieur (partie moyenne) → cou/face (1/3 inférieur)
+3.2 Aire Somesthésique Primaire (Aires 1, 2, 3)
+Localisation: Circonvolution pariétale ascendante
+Homunculus sensitif: surface proportionnelle à richesse innervation
+4. RÉGULATION DU DÉBIT SANGUIN CÉRÉBRAL (DSC)
+4.1 Définitions
+Pression Perfusion Cérébrale (PPC) = PAM - PIC
+DSC normal: 50 ml/min/100g
+4.2 Autorégulation
+Plateau autorégulation: PPC 50-150 mmHg = DSC constant
+Seuils: < 50 ou > 150 mmHg = perte autorégulation
+Mécanismes: vasodilatation artérielle (chimique), théorie myogène, hypothèse endothéliale, facteurs physiologiques (hypercapnie/hypoxie)
+Latence: modification diamètre en secondes
+5. PHYSIOPATHOLOGIE
+5.1 Mécanismes Ischémiques
+Mécanisme
+Description
+Occlusion artérielle
+Thrombose/embolie (cardiaque ou artério-artérielle) - principal mécanisme
+Hypoperfusion locale
+Aval sténose serrée
+Hypoperfusion globale
+Perturbation circulation systémique/hypotension
+5.2 Zones d’Ischémie (selon DSC)
+Zone
+DSC
+Caractéristiques
+Oligémie
+20-50 ml/100g/min
+Tissu fonctionnellement intact; extraction O2 augmentée
+Pénombre ischémique
+10-20 ml/100g/min
+Activité synaptique abolie; souffrance réversible; cible thrombolyse
+Infarctus
+< 10 ml/100g/min
+Nécrose irréversible; mort neuronale
+5.3 Évolution Œdème
+Phase aiguë: Œdème cytotoxique (anoxie)
+Phase tardive: Œdème vasogénique (rupture BHE)
+Maximum: 3ème jour
+6. FACTEURS DE RISQUE
+6.1 Non Modifiables
+Facteur
+Impact
+Âge
+Risque ×2 par décennie après 55 ans
+Sexe
+Homme: incidence ×1,25 vs femme
+Antécédents familiaux
+Risque ×2 si parent atteint
+Ethnie
+Noirs: ×2,4; Hispaniques: ×1,6 vs Blancs
+6.2 Modifiables
+Facteur
+Contribution/Impact
+HTA
+40% risque AVC; ×2 (×5 si < 55 ans); surtout hémorragique
+Diabète
+Principalement ischémique
+Fibrillation auriculaire
+1er facteur cardiaque; risque ×4
+Hypercholestérolémie
+Principalement ischémique
+Tabagisme
+Risque ×3
+Obésité abdominale
+36% contribution
+Alimentation déséquilibrée
+33% contribution
+Sédentarité
+Augmentation risque
+Alcool/Substances
+Cocaïne, cannabis, héroïne, amphétamines
+Contraceptif oral œstro-progestatif
+Principalement ischémique
+Traitement AVK
+Risque hémorragique
+Grossesse
+Risque augmenté
+Migraine
+Risque ischémique
+Stress/dépression/isolement
+Facteurs psychosociaux
+7. DIAGNOSTIC CLINIQUE
+7.1 Signes d’Alerte (Urgence Vitale)
+Déficit neurologique focal
+Apparition brutale (secondes/minutes)
+Déficit maximal d’emblée ou progression rapide
+7.2 Symptômes par Type
+AVC Ischémique
+AVC Hémorragique
+Déficit systématisé (territoire artériel)
+Symptomatologie non systématisée
+Céphalées sévères précoces
+Troubles conscience précoces (HTIC)
+7.3 Score ABCD2 (Risque Post-AIT)
+Critère
+Points
+Âge ≥ 60 ans
+1
+PA systolique ≥ 140 ou diastolique ≥ 90
+1
+Déficit moteur unilatéral
+2
+Trouble langage isolé
+1
+Autre
+0
+Durée 10-60 min
+1
+Durée > 60 min
+2
+Diabète
+1
+Score max
+7
+8. SYNDROMES TOPOGRAPHIQUES - AVC ISCHÉMIQUES
+8.1 Territoire Carotidien (Symptômes Controlatéraux)
+Infarctus Sylvien Superficiel (ACM)
+Hémiplégie brachiofaciale (+++)
+Troubles sensitifs territoriaux
+Hémianopsie latérale homonyme
+Hémisphère majeur: Aphasie de Broca (antérieur), Wernicke (postérieur), apraxie
+Hémisphère mineur: Syndrome d’Anton-Babinski (anosognosie, hémiasomatognosie, héminégligence)
+Infarctus Sylvien Profond
+Hémiplégie massive proportionnelle (capsule interne)
+Infarctus Sylvien Total
+Hémiplégie massive + hémianesthésie
+Aphasie globale (hémisphère majeur)
+Déviation conjuguée tête/yeux vers lésion
+Troubles conscience initiaux
+Infarctus Artère Cérébrale Antérieure
+Hémiplégie prédominance crurale
+Troubles sensitifs
+Syndrome frontal (adynamie, dysexécutif)
+Bilatéral complet: mutisme akinétique
+Infarctus Artère Choroïdienne Antérieure
+Hémiplégie controlatérale
+Déficits sensitifs controlatéraux
+Hémianopsie homonyme controlatérale
+8.2 Territoire Vertébro-Basilaire
+Artère Cérébrale Postérieure - Territoire Superficiel
+Hémianopsie latérale homonyme isolée (+++)
+Alexie/agnosie visuelle (hémisphère majeur)
+Troubles représentation spatiale/prosopagnosie (hémisphère mineur)
+Artère Cérébrale Postérieure - Territoire Profond (Thalamus)
+Troubles sensitifs tous modes hémicorps controlatéral
+Douleurs intenses/hyperpathie (secondaire)
+Mouvements anormaux main (rare)
+Bilatéral complet: cécité corticale + troubles mnésiques
+Infarctus Tronc Cérébral
+Syndromes Alternes:
+Atteinte nerf crânien homolatéral + voie longue controlatérale
+Syndrome de Wallenberg (latéral bulbe, PICA) - +++:
+Côté lésion
+Côté opposé
+Syndrome Claude Bernard-Horner
+Anesthésie thermoalgique hémicorps
+Hémisyndrome cérébelleux
+(Épargne face)
+Atteinte VIII (nystagmus, vertiges)
+Atteinte IX, X (dysphagie, voile)
+Atteinte V (anesthésie hémiface)
+Syndrome de Millard-Gubler (protubérance inférieure):
+Côté lésion: Paralysie faciale périphérique
+Côté opposé: Hémiplégie (épargne face)
+Syndrome de Weber (pédoncules):
+Côté lésion: Paralysie III
+Côté opposé: Hémiplégie + paralysie faciale centrale
+Infarctus Gravis Tronc Basilaire:
+Coma → décès
+Atteinte motrice bilatérale
+Locked-in syndrome (quadriplégie, diplégie faciale, conscience normale, verticalité yeux)
+Infarctus Cérébelleux
+Syndrome cérébelleux statique/cinétique ipsilatéral
+Risque vital: compression tronc cérébral, hydrocéphalie aiguë (compression IVe ventricule)
+8.3 Lacunes (Infarctus < 20 mm)
+Mécanisme: lipohyalinose artériole perforante
+Tableaux cliniques:
+Hémiplégie motrice pure (capsule interne)
+Hémianesthésie pure chéiro-orale (thalamus)
+Hémiparésie + hémihypoesthésie
+Dysarthrie + main malhabile (pied protubérance)
+Hémiparésie + hémi-ataxie
+9. HÉMORRAGIES INTRAPARENCHYMATEUSES
+9.1 Localisations
+Type
+Fréquence
+Caractéristiques
+Profonds (noyaux gris)
+50%
+HTA; paralysie controlatérale, troubles conscience
+Superficiels (lobaires)
+30-40%
+Angiopathie amyloïde; symptômes selon lobe
+Sous-tentoriels
+Protubérance, cervelet
+9.2 Hématomes par Localisation
+Localisation
+Symptômes
+Occipital
+Amputation champ visuel controlatéral
+Frontal
+Hémiplégie + troubles comportement + épilepsie
+Temporal gauche
+Aphasie de Wernicke
+Pariétal gauche
+Troubles sensitifs
+Pariétal droit
+Troubles sensitifs + schéma corporel + négligence
+Cervelet
+Syndrome cérébelleux; risque compression IVe ventricule/tronc
+Protubérance
+Tétraplégie, troubles végétatifs, coma, décès fréquent
+10. THROMBOSES VEINEUSES CÉRÉBRALES
+10.1 Caractéristiques
+Fréquence: < 2% AVC
+Traitement: anticoagulant efficace
+Topographie: non artérielle
+10.2 Triade Évocatrice
+Céphalées (HTIC)
+Crises épileptiques
+Déficit neurologique focal
+10.3 Syndromes Topographiques
+Localisation
+Manifestations
+SSS
+HTIC isolé (+++); signes corticaux (déficit moteur/sensitif, crises épileptiques); MI+++, bilatéraux/alternants
+Sinus latéral
+HTIC; aphasie (veine temporale); atteinte V (sinus pétreux sup); atteinte VI (sinus pétreux inf); syndrome trou déchiré postérieur
+Sinus caverneux
+Paralysie oculomotrice douloureuse (III, IV, VI); exophtalmie; chémosis; ptosis; œdème palpébral; atteinte V1; bilatéral secondaire
+Veines profondes
+Troubles vigilance; hypertonie extrapyramidale; pseudopsychiatrique (apathie); évolution rapide; décès/séquelles fréquents
+11. EXAMENS DIAGNOSTIQUES
+11.1 Imagerie
+Examen
+Indication
+Apports
+Scanner
+1ère intention
+Confirme AVC; différencie ischémie/hémorragie; signe delta (TV)
+IRM
+Référence
+Petites lésions; séquences diffusion/FLAIR/T2*; angio-RM veineuse (TV)
+Angio-scanner/Angio-RM
+Étiologie
+Visualise occlusions/sténoses; anévrismes
+11.2 Signes TV en Imagerie
+IRM:
+Hypersignal T1/T2, hyposignal T2* sinus thrombosé
+Absence flux angio-RM
+Signe delta (prise contraste paroi)
+Œdème vasogénique, infarctus veineux, remaniement hémorragique
+Scanner:
+Signe corde (veines corticales)
+Triangle dense (SSS)
+Signe delta vide
+11.3 Cardiaque
+Examen
+Objectif
+Échocardiographie
+Contours/intérieur cœur; thrombus; valve
+ECG
+Troubles rythme (FA)
+Holter/R-Test (24h-7j)
+Dépistage FA paroxystique
+11.4 Complémentaires
+Écho-doppler: vitesse circulation artères cou/cerveau
+Biologie: facteurs favorisants, coagulation
+LCR: si pas lésion focale (TV)
+12. TRAITEMENT
+12.1 Phase Aiguë - AVC Ischémique
+Traitement
+Indication/Délai
+Thrombolyse IV
+< 4h30 après début symptômes
+Thrombectomie
+Extraction mécanique caillot (cathéter + stent)
+Anti-agrégants
+Aspirine (prévention caillots)
+Anticoagulants
+Selon étiologie (embolie cardiaque)
+12.2 Phase Aiguë - AVC Hémorragique
+Antihypertenseurs (limiter hémorragie)
+Chirurgie évacuation hématome
+Traitement anévrismes
+12.3 Thromboses Veineuses
+Anticoagulants (héparine puis AVK/NOAC)
+12.4 Rééducation
+Début précoce (dès état stable)
+Orthophonie, ergothérapie, kinésithérapie
+Neuropsychologie
+12.5 Prévention Secondaire
+Anti-agrégant plaquettaire ou anticoagulant oral (selon type AVC)
+Contrôle facteurs risque (HTA, diabète, cholestérol)
+Arrêt tabac
+Activité physique régulière
+Alimentation équilibrée
+13. ÉTIOLOGIES SELON ÂGE
+13.1 Causes AVC Ischémique
+Catégorie
+Causes
+Maladie gros vaisseaux
+Athérosclérose carotide/vertébrale; sténose; plaques cholestérol
+Maladie petits vaisseaux
+Lipohyalinose; occlusion artérioles perforantes
+Embolie cardiaque
+Fibrillation auriculaire; infarctus; lésions valvulaires
+Dissections
+Carotide/vertébrale (jeunes); douleurs nuque
+Foramen ovale perméable
+25% population; caillot veineux → cerveau
+13.2 Causes AVC Hémorragique
+HTA (hématomes profonds)
+Angiopathie amyloïde (hématomes lobaires)
+Anévrismes (HSA)
+Traitement anticoagulant
+14. COMPLICATIONS
+Type
+Complications
+Neurologiques
+Handicap moteur (hémiplégie), aphasie, perte vision, démence, épilepsie
+Médicales
+Infections (urinaires, pulmonaires), œdème cérébral, hydrocéphalie
+Psychologiques
+Dépression, troubles humeur, agressivité, irritabilité
+Récidive
+Risque élevé sans traitement secondaire
+15. SOINS INFIRMIERS SPÉCIFIQUES
+15.1 Évaluation
+Conscience et vigilance
+Paramètres vitaux (PA, température, O2)
+Fonctions neurologiques (langage, force, sensibilité)
+Test déglutition
+15.2 Mesures
+Patient à jeun jusqu’au test déglutition
+SNG si dysphagie
+Prévention complications décubitus
+Surélévation membre hémiplégique (œdèmes)
+Éviter ponction/PA côté hémiplégique
+Adaptation environnement (héminégligence)
+16. STATISTIQUES ET IMPACT
+Indicateur
+Donnée
+1ère cause
+Handicap moteur
+2ème cause
+Démence
+3ème cause
+Mortalité
+AVC ischémique
+80%
+AVC hémorragique
+20%
+AIT → Infarctus
+10% dans mois suivant
+HTA contribution
+40% risque AVC
+Document optimisé pour système RAG - Version consolidée des sources médicales
