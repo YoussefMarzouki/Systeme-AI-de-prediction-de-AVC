@@ -6,7 +6,6 @@ from typing import Any
 
 from app.core.db import db
 from app.models.analyses import AnalyseIA, AnalyseSymptomes, EvaluationRisque
-from app.models.commentaire_medical import CommentaireMedical
 from app.models.donnees_cliniques import DonneesCliniques
 from app.models.dossier_patient import DossierPatient
 from app.models.image_irm import ImageIRM
@@ -221,6 +220,7 @@ class RapportService:
             statut="VALIDATED",
             cheminFichier=rapport.cheminFichier,
             contenu=content,
+            commentaire=payload.get("notes"),
             medecin_id=rapport.medecin_id,
             modifie_par_id=specialist_id,
             dossier_id=rapport.dossier_id,
@@ -232,7 +232,6 @@ class RapportService:
         if dossier:
             dossier.statut = "VALIDATED"
 
-        self._add_comment_if_needed(rapport.dossier_id, specialist_id, payload.get("notes"))
         db.session.commit()
         return {
             "original_rapport_id": rapport.idRapport,
@@ -268,6 +267,7 @@ class RapportService:
             statut="REJECTED",
             cheminFichier=rapport.cheminFichier,
             contenu=content,
+            commentaire=payload.get("notes"),
             medecin_id=rapport.medecin_id,
             modifie_par_id=specialist_id,
             dossier_id=rapport.dossier_id,
@@ -279,7 +279,6 @@ class RapportService:
         if dossier:
             dossier.statut = "REJECTED"
 
-        self._add_comment_if_needed(rapport.dossier_id, specialist_id, payload.get("notes"))
         db.session.commit()
         return {
             "original_rapport_id": rapport.idRapport,
@@ -317,6 +316,7 @@ class RapportService:
             "risk_level": scores["risk_level"],
             "status": self._ui_status(scores["risk_level"]),
             "rapport_status": rapport.statut,
+
             "date_generation": str(rapport.dateGeneration) if rapport.dateGeneration else None,
         }
 
@@ -371,34 +371,24 @@ class RapportService:
             "predicted_class": content.get("predicted_class") or "N/A",
         }
 
-    def _add_comment_if_needed(self, dossier_id: str, medecin_id: str, text: str | None) -> None:
-        if not text:
-            return
-        medecin = Medecin.query.get(medecin_id)
-        if not medecin:
-            return
-        db.session.add(
-            CommentaireMedical(
-                texte=text,
-                medecin_id=medecin_id,
-                dossier_id=dossier_id,
-            )
-        )
-
     def _get_comments(self, dossier_id: str) -> list[dict[str, Any]]:
-        comments = (
-            CommentaireMedical.query.filter_by(dossier_id=dossier_id)
-            .order_by(CommentaireMedical.date.desc())
+        rapports = (
+            Rapport.query.filter(
+                Rapport.dossier_id == dossier_id,
+                Rapport.commentaire.isnot(None),
+                Rapport.commentaire != "",
+            )
+            .order_by(Rapport.dateGeneration.desc())
             .all()
         )
         return [
             {
-                "id": comment.id,
-                "texte": comment.texte,
-                "date": str(comment.date) if comment.date else None,
-                "medecin_id": comment.medecin_id,
+                "id": r.idRapport,
+                "texte": r.commentaire,
+                "date": str(r.dateGeneration) if r.dateGeneration else None,
+                "medecin_id": r.modifie_par_id or r.medecin_id,
             }
-            for comment in comments
+            for r in rapports
         ]
 
     def _content_dict(self, rapport: Rapport) -> dict[str, Any]:
@@ -451,10 +441,14 @@ class RapportService:
     def _extract_onset(self, notes: str | None) -> str:
         if not notes:
             return "N/A"
-        marker = "Symptom onset time:"
-        if marker in notes:
-            return notes.split(marker, 1)[1].strip()
+        for marker in ("Début des symptômes :", "Symptom onset time:"):
+            if marker in notes:
+                part = notes.split(marker, 1)[1].strip()
+                if " | " in part:
+                    part = part.split(" | ", 1)[0].strip()
+                return part
         return "N/A"
+
 
     def _clinical_fallback_assessment(
         self,

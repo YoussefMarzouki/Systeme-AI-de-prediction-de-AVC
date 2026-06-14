@@ -98,17 +98,18 @@ def run_prediction(dossier_id):
       500:
         description: Erreur serveur
     """
-    data = request.json
+    data = request.json or {}
     image_url = data.get('image_url')
     symptoms_text = data.get('symptoms_text')
+    language = data.get('language', 'fr')
     
     try:
         if image_url and symptoms_text:
-            result = prediction_service.predict_fused(image_url, symptoms_text)
+            result = prediction_service.predict_fused(image_url, symptoms_text, language)
         elif image_url:
             result = prediction_service.predict_image(image_url)
         elif symptoms_text:
-            result = prediction_service.predict_symptoms(symptoms_text)
+            result = prediction_service.predict_symptoms(symptoms_text, language)
         else:
             return jsonify({"error": "No input data provided"}), 400
             

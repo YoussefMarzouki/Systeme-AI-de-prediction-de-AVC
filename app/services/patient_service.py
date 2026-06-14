@@ -2,6 +2,9 @@ from datetime import datetime
 from app.models.patient import Patient
 from app.repositories.patient_repository import PatientRepository
 
+from app.core.validation import validate_email_format, validate_cin_format, validate_phone_format
+
+
 class PatientService:
     def __init__(self, patient_repo: PatientRepository):
         self.patient_repo = patient_repo
@@ -31,6 +34,18 @@ class PatientService:
         cin_val = data.get('cin')
         if not cin_val or str(cin_val).strip() == '':
             cin_val = None
+        else:
+            cin_val = str(cin_val).strip()
+            if not validate_cin_format(cin_val):
+                raise Exception("Le CIN doit comporter exactement 8 chiffres")
+
+        email_val = self._clean_optional(data.get('email'))
+        if email_val and not validate_email_format(email_val):
+            raise Exception("Format de l'email incorrect")
+
+        phone_val = self._clean_optional(data.get('telephone'))
+        if phone_val and not validate_phone_format(phone_val):
+            raise Exception("Le numero de telephone doit comporter 8 chiffres et commencer par 20/21/22/50/51/52/53/90/91/92")
 
         new_patient = Patient(
             cin=cin_val,
@@ -39,8 +54,8 @@ class PatientService:
             dateNaissance=dob,
             age=age,
             sexe=data['sexe'],
-            email=self._clean_optional(data.get('email')),
-            telephone=self._clean_optional(data.get('telephone')),
+            email=email_val,
+            telephone=phone_val,
             adresse=self._clean_optional(data.get('adresse')),
         )
         patient = self.patient_repo.create(new_patient)
@@ -64,7 +79,13 @@ class PatientService:
             patient.age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
         if 'cin' in data:
             cin_val = data.get('cin')
-            patient.cin = cin_val if cin_val and str(cin_val).strip() else None
+            if cin_val and str(cin_val).strip():
+                cin_val = str(cin_val).strip()
+                if not validate_cin_format(cin_val):
+                    raise Exception("Le CIN doit comporter exactement 8 chiffres")
+                patient.cin = cin_val
+            else:
+                patient.cin = None
         if 'nom' in data:
             patient.nom = data['nom']
         if 'prenom' in data:
@@ -72,9 +93,15 @@ class PatientService:
         if 'sexe' in data:
             patient.sexe = data['sexe']
         if 'email' in data:
-            patient.email = self._clean_optional(data.get('email'))
+            email_val = self._clean_optional(data.get('email'))
+            if email_val and not validate_email_format(email_val):
+                raise Exception("Format de l'email incorrect")
+            patient.email = email_val
         if 'telephone' in data:
-            patient.telephone = self._clean_optional(data.get('telephone'))
+            phone_val = self._clean_optional(data.get('telephone'))
+            if phone_val and not validate_phone_format(phone_val):
+                raise Exception("Le numero de telephone doit comporter 8 chiffres et commencer par 20/21/22/50/51/52/53/90/91/92")
+            patient.telephone = phone_val
         if 'adresse' in data:
             patient.adresse = self._clean_optional(data.get('adresse'))
 
@@ -97,7 +124,6 @@ class PatientService:
     def _delete_patient_dependencies(self, patient_id: str) -> None:
         from app.core.db import db
         from app.models.analyses import AnalyseIA, AnalyseSymptomes, EvaluationRisque
-        from app.models.commentaire_medical import CommentaireMedical
         from app.models.donnees_cliniques import DonneesCliniques
         from app.models.dossier_patient import DossierPatient
         from app.models.image_irm import ImageIRM
@@ -109,7 +135,6 @@ class PatientService:
 
             EvaluationRisque.query.filter_by(dossier_id=dossier_id).delete(synchronize_session=False)
             Rapport.query.filter_by(dossier_id=dossier_id).delete(synchronize_session=False)
-            CommentaireMedical.query.filter_by(dossier_id=dossier_id).delete(synchronize_session=False)
 
             images = ImageIRM.query.filter_by(dossier_id=dossier_id).all()
             for image in images:

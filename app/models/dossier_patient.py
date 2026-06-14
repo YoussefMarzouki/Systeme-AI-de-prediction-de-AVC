@@ -16,6 +16,5 @@ class DossierPatient(db.Model):
     # 0..* relationships to this dossier
     donnees_cliniques = db.relationship('DonneesCliniques', backref='dossier', lazy=True)
     images_irm = db.relationship('ImageIRM', backref='dossier', lazy=True)
-    commentaires = db.relationship('CommentaireMedical', backref='dossier', lazy=True)
     rapports = db.relationship('Rapport', backref='dossier', lazy=True)
     evaluations = db.relationship('EvaluationRisque', backref='dossier', lazy=True)

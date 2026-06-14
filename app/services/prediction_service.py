@@ -22,16 +22,16 @@ class PredictionService:
         except Exception as e:
             raise Exception(f"Failed to communicate with PFE model: {str(e)}")
 
-    def predict_symptoms(self, symptoms_text):
+    def predict_symptoms(self, symptoms_text, language='fr'):
         try:
-            payload = {"description": symptoms_text}
+            payload = {"description": symptoms_text, "language": language}
             response = requests.post(f"{self.pfe_base_url}/predict/symptoms", json=payload)
             response.raise_for_status()
             return response.json()
         except Exception as e:
             raise Exception(f"Failed to communicate with PFE model: {str(e)}")
 
-    def predict_fused(self, file_url_or_path, symptoms_text):
+    def predict_fused(self, file_url_or_path, symptoms_text, language='fr'):
         try:
             if file_url_or_path.startswith('http'):
                 image_response = requests.get(file_url_or_path, headers={'User-Agent': 'Mozilla/5.0'})
@@ -42,7 +42,7 @@ class PredictionService:
             else:
                 files = {'file': open(file_url_or_path, 'rb')}
             
-            data = {"description": symptoms_text}
+            data = {"description": symptoms_text, "language": language}
             response = requests.post(f"{self.pfe_base_url}/predict/fused", files=files, data=data)
             response.raise_for_status()
             return response.json()

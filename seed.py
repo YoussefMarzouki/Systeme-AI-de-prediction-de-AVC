@@ -14,7 +14,6 @@ from app.models.donnees_cliniques import DonneesCliniques
 from app.models.image_irm import ImageIRM
 from app.models.analyses import AnalyseIA, AnalyseSymptomes, EvaluationRisque
 from app.models.user import Utilisateur, Medecin, AgentAccueil, Admin
-from app.models.commentaire_medical import CommentaireMedical
 from app.models.rapport import Rapport
 
 app = create_app()
@@ -27,6 +26,8 @@ def seed_db():
         try:
             print("Beginning the seeding process with Tunisian test data...")
             print("Clearing all previous data...")
+            db.session.execute(db.text("DROP TABLE IF EXISTS commentaires_medicaux CASCADE;"))
+            db.session.commit()
             db.drop_all()
             db.create_all()
             print("Database tables recreated fresh.")
@@ -120,7 +121,7 @@ def seed_db():
                         fast=fast_symptoms, 
                         tension='140' if idx % 2 == 0 else '120', 
                         age=60 + idx, 
-                        notes=f'Patient originaire de {cities[idx % len(cities)]}. Contact famille/urgence (+216 {phone_number}).'
+                        notes=f'Patient originaire de {cities[idx % len(cities)]}. Contact famille/urgence (+216 {phone_number}). | Début des symptômes : il y a {30 + idx * 15} minutes'
                     )
                     db.session.add(donnees)
                     db.session.commit()
@@ -175,28 +176,18 @@ def seed_db():
                     db.session.add(eval_risque)
                     db.session.commit()
 
-                # Commentaire Medical (Diagnosed by Medecin)
-                commentaire = CommentaireMedical.query.filter_by(dossier_id=dossier.idDossier).first()
-                if not commentaire:
-                    text_comment = 'Suspicion d\'AVC confirmée. Un transfert urgent vers l\'hôpital Charles Nicolle est recommandé.' if niveau == 'HIGH' else 'Le patient doit rester en observation.'
-                    commentaire = CommentaireMedical(
-                        texte=text_comment,
-                        medecin_id=medecins[idx % len(medecins)].id,
-                        dossier_id=dossier.idDossier
-                    )
-                    db.session.add(commentaire)
-                    db.session.commit()
-
-                # Rapport Medical
+                # Rapport Medical with Commentaire
                 rapport = Rapport.query.filter_by(dossier_id=dossier.idDossier).first()
                 if not rapport:
                     # Let's assign an optional 'modifie_par_id' to some reports to test it in the UI and pgAdmin
                     modificateur = medecins[(idx + 1) % len(medecins)].id if idx % 2 == 0 else None
+                    text_comment = 'Suspicion d\'AVC confirmée. Un transfert urgent vers l\'hôpital Charles Nicolle est recommandé.' if niveau == 'HIGH' else 'Le patient doit rester en observation.'
                     
                     rapport = Rapport(
                         medecin_id=medecins[idx % len(medecins)].id,
                         dossier_id=dossier.idDossier,
                         statut='GENERATED',
+                        commentaire=text_comment,
                         modifie_par_id=modificateur
                     )
                     db.session.add(rapport)

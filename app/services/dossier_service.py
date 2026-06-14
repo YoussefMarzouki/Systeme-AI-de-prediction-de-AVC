@@ -4,6 +4,7 @@ from app.models.analyses import AnalyseIA, EvaluationRisque
 from app.models.patient import Patient
 from app.core.db import db
 from app.repositories.dossier_repository import DossierRepository
+from datetime import date
 import json
 
 class DossierService:
@@ -119,6 +120,9 @@ class DossierService:
                 "patient_id": patient.id,
                 "patient_name": f"{patient.nom} {patient.prenom}",
                 "patient_cin": patient.cin,
+                "patient_age": self._patient_age(patient),
+                "patient_email": patient.email,
+                "patient_telephone": patient.telephone,
                 "dossier_status": current_status,
                 "risk_level": risk_level,
                 "fused_probability": fused_probability,
@@ -139,6 +143,9 @@ class DossierService:
                 "patient_id": patient.id,
                 "patient_name": f"{patient.nom} {patient.prenom}",
                 "patient_cin": patient.cin,
+                "patient_age": self._patient_age(patient),
+                "patient_email": patient.email,
+                "patient_telephone": patient.telephone,
                 "dossier_status": "NO_DOSSIER",
                 "risk_level": "UNKNOWN",
                 "fused_probability": None,
@@ -258,11 +265,30 @@ class DossierService:
             "patient_id": patient.id,
             "patient_name": f"{patient.nom} {patient.prenom}",
             "patient_cin": patient.cin,
-            "patient_age": patient.age,
+            "patient_age": self._patient_age(patient),
+            "patient_email": patient.email,
+            "patient_telephone": patient.telephone,
             "patient_sexe": patient.sexe,
             "total_consultations": len(history),
             "consultations": history,
         }
+
+    def _patient_age(self, patient: Patient):
+        if patient.age is not None:
+            return patient.age
+
+        dob = patient.dateNaissance
+        if not dob:
+            return None
+
+        if isinstance(dob, str):
+            try:
+                dob = date.fromisoformat(dob[:10])
+            except ValueError:
+                return None
+
+        today = date.today()
+        return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
 
     def _latest_evaluation_for_dossier(self, dossier_id: str):
         return db.session.query(EvaluationRisque).outerjoin(

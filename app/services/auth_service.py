@@ -5,6 +5,9 @@ from flask_jwt_extended import create_access_token
 from app.repositories.utilisateur_repository import UtilisateurRepository
 
 
+from app.core.validation import validate_email_format
+
+
 class AuthService:
     def __init__(self, repo: UtilisateurRepository):
         self.repo = repo
@@ -37,6 +40,9 @@ class AuthService:
         return data
 
     def login(self, email: str, password: str) -> dict:
+        if not validate_email_format(email):
+            raise Exception("Format de l'email incorrect")
+
         user = self.repo.get_by_email(email)
         if not user:
             raise Exception("Email ou mot de passe incorrect")

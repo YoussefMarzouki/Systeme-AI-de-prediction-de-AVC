@@ -3,6 +3,8 @@ from app.models.user import Utilisateur, Medecin, AgentAccueil, Admin
 from app.repositories.utilisateur_repository import UtilisateurRepository
 
 
+from app.core.validation import validate_email_format
+
 TYPE_MAP = {
     "medecin": Medecin,
     "agent_accueil": AgentAccueil,
@@ -36,7 +38,11 @@ class UtilisateurService:
         return self._serialize(user)
 
     def create_utilisateur(self, data: dict) -> str:
-        if self.repo.get_by_email(data["email"]):
+        email_val = data.get("email", "")
+        if not validate_email_format(email_val):
+            raise Exception("Format de l'email incorrect")
+
+        if self.repo.get_by_email(email_val):
             raise Exception("Un utilisateur avec cet email existe deja")
 
         user_type = data.get("type", "medecin")
@@ -48,7 +54,7 @@ class UtilisateurService:
 
         user = cls(
             nom=data["nom"],
-            email=data["email"],
+            email=email_val,
             motDePasse=hashed,
             etat=data.get("etat", "actif"),
         )
@@ -66,10 +72,13 @@ class UtilisateurService:
         if "nom" in data:
             user.nom = data["nom"]
         if "email" in data:
-            existing = self.repo.get_by_email(data["email"])
+            email_val = data["email"]
+            if not validate_email_format(email_val):
+                raise Exception("Format de l'email incorrect")
+            existing = self.repo.get_by_email(email_val)
             if existing and existing.id != user_id:
                 raise Exception("Cet email est deja utilise")
-            user.email = data["email"]
+            user.email = email_val
         if "etat" in data:
             user.etat = data["etat"]
         if "motDePasse" in data and data["motDePasse"]:
