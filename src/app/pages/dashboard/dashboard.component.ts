@@ -72,16 +72,24 @@ export class DashboardComponent implements OnInit {
     return this.stateService.isCurrentUserAdmin || this.stateService.currentRole === 'agent';
   }
 
+  get shouldShowPatientContactDetails(): boolean {
+    return this.stateService.isCurrentUserAdmin || this.stateService.currentRole === 'agent';
+  }
+
+  get totalPatientCount(): number {
+    return new Set(this.records.map(record => this.patientGroupKey(record))).size;
+  }
+
   get highRiskCount(): number {
-    return this.records.filter(r => ['HIGH', 'VERY_HIGH'].includes(this.normalizeRiskLevel(r.risk_level))).length;
+    return this.groupRecordsByPatient(this.records).filter(r => ['HIGH', 'VERY_HIGH'].includes(this.normalizeRiskLevel(r.risk_level))).length;
   }
 
   get mediumRiskCount(): number {
-    return this.records.filter(r => this.normalizeRiskLevel(r.risk_level) === 'MEDIUM').length;
+    return this.groupRecordsByPatient(this.records).filter(r => this.normalizeRiskLevel(r.risk_level) === 'MEDIUM').length;
   }
 
   get lowRiskCount(): number {
-    return this.records.filter(r => ['LOW', 'UNKNOWN', 'UNCERTAIN'].includes(this.normalizeRiskLevel(r.risk_level))).length;
+    return this.groupRecordsByPatient(this.records).filter(r => ['LOW', 'UNKNOWN', 'UNCERTAIN'].includes(this.normalizeRiskLevel(r.risk_level))).length;
   }
 
   fetchDossiers() {
@@ -120,6 +128,38 @@ export class DashboardComponent implements OnInit {
       default:
         this.filteredRecords = [...this.records];
     }
+
+    this.filteredRecords = this.groupRecordsByPatient(this.filteredRecords);
+  }
+
+  private groupRecordsByPatient(records: any[]): any[] {
+    const grouped = new Map<string, any>();
+
+    for (const record of records) {
+      const key = this.patientGroupKey(record);
+      if (!key || !grouped.has(key)) {
+        grouped.set(key, record);
+      }
+    }
+
+    return Array.from(grouped.values());
+  }
+
+  private patientGroupKey(record: any): string {
+    const cin = String(record.patient_cin || '').trim();
+    if (cin && cin.toUpperCase() !== 'N/A') {
+      return `cin:${cin}`;
+    }
+
+    const name = String(record.patient_name || '').trim().toLowerCase();
+    const phone = String(record.patient_telephone || '').trim();
+    const email = String(record.patient_email || '').trim().toLowerCase();
+
+    if (name && (phone || email)) {
+      return `contact:${name}:${phone}:${email}`;
+    }
+
+    return `id:${record.patient_id || name}`;
   }
 
   getAvatarGradient(name: string): string {
@@ -477,10 +517,43 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  get isEditCinInvalid(): boolean {
+    if (!this.editForm.cin) return false;
+    const pattern = /^\d{8}$/;
+    return !pattern.test(this.editForm.cin.trim());
+  }
+
+  get isEditPhoneInvalid(): boolean {
+    if (!this.editForm.telephone) return false;
+    const pattern = /^(20|21|22|50|51|52|53|90|91|92)\d{6}$/;
+    return !pattern.test(this.editForm.telephone.trim());
+  }
+
+  get isEditEmailInvalid(): boolean {
+    if (!this.editForm.email) return false;
+    const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return !pattern.test(this.editForm.email.trim());
+  }
+
   saveEdit() {
     if (!this.editRecord?.patient_id) return;
     if (!this.editForm.nom.trim() || !this.editForm.prenom.trim() || !this.editForm.dateNaissance || !this.editForm.sexe) {
       this.editError = 'Please fill in all required fields.';
+      return;
+    }
+
+    if (this.isEditCinInvalid) {
+      this.editError = 'Le CIN doit comporter exactement 8 chiffres.';
+      return;
+    }
+
+    if (this.isEditPhoneInvalid) {
+      this.editError = 'Le téléphone doit comporter exactement 8 chiffres et commencer par 20/21/22/50/51/52/53/90/91/92.';
+      return;
+    }
+
+    if (this.isEditEmailInvalid) {
+      this.editError = "Format de l'email incorrect (ex: patient@domaine.tn).";
       return;
     }
 

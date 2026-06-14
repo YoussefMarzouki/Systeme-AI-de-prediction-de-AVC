@@ -26,13 +26,29 @@
          <strong>Symptom Probability:</strong> 
          <span class="highlight">{{ symptomAnalysisData.symptom_probability | percent:'1.1-2' }}</span>
        </div>
-       <div class="symptom-row">
+       <div class="symptom-row" style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
          <strong>Urgency Level:</strong> 
-         <span class="badge">{{ symptomAnalysisData.urgency || symptomAnalysisData.symptom_urgency || 'N/A' }}</span>
+         <span class="urgency-badge" [ngClass]="{
+           'urgency-high': (symptomAnalysisData.urgency || symptomAnalysisData.symptom_urgency) === 'URGENCE IMMEDIATE' || (symptomAnalysisData.urgency || symptomAnalysisData.symptom_urgency) === 'EMERGENCY',
+           'urgency-medium': (symptomAnalysisData.urgency || symptomAnalysisData.symptom_urgency) === 'URGENCE A EVALUER RAPIDEMENT' || (symptomAnalysisData.urgency || symptomAnalysisData.symptom_urgency) === 'MODERATE',
+           'urgency-low': (symptomAnalysisData.urgency || symptomAnalysisData.symptom_urgency) === 'FAIBLE PROBABILITE MAIS SURVEILLANCE' || (symptomAnalysisData.urgency || symptomAnalysisData.symptom_urgency) === 'LOW'
+         }">
+           {{ symptomAnalysisData.urgency || symptomAnalysisData.symptom_urgency || 'N/A' }}
+         </span>
        </div>
-       <div class="symptom-row summary">
-         <strong>AI Assessment:</strong>
-         <div [innerHTML]="symptomAnalysisData.response || symptomAnalysisData.symptom_response"></div>
+       
+       <!-- AI Response exactly like the report page! -->
+       <div class="ai-response-card" style="margin-top: 12px;">
+         <div class="ai-response-header">
+           <div class="ai-icon">
+             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+               <path d="M10 2l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6l2-6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+             </svg>
+           </div>
+           <h3 style="margin: 0; font-size: 14px; font-weight: 600; color: var(--color-primary); flex: 1;">AI Knowledge Assessment (RAG)</h3>
+           <span class="ai-badge">RAG OUTPUT</span>
+         </div>
+         <div class="ai-response-body" [innerHTML]="symptomAnalysisData.response || symptomAnalysisData.symptom_response"></div>
        </div>
     </div>
   </div>

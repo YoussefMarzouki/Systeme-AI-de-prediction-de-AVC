@@ -2,12 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { RapportService, CaseDetail } from '../../services/rapport.service';
 
 @Component({
   selector: 'app-case-evaluation',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, TranslateModule],
   templateUrl: './case-evaluation.component.html',
   styleUrl: './case-evaluation.component.css'
 })
@@ -151,4 +152,3 @@ export class CaseEvaluationComponent implements OnInit {
     });
   }
 }
-

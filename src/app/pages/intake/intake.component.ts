@@ -70,12 +70,16 @@ export class IntakeComponent {
     private predictionService: PredictionService,
     private translate: TranslateService
   ) {
+    const now = new Date();
+    const tzOffset = now.getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(now.getTime() - tzOffset)).toISOString().slice(0, 16);
+
     this.intakeForm = this.fb.group({
       patientSearch: [''],
       fullName: [''],
       dateOfBirth: [''],
       cin: [''],
-      symptomOnsetTime: [''],
+      symptomOnsetTime: [localISOTime],
       tension: [120],
       triageNotes: [''],
     });
@@ -218,7 +222,23 @@ export class IntakeComponent {
     let notes = this.intakeForm.get('triageNotes')?.value || '';
     
     if (onsetTime) {
-      notes += ` | Symptom onset time: ${onsetTime}`;
+      try {
+        const dateObj = new Date(onsetTime);
+        if (!isNaN(dateObj.getTime())) {
+          const formatted = dateObj.toLocaleString('fr-FR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+          notes += ` | Début des symptômes : ${formatted}`;
+        } else {
+          notes += ` | Début des symptômes : ${onsetTime}`;
+        }
+      } catch (e) {
+        notes += ` | Début des symptômes : ${onsetTime}`;
+      }
     }
 
     const dob = this.patientFound ? this.selectedPatient.dob : this.intakeForm.get('dateOfBirth')?.value;

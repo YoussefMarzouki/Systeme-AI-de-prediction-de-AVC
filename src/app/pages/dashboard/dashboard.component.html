@@ -31,7 +31,7 @@
       </div>
       <div class="stat-content">
         <span class="stat-label">{{ 'DASHBOARD.TOTAL_PATIENTS' | translate }}</span>
-        <span class="stat-value">{{ records.length }}</span>
+        <span class="stat-value">{{ totalPatientCount }}</span>
       </div>
       <div class="stat-trend up">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -90,7 +90,7 @@
       <div class="table-title-row">
         <div class="table-title-group">
           <h2 class="table-title">{{ 'DASHBOARD.PATIENT_ASSESSMENTS' | translate }}</h2>
-          <span class="table-count">{{ records.length }} {{ 'DASHBOARD.RECORDS' | translate }}</span>
+          <span class="table-count">{{ filteredRecords.length }} {{ 'DASHBOARD.RECORDS' | translate }}</span>
         </div>
         <div class="table-filter-group" *ngIf="!shouldHideClinicalRisk">
           <button class="filter-chip" [class.active]="activeFilter === 'all'" (click)="setFilter('all')">{{ 'DASHBOARD.ALL' | translate }}</button>
@@ -166,6 +166,11 @@
                 <div class="patient-info">
                   <span class="patient-name">{{ rec.patient_name }}</span>
                   <span class="patient-cin">{{ rec.patient_cin || 'N/A' }}</span>
+                  <div class="patient-meta-list" *ngIf="shouldShowPatientContactDetails">
+                    <span class="patient-meta-item">{{ 'REGISTRATION.AGE' | translate }}: {{ rec.patient_age ?? 'N/A' }}</span>
+                    <span class="patient-meta-item">{{ 'DASHBOARD.PHONE' | translate }}: {{ rec.patient_telephone || 'N/A' }}</span>
+                    <span class="patient-meta-item patient-email">{{ 'DASHBOARD.EMAIL' | translate }}: {{ rec.patient_email || 'N/A' }}</span>
+                  </div>
                 </div>
               </div>
             </td>
@@ -305,7 +310,10 @@
 
         <label class="edit-field">
           <span>{{ 'DASHBOARD.CIN' | translate }}</span>
-          <input type="text" name="cin" [(ngModel)]="editForm.cin" />
+          <input type="text" name="cin" [(ngModel)]="editForm.cin" [style.border-color]="isEditCinInvalid ? '#ef4444' : ''" [style.box-shadow]="isEditCinInvalid ? '0 0 0 1px #ef4444' : ''" />
+          <span *ngIf="isEditCinInvalid" style="color: #ef4444; font-size: 0.78rem; margin-top: 4px; font-weight: 500;">
+            Doit comporter 8 chiffres
+          </span>
         </label>
 
         <label class="edit-field">
@@ -323,12 +331,18 @@
 
         <label class="edit-field">
           <span>{{ 'DASHBOARD.EMAIL' | translate }}</span>
-          <input type="email" name="email" [(ngModel)]="editForm.email" placeholder="patient@example.tn" />
+          <input type="email" name="email" [(ngModel)]="editForm.email" placeholder="patient@example.tn" [style.border-color]="isEditEmailInvalid ? '#ef4444' : ''" [style.box-shadow]="isEditEmailInvalid ? '0 0 0 1px #ef4444' : ''" />
+          <span *ngIf="isEditEmailInvalid" style="color: #ef4444; font-size: 0.78rem; margin-top: 4px; font-weight: 500;">
+            Format d'email invalide
+          </span>
         </label>
 
         <label class="edit-field">
           <span>{{ 'DASHBOARD.PHONE' | translate }}</span>
-          <input type="tel" name="telephone" [(ngModel)]="editForm.telephone" placeholder="+216 20 123 456" />
+          <input type="tel" name="telephone" [(ngModel)]="editForm.telephone" placeholder="ex: 20123456" [style.border-color]="isEditPhoneInvalid ? '#ef4444' : ''" [style.box-shadow]="isEditPhoneInvalid ? '0 0 0 1px #ef4444' : ''" />
+          <span *ngIf="isEditPhoneInvalid" style="color: #ef4444; font-size: 0.75rem; margin-top: 4px; font-weight: 500; line-height: 1.2;">
+            8 chiffres (commence par 20/21/22/50/51/52/53/90/91/92)
+          </span>
         </label>
 
         <label class="edit-field edit-field-wide">
@@ -342,7 +356,6 @@
             <option value="OUVERT">{{ 'STATUS.OPEN' | translate }}</option>
             <option value="PENDING_MRI">{{ 'STATUS.PENDING_MRI' | translate }}</option>
             <option value="FERME">{{ 'STATUS.CLOSED' | translate }}</option>
-            <option value="CLOSED">{{ 'STATUS.CLOSED' | translate }}</option>
             <option value="VALIDATED">{{ 'STATUS.VALIDATED' | translate }}</option>
             <option value="REJECTED">{{ 'STATUS.REJECTED' | translate }}</option>
           </select>
@@ -391,7 +404,9 @@
       <span class="history-patient-name">{{ historyData.patient_name }}</span>
       <div class="history-patient-meta">
         <span *ngIf="historyData.patient_cin">{{ 'DASHBOARD.CIN' | translate }}: {{ historyData.patient_cin }}</span>
-        <span *ngIf="historyData.patient_age">{{ 'REGISTRATION.AGE' | translate }}: {{ historyData.patient_age }}</span>
+        <span *ngIf="historyData.patient_age !== null && historyData.patient_age !== undefined">{{ 'REGISTRATION.AGE' | translate }}: {{ historyData.patient_age }}</span>
+        <span *ngIf="historyData.patient_telephone">{{ 'DASHBOARD.PHONE' | translate }}: {{ historyData.patient_telephone }}</span>
+        <span *ngIf="historyData.patient_email">{{ 'DASHBOARD.EMAIL' | translate }}: {{ historyData.patient_email }}</span>
         <span *ngIf="historyData.patient_sexe">{{ 'DASHBOARD.SEX' | translate }}: {{ (historyData.patient_sexe === 'M' ? 'REGISTRATION.MALE' : 'REGISTRATION.FEMALE') | translate }}</span>
       </div>
     </div>

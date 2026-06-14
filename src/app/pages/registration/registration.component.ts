@@ -47,11 +47,11 @@ export class RegistrationComponent {
   ) {
     this.registrationForm = this.fb.group({
       fullLegalName: ['', [Validators.required, fullNameValidator]],
-      cin: ['', Validators.required],
+      cin: ['', [Validators.required, Validators.pattern('^\\d{8}$')]],
       dateOfBirth: ['', [Validators.required, pastDateValidator]],
       genderIdentity: ['', Validators.required],
-      phoneNumber: ['', Validators.required],
-      emailAddress: ['', [Validators.required, Validators.email]],
+      phoneNumber: ['', [Validators.required, Validators.pattern('^(20|21|22|50|51|52|53|90|91|92)\\d{6}$')]],
+      emailAddress: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$')]],
       homeAddress: ['', Validators.required],
       insuranceProvider: [''],
       policyNumber: [''],

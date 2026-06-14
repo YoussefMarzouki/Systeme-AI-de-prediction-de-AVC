@@ -154,10 +154,10 @@
       <!-- Symptom Onset Time & Vitals -->
       <form [formGroup]="intakeForm">
         <div class="onset-row">
-          <div class="form-group onset-time">
-            <label class="form-label">{{ 'INTAKE.SYMPTOM_ONSET_TIME' | translate }}</label>
+          <div class="form-group onset-time" style="width: 100%;">
+            <label class="form-label">{{ 'INTAKE.SYMPTOM_ONSET_TIME' | translate }} (Date &amp; Heure)</label>
             <div class="time-input-wrap">
-              <input type="time" formControlName="symptomOnsetTime" class="form-input" placeholder="--:-- --" />
+              <input type="datetime-local" formControlName="symptomOnsetTime" class="form-input" />
             </div>
           </div>
         </div>

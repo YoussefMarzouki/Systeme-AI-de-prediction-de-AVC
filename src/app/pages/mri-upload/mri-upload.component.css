@@ -232,3 +232,65 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* ── AI Response Card (Report Page Style Integration) ── */
+.ai-response-card {
+  border: 1px solid var(--color-primary, #1d4ed8);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.ai-response-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: var(--color-primary-light, #eff6ff);
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+}
+
+.ai-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(29, 78, 216, 0.1);
+  color: var(--color-primary, #1d4ed8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ai-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 8px;
+  background: var(--color-primary, #1d4ed8);
+  color: #ffffff;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.ai-response-body {
+  padding: 20px;
+  font-size: 13.5px;
+  color: var(--color-text-body, #334155);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  background: var(--color-bg-card, #ffffff);
+}
+
+/* Urgency Badges */
+.urgency-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: inline-flex;
+}
+
+.urgency-badge.urgency-high { background: var(--color-danger-bg, #fee2e2); color: var(--color-danger-text, #b91c1c); }
+.urgency-badge.urgency-medium { background: var(--color-warning-bg, #fef3c7); color: var(--color-warning-text, #b45309); }
+.urgency-badge.urgency-low { background: var(--color-success-bg, #d1fae5); color: var(--color-success-text, #047857); }

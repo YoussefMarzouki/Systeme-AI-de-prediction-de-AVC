@@ -4,14 +4,14 @@
   <div class="flex justify-between items-end mb-8" *ngIf="caseDetail">
     <div>
       <div class="flex items-center gap-4 mb-2">
-        <span class="bg-gray-200 text-gray-700 text-xs font-bold px-3 py-1 rounded-sm uppercase tracking-wider">Pending Validation</span>
-        <span class="text-gray-500 text-sm">ID: {{caseDetail.patient_id}}</span>
+        <span class="bg-gray-200 text-gray-700 text-xs font-bold px-3 py-1 rounded-sm uppercase tracking-wider">{{ 'CASE_EVALUATION.PENDING_VALIDATION' | translate }}</span>
+        <span class="text-gray-500 text-sm">{{ 'VALIDATION_QUEUE.ID' | translate }}: {{caseDetail.patient_id}}</span>
       </div>
-      <h1 class="text-3xl font-bold text-gray-900 tracking-tight">{{caseDetail.patient_name}} - Acute Evaluation</h1>
+      <h1 class="text-3xl font-bold text-gray-900 tracking-tight">{{caseDetail.patient_name}} - {{ 'CASE_EVALUATION.TITLE' | translate }}</h1>
     </div>
     <div class="text-right">
-      <div class="text-gray-500 text-sm mb-1">Risk Level</div>
-      <div class="text-5xl font-bold text-[#8A1538] leading-none">{{caseDetail.risk_level}}</div>
+      <div class="text-gray-500 text-sm mb-1">{{ 'CASE_EVALUATION.RISK_LEVEL' | translate }}</div>
+      <div class="text-5xl font-bold text-[#8A1538] leading-none">{{ 'RISK.' + (caseDetail.risk_level || 'UNKNOWN') | translate }}</div>
     </div>
   </div>
 
@@ -25,7 +25,7 @@
       <!-- Toolbar -->
       <div class="absolute top-4 right-4 flex gap-2 z-20">
         <!-- Zoom In -->
-        <button (click)="zoomIn()" title="Zoom In"
+        <button (click)="zoomIn()" [title]="'CASE_EVALUATION.ZOOM_IN' | translate"
           class="bg-white/20 hover:bg-white/30 backdrop-blur-md p-2 rounded-lg text-white transition-colors">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -33,7 +33,7 @@
           </svg>
         </button>
         <!-- Zoom Out -->
-        <button (click)="zoomOut()" title="Zoom Out"
+        <button (click)="zoomOut()" [title]="'CASE_EVALUATION.ZOOM_OUT' | translate"
           class="bg-white/20 hover:bg-white/30 backdrop-blur-md p-2 rounded-lg text-white transition-colors">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -41,7 +41,7 @@
           </svg>
         </button>
         <!-- Fullscreen Toggle -->
-        <button (click)="toggleFullscreen()" [title]="isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'"
+        <button (click)="toggleFullscreen()" [title]="isFullscreen ? ('CASE_EVALUATION.EXIT_FULLSCREEN' | translate) : ('CASE_EVALUATION.FULLSCREEN' | translate)"
           class="bg-white/20 hover:bg-white/30 backdrop-blur-md p-2 rounded-lg text-white transition-colors">
           <svg *ngIf="!isFullscreen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -65,7 +65,7 @@
            *ngIf="caseDetail"
            [ngStyle]="{width: isFullscreen ? '100%' : '100%', height: isFullscreen ? '100%' : '100%'}">
         
-        <img *ngIf="caseDetail.image_urls && caseDetail.image_urls.length > 0" 
+         <img *ngIf="caseDetail.image_urls && caseDetail.image_urls.length > 0" 
              [src]="caseDetail.image_urls[currentSlice - 1]" 
              class="max-w-full max-h-full object-contain shadow-2xl transition-transform duration-200"
              [ngStyle]="{'transform': 'scale(' + zoomLevel + ')'}">
@@ -75,7 +75,7 @@
           <svg class="w-16 h-16 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="1.5"></path>
           </svg>
-          <p>No MRI images available for this case</p>
+          <p>{{ 'CASE_EVALUATION.NO_MRI' | translate }}</p>
         </div>
       </div>
 
@@ -97,7 +97,7 @@
 
       <!-- Slice indicator -->
       <div class="absolute bottom-6 bg-[#0f0f0f] border border-gray-800 text-white text-xs px-5 py-2.5 rounded-md font-mono z-20 tracking-wider">
-        Slice {{currentSlice}} of {{totalSlices}}
+        {{ 'CASE_EVALUATION.SLICE_INDICATOR' | translate: { current: currentSlice, total: totalSlices } }}
       </div>
 
     </div>
@@ -109,17 +109,17 @@
       <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
         <div class="flex items-center gap-2 mb-4 text-[#1546b8] font-bold text-sm">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-          Diagnostic Finding
+          {{ 'CASE_EVALUATION.DIAGNOSTIC_FINDING' | translate }}
         </div>
         
         <div class="mb-4">
-          <label class="block text-xs text-gray-500 mb-2">Detected AVC Type</label>
+          <label class="block text-xs text-gray-500 mb-2">{{ 'CASE_EVALUATION.DETECTED_AVC_TYPE' | translate }}</label>
           <div class="relative">
             <select [(ngModel)]="predictedClass" class="w-full appearance-none bg-[#f4f6fb] border-none rounded-lg px-4 py-3 text-gray-800 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium">
-              <option value="">Select diagnosis...</option>
-              <option value="Ischemic">Ischemic Stroke</option>
-              <option value="Hemorrhagic">Hemorrhagic Stroke</option>
-              <option value="Normal">Normal / No stroke detected</option>
+              <option value="">{{ 'CASE_EVALUATION.SELECT_DIAGNOSIS' | translate }}</option>
+              <option value="Ischemic">{{ 'CASE_EVALUATION.ISCHEMIC_STROKE' | translate }}</option>
+              <option value="Hemorrhagic">{{ 'CASE_EVALUATION.HEMORRHAGIC_STROKE' | translate }}</option>
+              <option value="Normal">{{ 'CASE_EVALUATION.NORMAL_NO_STROKE' | translate }}</option>
             </select>
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -128,7 +128,7 @@
         </div>
 
         <div class="bg-[#f4f6fb] rounded-lg p-4 flex justify-between items-center" *ngIf="caseDetail?.confidence_score">
-          <span class="text-sm text-gray-600 font-medium">Confidence Score</span>
+          <span class="text-sm text-gray-600 font-medium">{{ 'CASE_EVALUATION.CONFIDENCE_SCORE' | translate }}</span>
           <span class="text-lg font-bold text-[#1546b8]">{{caseDetail?.confidence_score}}%</span>
         </div>
       </div>
@@ -137,19 +137,19 @@
       <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100" *ngIf="caseDetail">
         <div class="flex items-center gap-2 mb-4 text-gray-800 font-bold text-sm">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19V5m0 14h16M8 17V9m4 8V7m4 10v-5"></path></svg>
-          AI Scores
+          {{ 'CASE_EVALUATION.AI_SCORES' | translate }}
         </div>
         <div class="grid grid-cols-3 gap-3">
           <div class="bg-[#f4f6fb] rounded-lg p-3">
-            <div class="text-[11px] text-gray-500 font-semibold uppercase">IRM</div>
+            <div class="text-[11px] text-gray-500 font-semibold uppercase">{{ 'CASE_EVALUATION.IRM' | translate }}</div>
             <div class="text-xl font-bold text-gray-900">{{caseDetail.ai_irm_score ?? 'N/A'}}<span *ngIf="caseDetail.ai_irm_score !== null">%</span></div>
           </div>
           <div class="bg-[#f4f6fb] rounded-lg p-3">
-            <div class="text-[11px] text-gray-500 font-semibold uppercase">Symptomes</div>
+            <div class="text-[11px] text-gray-500 font-semibold uppercase">{{ 'CASE_EVALUATION.SYMPTOMS' | translate }}</div>
             <div class="text-xl font-bold text-gray-900">{{caseDetail.ai_symptom_score ?? 'N/A'}}<span *ngIf="caseDetail.ai_symptom_score !== null">%</span></div>
           </div>
           <div class="bg-[#f4f6fb] rounded-lg p-3">
-            <div class="text-[11px] text-gray-500 font-semibold uppercase">Fusion</div>
+            <div class="text-[11px] text-gray-500 font-semibold uppercase">{{ 'CASE_EVALUATION.FUSION' | translate }}</div>
             <div class="text-xl font-bold text-[#8A1538]">{{caseDetail.fused_score ?? 'N/A'}}<span *ngIf="caseDetail.fused_score !== null">%</span></div>
           </div>
         </div>
@@ -160,9 +160,9 @@
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2 text-[#0f766e] font-bold text-sm">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-            AI Knowledge Assessment
+            {{ 'CASE_EVALUATION.AI_KNOWLEDGE_ASSESSMENT' | translate }}
           </div>
-          <span class="text-[10px] font-bold text-[#0f766e] uppercase tracking-widest">Editable</span>
+          <span class="text-[10px] font-bold text-[#0f766e] uppercase tracking-widest">{{ 'CASE_EVALUATION.EDITABLE' | translate }}</span>
         </div>
         <textarea [(ngModel)]="aiAssessment" class="w-full bg-[#f4f6fb] border-none focus:ring-2 focus:ring-[#0f766e] rounded-lg p-4 text-sm text-gray-700 h-32 resize-none transition-colors outline-none leading-relaxed font-medium"></textarea>
       </div>
@@ -171,20 +171,20 @@
       <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
         <div class="flex items-center gap-2 mb-4 text-gray-800 font-bold text-sm">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-          Specialist Validation Notes
+          {{ 'CASE_EVALUATION.SPECIALIST_VALIDATION_NOTES' | translate }}
         </div>
-        <textarea [(ngModel)]="specialistNotes" placeholder="Add clinical context or rationale for modifications..." class="w-full bg-white border border-gray-200 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 rounded-lg p-4 text-sm text-gray-700 h-24 resize-none transition-colors outline-none placeholder-gray-400"></textarea>
+        <textarea [(ngModel)]="specialistNotes" [placeholder]="'CASE_EVALUATION.NOTES_PLACEHOLDER' | translate" class="w-full bg-white border border-gray-200 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 rounded-lg p-4 text-sm text-gray-700 h-24 resize-none transition-colors outline-none placeholder-gray-400"></textarea>
       </div>
 
       <!-- Actions -->
       <div class="grid grid-cols-2 gap-4 mt-2">
         <button (click)="reject()" class="bg-[#f3f4f6] hover:bg-gray-200 text-gray-800 font-semibold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors text-sm">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-          Reject Case
+          {{ 'CASE_EVALUATION.REJECT_CASE' | translate }}
         </button>
         <button (click)="validate()" class="bg-[#1546b8] hover:bg-blue-700 text-white font-semibold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors text-sm">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-          Validate & Dispatch
+          {{ 'CASE_EVALUATION.VALIDATE_DISPATCH' | translate }}
         </button>
       </div>
 

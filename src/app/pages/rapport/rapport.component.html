@@ -13,8 +13,8 @@
               </svg>
             </div>
             <div>
-              <h1 class="report-title">StrokeAI Assessment Report</h1>
-              <p class="report-subtitle">Comprehensive Neurological Diagnostic Analysis</p>
+              <h1 class="report-title">{{ 'REPORT.TITLE' | translate }}</h1>
+              <p class="report-subtitle">{{ 'REPORT.SUBTITLE' | translate }}</p>
               <div class="report-version-strip" *ngIf="predictionData.version_label || predictionData.version_number || predictionData.rapport_status">
                 <span *ngIf="predictionData.version_number">V{{ predictionData.version_number }}</span>
                 <span *ngIf="predictionData.version_label">{{ predictionData.version_label }}</span>
@@ -25,7 +25,7 @@
         </div>
         <div class="header-right">
           <div class="report-meta">
-            <span class="meta-label">Report Date</span>
+            <span class="meta-label">{{ 'REPORT.REPORT_DATE' | translate }}</span>
             <span class="meta-value">{{ currentDate | date:'mediumDate' }}</span>
           </div>
           <button (click)="exportPdf()" class="print-btn print-hide" id="printBtn" [disabled]="exportLoading">
@@ -33,7 +33,7 @@
               <path d="M4 6V2h8v4M4 12H2V7h12v5h-2" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
               <rect x="4" y="10" width="8" height="4" rx="1" stroke="currentColor" stroke-width="1.5"/>
             </svg>
-            {{ exportLoading ? 'Exporting...' : 'Export PDF' }}
+            {{ exportLoading ? ('REPORT.EXPORTING' | translate) : ('REPORT.EXPORT_PDF' | translate) }}
           </button>
           <span class="export-error print-hide" *ngIf="exportError">{{ exportError }}</span>
         </div>
@@ -45,9 +45,9 @@
       <div class="risk-card" [ngClass]="getRiskCardClass()">
         <div class="risk-card-content">
           <div class="risk-info">
-            <span class="risk-eyebrow">PRIMARY DIAGNOSIS RESULT</span>
-            <h2 class="risk-title">Risk Level: {{ predictionData.risk_level }}</h2>
-            <p class="risk-confidence">AI Confidence: {{ predictionData.confidence | percent:'1.1-2' }}</p>
+            <span class="risk-eyebrow">{{ 'REPORT.PRIMARY_DIAGNOSIS_RESULT' | translate }}</span>
+            <h2 class="risk-title">{{ 'REPORT.RISK_LEVEL' | translate: { level: ('RISK.' + (predictionData.risk_level || 'UNKNOWN') | translate) } }}</h2>
+            <p class="risk-confidence">{{ 'REPORT.AI_CONFIDENCE' | translate: { confidence: (predictionData.confidence | percent:'1.1-2') } }}</p>
           </div>
           <div class="risk-gauge">
             <div class="gauge-circle">
@@ -62,7 +62,7 @@
                 {{ predictionData.fused_probability | percent:'1.0-0' }}
               </div>
             </div>
-            <span class="gauge-label">Fused Probability</span>
+            <span class="gauge-label">{{ 'REPORT.FUSED_PROBABILITY' | translate }}</span>
           </div>
         </div>
       </div>
@@ -78,9 +78,9 @@
                 <path d="M7 13l3-5 2 3 2-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
-            <h3 class="analysis-title">MRI Analysis</h3>
+            <h3 class="analysis-title">{{ 'REPORT.MRI_ANALYSIS' | translate }}</h3>
             <span *ngIf="predictionData.all_slices && predictionData.all_slices.length > 1" class="slice-count-badge">
-              {{ predictionData.all_slices.length }} Slices
+              {{ predictionData.all_slices.length }} {{ 'REPORT.SLICES' | translate }}
             </span>
           </div>
 
@@ -89,7 +89,7 @@
             <div class="mri-viewer-display">
               <!-- PRIMARY PATHOLOGY badge on the active slice -->
               <div class="slice-primary-badge" *ngIf="predictionData.all_slices[currentSliceIndex].imageUrl === imageUrl">
-                PRIMARY PATHOLOGY
+                {{ 'REPORT.PRIMARY_PATHOLOGY' | translate }}
               </div>
 
               <!-- Main Slice Image -->
@@ -100,9 +100,9 @@
               <!-- Individual Slice Details Overlay at bottom -->
               <div class="mri-viewer-overlay">
                 <div class="mri-viewer-meta">
-                  <span class="mri-viewer-tag">Slice {{ currentSliceIndex + 1 }} of {{ totalSlices }}</span>
+                  <span class="mri-viewer-tag">{{ 'REPORT.SLICE_INDICATOR' | translate: { current: currentSliceIndex + 1, total: totalSlices } }}</span>
                   <span class="mri-viewer-risk" [ngClass]="getSliceRiskColorClass(predictionData.all_slices[currentSliceIndex].probability)">
-                    {{ predictionData.all_slices[currentSliceIndex].probability | percent:'1.1-2' }} Risk
+                    {{ predictionData.all_slices[currentSliceIndex].probability | percent:'1.1-2' }} {{ 'REPORT.RISK' | translate }}
                   </span>
                 </div>
               </div>
@@ -111,7 +111,7 @@
               <button *ngIf="currentSliceIndex > 0" 
                       (click)="prevSlice()" 
                       class="mri-viewer-arrow left-arrow" 
-                      title="Previous Slice">
+                      [title]="'REPORT.PREVIOUS_SLICE' | translate">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="15 18 9 12 15 6"></polyline>
                 </svg>
@@ -121,7 +121,7 @@
               <button *ngIf="currentSliceIndex < totalSlices - 1" 
                       (click)="nextSlice()" 
                       class="mri-viewer-arrow right-arrow" 
-                      title="Next Slice">
+                      [title]="'REPORT.NEXT_SLICE' | translate">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="9 18 15 12 9 6"></polyline>
                 </svg>
@@ -141,19 +141,26 @@
               <path d="M12 20l4-6 4 6" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               <circle cx="12" cy="13" r="2" stroke="#cbd5e1" stroke-width="1.5"/>
             </svg>
-            <span>No MRI scan provided</span>
+            <span>{{ 'REPORT.NO_MRI' | translate }}</span>
           </div>
 
           <div class="analysis-metrics">
             <div class="metric-row">
-              <span class="metric-label">Predicted Class</span>
+              <span class="metric-label">{{ 'REPORT.PREDICTED_CLASS' | translate }}</span>
               <div class="flex items-center gap-2">
-                <span *ngIf="predictionData.validation_status === 'VALIDATED' || predictionData.validation_status === 'REJECTED'" class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-bold">MD</span>
-                <span class="metric-value">{{ predictionData.predicted_class || 'N/A' }}</span>
+                <span *ngIf="predictionData.validation_status === 'VALIDATED' || predictionData.validation_status === 'REJECTED'" class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-bold">{{ 'REPORT.MD_VERIFIED' | translate }}</span>
+                <span class="metric-value">
+                  {{ 
+                    predictionData.predicted_class === 'Ischemic' ? ('CASE_EVALUATION.ISCHEMIC_STROKE' | translate) : 
+                    predictionData.predicted_class === 'Hemorrhagic' ? ('CASE_EVALUATION.HEMORRHAGIC_STROKE' | translate) : 
+                    predictionData.predicted_class === 'Normal' ? ('CASE_EVALUATION.NORMAL_NO_STROKE' | translate) : 
+                    predictionData.predicted_class || 'N/A' 
+                  }}
+                </span>
               </div>
             </div>
             <div class="metric-row">
-              <span class="metric-label">{{ (predictionData.all_slices && predictionData.all_slices.length > 1) ? 'Image Probability (Avg)' : 'Image Probability' }}</span>
+              <span class="metric-label">{{ (predictionData.all_slices && predictionData.all_slices.length > 1) ? ('REPORT.IMAGE_PROBABILITY_AVG' | translate) : ('REPORT.IMAGE_PROBABILITY' | translate) }}</span>
               <span class="metric-value highlight-indigo">{{ predictionData.image_probability != null ? (predictionData.image_probability | percent:'1.1-2') : 'N/A' }}</span>
             </div>
           </div>
@@ -168,35 +175,47 @@
                 <path d="M7 8h6M7 11h6M7 14h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
               </svg>
             </div>
-            <h3 class="analysis-title">Clinical Observations</h3>
+            <h3 class="analysis-title">{{ 'REPORT.CLINICAL_OBSERVATIONS' | translate }}</h3>
           </div>
 
           <div class="symptoms-section">
-            <span class="symptoms-heading">Reported Symptoms</span>
+            <span class="symptoms-heading">{{ 'REPORT.REPORTED_SYMPTOMS' | translate }}</span>
             <div class="symptoms-tags">
-              <span *ngFor="let sym of patientDetails?.symptoms || []" class="symptom-tag">{{ sym }}</span>
-              <span *ngIf="!patientDetails?.symptoms?.length" class="no-data">None reported</span>
+              <span *ngFor="let sym of patientDetails?.symptoms || []" class="symptom-tag">
+                {{ 
+                  sym === 'Balance/Vision Impairment' ? ('INTAKE.SYMPTOM_BALANCE_VISION' | translate) :
+                  sym === 'Facial Droop' ? ('INTAKE.SYMPTOM_FACIAL_DROOP' | translate) :
+                  sym === 'Arm Weakness' ? ('INTAKE.SYMPTOM_ARM_WEAKNESS' | translate) :
+                  sym === 'Speech Difficulty' ? ('INTAKE.SYMPTOM_SPEECH_DIFFICULTY' | translate) :
+                  sym === 'Severe Headache' ? ('INTAKE.SYMPTOM_SEVERE_HEADACHE' | translate) :
+                  sym === 'Leg Weakness' ? ('INTAKE.SYMPTOM_LEG_WEAKNESS' | translate) :
+                  sym === 'Confusion' ? ('INTAKE.SYMPTOM_CONFUSION' | translate) :
+                  sym === 'Numbness' ? ('INTAKE.SYMPTOM_NUMBNESS' | translate) :
+                  sym
+                }}
+              </span>
+              <span *ngIf="!patientDetails?.symptoms?.length" class="no-data">{{ 'REPORT.NONE_REPORTED' | translate }}</span>
             </div>
           </div>
 
           <div class="vitals-row" *ngIf="patientDetails?.tension">
-            <span class="metric-label">Blood Pressure</span>
+            <span class="metric-label">{{ 'REPORT.BLOOD_PRESSURE' | translate }}</span>
             <span class="metric-value">{{ patientDetails.tension }} mmHg</span>
           </div>
 
           <div class="analysis-metrics">
             <div class="metric-row">
-              <span class="metric-label">Symptom Probability</span>
+              <span class="metric-label">{{ 'REPORT.SYMPTOM_PROBABILITY' | translate }}</span>
               <span class="metric-value highlight-emerald">{{ predictionData.symptom_probability != null ? (predictionData.symptom_probability | percent:'1.1-2') : 'N/A' }}</span>
             </div>
             <div class="metric-row">
-              <span class="metric-label">RAG Urgency Level</span>
+              <span class="metric-label">{{ 'REPORT.RAG_URGENCY_LEVEL' | translate }}</span>
               <span class="urgency-badge" [ngClass]="{
                 'urgency-high': predictionData.symptom_urgency === 'HIGH' || predictionData.symptom_urgency === 'EMERGENCY',
                 'urgency-medium': predictionData.symptom_urgency === 'MEDIUM' || predictionData.symptom_urgency === 'MODERATE',
                 'urgency-low': predictionData.symptom_urgency === 'LOW'
               }">
-                {{ predictionData.symptom_urgency || 'Unknown' }}
+                {{ predictionData.symptom_urgency ? ('REPORT.' + predictionData.symptom_urgency | translate) : ('REPORT.UNKNOWN' | translate) }}
               </span>
             </div>
           </div>
@@ -211,9 +230,9 @@
               <path d="M10 2l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6l2-6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
             </svg>
           </div>
-          <h3>{{ (predictionData.validation_status === 'VALIDATED' || predictionData.validation_status === 'REJECTED') ? 'Specialist Clinical Assessment' : 'AI Knowledge Assessment' }}</h3>
+          <h3>{{ (predictionData.validation_status === 'VALIDATED' || predictionData.validation_status === 'REJECTED') ? ('REPORT.SPECIALIST_CLINICAL_ASSESSMENT' | translate) : ('REPORT.AI_KNOWLEDGE_ASSESSMENT' | translate) }}</h3>
           <span class="ai-badge" [ngClass]="{'md-badge': predictionData.validation_status === 'VALIDATED' || predictionData.validation_status === 'REJECTED'}">
-            {{ (predictionData.validation_status === 'VALIDATED' || predictionData.validation_status === 'REJECTED') ? 'MD VERIFIED' : 'RAG OUTPUT' }}
+            {{ (predictionData.validation_status === 'VALIDATED' || predictionData.validation_status === 'REJECTED') ? ('REPORT.MD_VERIFIED' | translate) : ('REPORT.RAG_OUTPUT' | translate) }}
           </span>
         </div>
         <div class="ai-response-body" [innerHTML]="predictionData.final_assessment">
@@ -232,28 +251,28 @@
             </svg>
           </div>
           <div class="validation-title-group">
-            <h3 class="validation-title">Specialist Clinical Review</h3>
+            <h3 class="validation-title">{{ 'REPORT.SPECIALIST_CLINICAL_REVIEW' | translate }}</h3>
             <span class="validation-status-text" [ngClass]="predictionData.validation_status === 'VALIDATED' ? 'success' : 'danger'">
-              Status: {{ predictionData.validation_status }}
+              {{ 'REPORT.STATUS' | translate: { status: ('STATUS.' + (predictionData.validation_status || 'UNKNOWN') | translate) } }}
             </span>
           </div>
         </div>
         <div class="validation-body">
           <div class="specialist-note" *ngIf="predictionData.display_notes">
-            <span class="note-label">Specialist Notes:</span>
+            <span class="note-label">{{ 'REPORT.SPECIALIST_NOTES' | translate }}</span>
             <p class="note-text">{{ predictionData.display_notes }}</p>
           </div>
           <div class="validation-footer" *ngIf="predictionData.validated_at || predictionData.rejected_at">
-             <span class="footer-item" *ngIf="predictionData.validated_at">Validated on: {{ predictionData.validated_at | date:'medium' }}</span>
-             <span class="footer-item" *ngIf="predictionData.rejected_at">Rejected on: {{ predictionData.rejected_at | date:'medium' }}</span>
+             <span class="footer-item" *ngIf="predictionData.validated_at">{{ 'REPORT.VALIDATED_ON' | translate: { date: (predictionData.validated_at | date:'medium') } }}</span>
+             <span class="footer-item" *ngIf="predictionData.rejected_at">{{ 'REPORT.REJECTED_ON' | translate: { date: (predictionData.rejected_at | date:'medium') } }}</span>
           </div>
         </div>
       </div>
 
       <!-- Disclaimer -->
       <div class="disclaimer print-hide">
-        <p>Report generated via StrokeAI Platform. This is an AI assessment for clinical support.</p>
-        <p>It does not replace final evaluation by a certified specialized physician.</p>
+        <p>{{ 'REPORT.DISCLAIMER_1' | translate }}</p>
+        <p>{{ 'REPORT.DISCLAIMER_2' | translate }}</p>
       </div>
     </div>
   </div>
@@ -267,13 +286,13 @@
           <path d="M28 18v12M28 36h.01" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </div>
-      <h2 class="fallback-title">No Report Available</h2>
-      <p class="fallback-desc">Submit a patient assessment from the intake page to generate a diagnostic report.</p>
+      <h2 class="fallback-title">{{ 'REPORT.NO_REPORT' | translate }}</h2>
+      <p class="fallback-desc">{{ 'REPORT.NO_REPORT_DESC' | translate }}</p>
       <a routerLink="/intake" class="fallback-btn">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        Go to Intake
+        {{ 'REPORT.GO_TO_INTAKE' | translate }}
       </a>
     </div>
   </div>

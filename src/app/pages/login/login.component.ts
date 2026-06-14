@@ -67,12 +67,23 @@ export class LoginComponent {
     this.showPassword = !this.showPassword;
   }
 
+  get isEmailInvalid(): boolean {
+    if (!this.email) return false;
+    const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return !pattern.test(this.email.trim());
+  }
+
   onSubmit(): void {
     this.errorMessage = '';
     const email = this.email.trim();
 
     if (!email || !this.password) {
       this.errorMessage = this.translate.instant('LOGIN.ERR_REQUIRED');
+      return;
+    }
+
+    if (this.isEmailInvalid) {
+      this.errorMessage = "Format de l'email invalide (ex: nom@domaine.com)";
       return;
     }
 
